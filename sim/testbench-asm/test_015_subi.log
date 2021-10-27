@@ -1,0 +1,182 @@
+
+Picoblaze Assembler based on kpicosim  Version 1.0
+Source File: /home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-asm/test_015_subi.psm
+
+Line  Addr Instr  Source Code
+   1              ; ;------------------------------------
+   2              ; ; Test 015
+   3              ; ; Instruction SUB (Immédiat)
+   4              ; ;------------------------------------
+   5              
+   6              ; ;------------------------------------
+   7              ; ; directive compilation fichier
+   8              ; ;------------------------------------
+   9              
+  10              VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+  11              
+  12              ; ;------------------------------------
+  13              ; ; Constantes
+  14              ; ;------------------------------------
+  15              sp                  EQU       sF
+  16              
+  17              test_val_ok         EQU       $FA
+  18              test_val_ko         EQU       $ED
+  19              
+  20              ; ;------------------------------------
+  21              ; ; directives pour le simulateur:  definition des  E/S
+  22              ; ;------------------------------------
+  23              switch_id           EQU       $00
+  24              led_id              EQU       $20
+  25              debug_id            EQU       $e0
+  26              
+  27              switch              DSIN      switch_id
+  28              led                 DSOUT     led_id
+  29              debug               DSOUT     debug_id
+  30              
+  31              ; ;------------------------------------
+  32              ; ; MAIN
+  33              ; ;------------------------------------
+  34                                  ORG       $000
+  35              main: 
+  36  000  000a5                      LOAD      s0, $A5
+  37  001  00100                      LOAD      s1, $00
+  38  002  00201                      LOAD      s2, $01
+  39  003  0030f                      LOAD      s3, $0F
+  40  004  00410                      LOAD      s4, $10
+  41  005  005ff                      LOAD      s5, $FF
+  42  006  0065a                      LOAD      s6, $5A
+  43              
+  44  007  01a00                      LOAD      sA, s0              ; 
+  45  008  1ca00                      SUB       sA, $00             ; sA <- $A5 - 00 <- $A5
+  46              
+  47  009  35c0b                      JUMP      NC, test01_ok
+  48  00a  34050                      JUMP      test_ko
+  49              test01_ok: 
+  50  00b  3540d                      JUMP      NZ, test02_ok
+  51  00c  34050                      JUMP      test_ko
+  52              test02_ok: 
+  53  00d  14aa5                      COMP      sA, $A5
+  54  00e  35010                      JUMP      Z, test03_ok
+  55  00f  34050                      JUMP      test_ko
+  56              test03_ok: 
+  57              
+  58  010  01a00                      LOAD      sA, s0
+  59  011  1ca01                      SUB       sA, $01             ; sA <- $A5 - $01 <- $A4
+  60              
+  61  012  35c14                      JUMP      NC, test11_ok
+  62  013  34050                      JUMP      test_ko
+  63              test11_ok: 
+  64  014  35416                      JUMP      NZ, test12_ok
+  65  015  34050                      JUMP      test_ko
+  66              test12_ok: 
+  67  016  14aa4                      COMP      sA, $A4
+  68  017  35019                      JUMP      Z, test13_ok
+  69  018  34050                      JUMP      test_ko
+  70              test13_ok: 
+  71              
+  72  019  01a00                      LOAD      sA, s0              ; 
+  73  01a  1ca0f                      SUB       sA, $0F             ; sA <- $A5 - $0F <- $96
+  74              
+  75  01b  35c1d                      JUMP      NC, test21_ok
+  76  01c  34050                      JUMP      test_ko
+  77              test21_ok: 
+  78  01d  3541f                      JUMP      NZ, test22_ok
+  79  01e  34050                      JUMP      test_ko
+  80              test22_ok: 
+  81  01f  14a96                      COMP      sA, $96
+  82  020  35022                      JUMP      Z, test23_ok
+  83  021  34050                      JUMP      test_ko
+  84              test23_ok: 
+  85              
+  86  022  01a00                      LOAD      sA, s0
+  87  023  1ca10                      SUB       sA, $10             ; sA <- $A5 - $10 <- $95
+  88              
+  89  024  35c26                      JUMP      NC, test31_ok
+  90  025  34050                      JUMP      test_ko
+  91              test31_ok: 
+  92  026  35428                      JUMP      NZ, test32_ok
+  93  027  34050                      JUMP      test_ko
+  94              test32_ok: 
+  95  028  14a95                      COMP      sA, $95
+  96  029  3502b                      JUMP      Z, test33_ok
+  97  02a  34050                      JUMP      test_ko
+  98              test33_ok: 
+  99              
+ 100  02b  01a00                      LOAD      sA, s0
+ 101  02c  1caff                      SUB       sA, $FF             ; sA <- $A5 - $FF <- $A6
+ 102              
+ 103  02d  3582f                      JUMP      C, test41_ok
+ 104  02e  34050                      JUMP      test_ko
+ 105              test41_ok: 
+ 106  02f  35431                      JUMP      NZ, test42_ok
+ 107  030  34050                      JUMP      test_ko
+ 108              test42_ok: 
+ 109  031  14aa6                      COMP      sA, $A6
+ 110  032  35034                      JUMP      Z, test43_ok
+ 111  033  34050                      JUMP      test_ko
+ 112              test43_ok: 
+ 113              
+ 114  034  01a00                      LOAD      sA, s0
+ 115  035  1ca5a                      SUB       sA, $5A             ; sA <- $A5 - $5A <- $4B
+ 116              
+ 117  036  35c38                      JUMP      NC, test51_ok
+ 118  037  34050                      JUMP      test_ko
+ 119              test51_ok: 
+ 120  038  3543a                      JUMP      NZ, test52_ok
+ 121  039  34050                      JUMP      test_ko
+ 122              test52_ok: 
+ 123  03a  14a4b                      COMP      sA, $4B
+ 124  03b  3503d                      JUMP      Z, test53_ok
+ 125  03c  34050                      JUMP      test_ko
+ 126              test53_ok: 
+ 127              
+ 128  03d  01a10                      LOAD      sA, s1
+ 129  03e  1ca00                      SUB       sA, $00             ; sA <- $00 - $00 <- $00
+ 130              
+ 131  03f  35c41                      JUMP      NC, test61_ok
+ 132  040  34050                      JUMP      test_ko
+ 133              test61_ok: 
+ 134  041  35043                      JUMP      Z, test62_ok
+ 135  042  34050                      JUMP      test_ko
+ 136              test62_ok: 
+ 137  043  14a00                      COMP      sA, $00
+ 138  044  35046                      JUMP      Z, test63_ok
+ 139  045  34050                      JUMP      test_ko
+ 140              test63_ok: 
+ 141              
+ 142  046  01a60                      LOAD      sA, s6
+ 143  047  1caa5                      SUB       sA, $A5             ; sA <- $5A - $A5 <- b5
+ 144              
+ 145  048  3584a                      JUMP      C, test71_ok
+ 146  049  34050                      JUMP      test_ko
+ 147              test71_ok: 
+ 148  04a  3544c                      JUMP      NZ, test72_ok
+ 149  04b  34050                      JUMP      test_ko
+ 150              test72_ok: 
+ 151  04c  14ab5                      COMP      sA, $B5
+ 152  04d  3504f                      JUMP      Z, test73_ok
+ 153  04e  34050                      JUMP      test_ko
+ 154              test73_ok: 
+ 155              
+ 156              
+ 157  04f  343fc                      JUMP      test_ok
+ 158              
+ 159              ; ;------------------------------------
+ 160              ; ; Test ok/ko
+ 161              ; ;------------------------------------
+ 162              test_ko:
+ 163  050  00eed                      LOAD      sE, test_val_ko
+ 164  051  2cee0                      OUT       sE, debug_id
+ 165  052  34050                      JUMP      test_ko
+ 166              
+ 167                                  ORG       $3FC
+ 168              test_ok: 
+ 169                                  LOAD      sE, test_val_ok
+ 170                                  OUT       sE, debug_id
+ 171                                  JUMP      test_ok
+ 172              
+ 173              ; ;------------------------------------
+ 174              ; ; Interrupt VECTOR
+ 175              ; ;------------------------------------
+ 176                                  ORG       $3FF
+ 177                                  RETI      ENABLE

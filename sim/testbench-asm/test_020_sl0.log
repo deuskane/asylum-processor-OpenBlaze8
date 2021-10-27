@@ -1,0 +1,132 @@
+
+Picoblaze Assembler based on kpicosim  Version 1.0
+Source File: /home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-asm/test_020_sl0.psm
+
+Line  Addr Instr  Source Code
+   1              ; ;------------------------------------
+   2              ; ; Test 020
+   3              ; ; SL0 : Shift Left, zero fill
+   4              ; ;------------------------------------
+   5              
+   6              ; ;------------------------------------
+   7              ; ; directive compilation fichier
+   8              ; ;------------------------------------
+   9              
+  10              VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+  11              
+  12              ; ;------------------------------------
+  13              ; ; Constantes
+  14              ; ;------------------------------------
+  15              sp                  EQU       sF
+  16              
+  17              test_val_ok         EQU       $FA
+  18              test_val_ko         EQU       $ED
+  19              
+  20              ; ;------------------------------------
+  21              ; ; directives pour le simulateur:  definition des  E/S
+  22              ; ;------------------------------------
+  23              switch_id           EQU       $00
+  24              led_id              EQU       $20
+  25              debug_id            EQU       $e0
+  26              
+  27              switch              DSIN      switch_id
+  28              led                 DSOUT     led_id
+  29              debug               DSOUT     debug_id
+  30              
+  31              ; ;------------------------------------
+  32              ; ; MAIN
+  33              ; ;------------------------------------
+  34                                  ORG       $000
+  35              main: 
+  36  000  000a5                      LOAD      s0, $A5
+  37  001  00100                      LOAD      s1, $00
+  38              
+  39              ; RL
+  40  002  01900                      LOAD      s9, s0
+  41              
+  42  003  20906                      SL0       s9                  ; 10100101 -> 01001010
+  43  004  35c34                      JUMP      NC, test_ko
+  44  005  35034                      JUMP      Z, test_ko
+  45              
+  46  006  1494a                      COMP      s9, $4A
+  47  007  35834                      JUMP      C, test_ko
+  48  008  35434                      JUMP      NZ, test_ko
+  49              
+  50  009  20906                      SL0       s9                  ; 01001010 -> 10010100
+  51  00a  35834                      JUMP      C, test_ko
+  52  00b  35034                      JUMP      Z, test_ko
+  53              
+  54  00c  14994                      COMP      s9, $94
+  55  00d  35834                      JUMP      C, test_ko
+  56  00e  35434                      JUMP      NZ, test_ko
+  57              
+  58  00f  20906                      SL0       s9                  ; 10010100 -> 00101000
+  59  010  35c34                      JUMP      NC, test_ko
+  60  011  35034                      JUMP      Z, test_ko
+  61              
+  62  012  14928                      COMP      s9, $28
+  63  013  35834                      JUMP      C, test_ko
+  64  014  35434                      JUMP      NZ, test_ko
+  65              
+  66  015  20906                      SL0       s9                  ; 00101000 -> 01010000
+  67  016  35834                      JUMP      C, test_ko
+  68  017  35034                      JUMP      Z, test_ko
+  69              
+  70  018  14950                      COMP      s9, $50
+  71  019  35834                      JUMP      C, test_ko
+  72  01a  35434                      JUMP      NZ, test_ko
+  73              
+  74  01b  20906                      SL0       s9                  ; 01010000 -> 10100000
+  75  01c  35834                      JUMP      C, test_ko
+  76  01d  35034                      JUMP      Z, test_ko
+  77              
+  78  01e  149a0                      COMP      s9, $A0
+  79  01f  35834                      JUMP      C, test_ko
+  80  020  35434                      JUMP      NZ, test_ko
+  81              
+  82  021  20906                      SL0       s9                  ; 10100000 -> 01000000
+  83  022  35c34                      JUMP      NC, test_ko
+  84  023  35034                      JUMP      Z, test_ko
+  85              
+  86  024  14940                      COMP      s9, $40
+  87  025  35834                      JUMP      C, test_ko
+  88  026  35434                      JUMP      NZ, test_ko
+  89              
+  90  027  20906                      SL0       s9                  ; 01000000 -> 10000000
+  91  028  35834                      JUMP      C, test_ko
+  92  029  35034                      JUMP      Z, test_ko
+  93              
+  94  02a  14980                      COMP      s9, $80
+  95  02b  35834                      JUMP      C, test_ko
+  96  02c  35434                      JUMP      NZ, test_ko
+  97              
+  98  02d  20906                      SL0       s9                  ; 10000000 -> 00000000
+  99  02e  35c34                      JUMP      NC, test_ko
+ 100  02f  35434                      JUMP      NZ, test_ko
+ 101              
+ 102  030  14900                      COMP      s9, $00
+ 103  031  35834                      JUMP      C, test_ko
+ 104  032  35434                      JUMP      NZ, test_ko
+ 105              
+ 106              
+ 107  033  343fc                      JUMP      test_ok
+ 108              
+ 109              ; ;------------------------------------
+ 110              ; ; Test ok/ko
+ 111              ; ;------------------------------------
+ 112              test_ko:
+ 113  034  00eed                      LOAD      sE, test_val_ko
+ 114  035  2cee0                      OUT       sE, debug_id
+ 115  036  34034                      JUMP      test_ko
+ 116              
+ 117                                  ORG       $3FC
+ 118              test_ok: 
+ 119                                  LOAD      sE, test_val_ok
+ 120                                  OUT       sE, debug_id
+ 121                                  JUMP      test_ok
+ 122              
+ 123              ; ;------------------------------------
+ 124              ; ; Interrupt VECTOR
+ 125              ; ;------------------------------------
+ 126                                  ORG       $3FF
+ 127                                  RETI      ENABLE

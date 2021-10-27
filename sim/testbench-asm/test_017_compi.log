@@ -1,0 +1,156 @@
+
+Picoblaze Assembler based on kpicosim  Version 1.0
+Source File: /home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-asm/test_017_compi.psm
+
+Line  Addr Instr  Source Code
+   1              ; ;------------------------------------
+   2              ; ; Test 017
+   3              ; ; compare (immediat)
+   4              ; ;------------------------------------
+   5              
+   6              ; ;------------------------------------
+   7              ; ; directive compilation fichier
+   8              ; ;------------------------------------
+   9              
+  10              VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+  11              
+  12              ; ;------------------------------------
+  13              ; ; Constantes
+  14              ; ;------------------------------------
+  15              sp                  EQU       sF
+  16              
+  17              test_val_ok         EQU       $FA
+  18              test_val_ko         EQU       $ED
+  19              
+  20              ; ;------------------------------------
+  21              ; ; directives pour le simulateur:  definition des  E/S
+  22              ; ;------------------------------------
+  23              switch_id           EQU       $00
+  24              led_id              EQU       $20
+  25              debug_id            EQU       $e0
+  26              
+  27              switch              DSIN      switch_id
+  28              led                 DSOUT     led_id
+  29              debug               DSOUT     debug_id
+  30              
+  31              ; ;------------------------------------
+  32              ; ; MAIN
+  33              ; ;------------------------------------
+  34                                  ORG       $000
+  35              main: 
+  36              
+  37  000  0005a                      LOAD      s0, $5A
+  38  001  0013c                      LOAD      s1, $3C
+  39  002  002a5                      LOAD      s2, $A5
+  40  003  003c3                      LOAD      s3, $C3
+  41  004  004ff                      LOAD      s4, $FF
+  42  005  00501                      LOAD      s5, $01
+  43              
+  44              ; -----------------
+  45  006  1405a                      COMP      s0, $5a              ; compare $5A with $5A
+  46  007  35843                      JUMP      C, test_ko
+  47  008  35443                      JUMP      NZ, test_ko
+  48              
+  49  009  1403c                      COMP      s0, $3c              ; compare $5A with $3C
+  50  00a  35843                      JUMP      C, test_ko
+  51  00b  35043                      JUMP      Z, test_ko
+  52              
+  53  00c  140a5                      COMP      s0, $a5              ; compare $5A with $A5
+  54  00d  35c43                      JUMP      NC, test_ko
+  55  00e  35043                      JUMP      Z, test_ko
+  56              
+  57  00f  140c3                      COMP      s0, $c3              ; compare $5A with $c3
+  58  010  35c43                      JUMP      NC, test_ko
+  59  011  35043                      JUMP      Z, test_ko
+  60              
+  61              ; -----------------
+  62  012  1415a                      COMP      s1, $5a              ; compare $3C with $5A
+  63  013  35c43                      JUMP      NC, test_ko
+  64  014  35043                      JUMP      Z, test_ko
+  65              
+  66  015  1413c                      COMP      s1, $3c              ; compare $3C with $3C
+  67  016  35843                      JUMP      C, test_ko
+  68  017  35443                      JUMP      NZ, test_ko
+  69              
+  70  018  141a5                      COMP      s1, $a5              ; compare $3C with $A5
+  71  019  35c43                      JUMP      NC, test_ko
+  72  01a  35043                      JUMP      Z, test_ko
+  73              
+  74  01b  141c3                      COMP      s1, $c3              ; compare $3C with $c3
+  75  01c  35c43                      JUMP      NC, test_ko
+  76  01d  35043                      JUMP      Z, test_ko
+  77              
+  78              ; -----------------
+  79  01e  1425a                      COMP      s2, $5a              ; compare $a5 with $5A
+  80  01f  35843                      JUMP      C, test_ko
+  81  020  35043                      JUMP      Z, test_ko
+  82              
+  83  021  1423c                      COMP      s2, $3c              ; compare $a5 with $3C
+  84  022  35843                      JUMP      C, test_ko
+  85  023  35043                      JUMP      Z, test_ko
+  86              
+  87  024  142a5                      COMP      s2, $a5              ; compare $a5 with $A5
+  88  025  35843                      JUMP      C, test_ko
+  89  026  35443                      JUMP      NZ, test_ko
+  90              
+  91  027  142c3                      COMP      s2, $c3              ; compare $a5 with $c3
+  92  028  35c43                      JUMP      NC, test_ko
+  93  029  35043                      JUMP      Z, test_ko
+  94              
+  95              ; -----------------
+  96  02a  1435a                      COMP      s3, $5a              ; compare $c3 with $5A
+  97  02b  35843                      JUMP      C, test_ko
+  98  02c  35043                      JUMP      Z, test_ko
+  99              
+ 100  02d  1433c                      COMP      s3, $3c              ; compare $c3 with $3C
+ 101  02e  35843                      JUMP      C, test_ko
+ 102  02f  35043                      JUMP      Z, test_ko
+ 103              
+ 104  030  143a5                      COMP      s3, $a5              ; compare $c3 with $A5
+ 105  031  35843                      JUMP      C, test_ko
+ 106  032  35043                      JUMP      Z, test_ko
+ 107              
+ 108  033  143c3                      COMP      s3, $c3              ; compare $c3 with $c3
+ 109  034  35843                      JUMP      C, test_ko
+ 110  035  35443                      JUMP      NZ, test_ko
+ 111              
+ 112              ; -----------------
+ 113  036  144ff                      COMP      s4, $ff              ; compare $ff with $ff
+ 114  037  35843                      JUMP      C, test_ko
+ 115  038  35443                      JUMP      NZ, test_ko
+ 116              
+ 117  039  14401                      COMP      s4, $01              ; compare $ff with $01
+ 118  03a  35843                      JUMP      C, test_ko
+ 119  03b  35043                      JUMP      Z, test_ko
+ 120              
+ 121              ; -----------------
+ 122  03c  145ff                      COMP      s5, $ff              ; compare $01 with $ff
+ 123  03d  35c43                      JUMP      NC, test_ko
+ 124  03e  35043                      JUMP      Z, test_ko
+ 125              
+ 126  03f  14501                      COMP      s5, $01              ; compare $01 with $01
+ 127  040  35843                      JUMP      C, test_ko
+ 128  041  35443                      JUMP      NZ, test_ko
+ 129              
+ 130              
+ 131  042  343fc                      JUMP      test_ok
+ 132              
+ 133              ; ;------------------------------------
+ 134              ; ; Test ok/ko
+ 135              ; ;------------------------------------
+ 136              test_ko:
+ 137  043  00eed                      LOAD      sE, test_val_ko
+ 138  044  2cee0                      OUT       sE, debug_id
+ 139  045  34043                      JUMP      test_ko
+ 140              
+ 141                                  ORG       $3FC
+ 142              test_ok: 
+ 143                                  LOAD      sE, test_val_ok
+ 144                                  OUT       sE, debug_id
+ 145                                  JUMP      test_ok
+ 146              
+ 147              ; ;------------------------------------
+ 148              ; ; Interrupt VECTOR
+ 149              ; ;------------------------------------
+ 150                                  ORG       $3FF
+ 151                                  RETI      ENABLE

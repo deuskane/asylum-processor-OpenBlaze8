@@ -1,0 +1,137 @@
+; ;------------------------------------
+; ; Test 033
+; ; Multiplier Routine
+; ; Figure 3-14 of ug129
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $e0
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $000
+main:
+                    result_msb_expected       EQU s5            ;
+                    result_lsb_expected       EQU s6            ;
+
+		    ; 0 * 0 = 0
+                    LOAD      multiplicand,        $00
+                    LOAD      multiplier,          $00
+                    LOAD      result_msb_expected, $00
+                    LOAD      result_lsb_expected, $00
+		    CALL      mult_8x8
+		    COMP      result_lsb_expected, result_lsb
+		    JUMP      NZ, test_ko
+		    COMP      result_msb_expected, result_msb
+		    JUMP      NZ, test_ko
+
+		    ; 255*255 = 65025
+                    LOAD      multiplicand,        $ff
+                    LOAD      multiplier,          $ff
+                    LOAD      result_msb_expected, $fe
+                    LOAD      result_lsb_expected, $01
+		    CALL      mult_8x8
+		    COMP      result_lsb_expected, result_lsb
+		    JUMP      NZ, test_ko
+		    COMP      result_msb_expected, result_msb
+		    JUMP      NZ, test_ko
+
+		    ; 38*21 = 798
+                    LOAD      multiplicand,        $26
+                    LOAD      multiplier,          $15
+                    LOAD      result_msb_expected, $03
+                    LOAD      result_lsb_expected, $1e
+		    CALL      mult_8x8
+		    COMP      result_lsb_expected, result_lsb
+		    JUMP      NZ, test_ko
+		    COMP      result_msb_expected, result_msb
+		    JUMP      NZ, test_ko
+
+		    ; 112*99 = 11088
+                    LOAD      multiplicand,        $70
+                    LOAD      multiplier,          $63
+                    LOAD      result_msb_expected, $2b
+                    LOAD      result_lsb_expected, $50
+		    CALL      mult_8x8
+		    COMP      result_lsb_expected, result_lsb
+		    JUMP      NZ, test_ko
+		    COMP      result_msb_expected, result_msb
+		    JUMP      NZ, test_ko
+
+
+		    JUMP      test_ok
+
+; Multiplier Routine (8-bit x 8-bit = 16-bit product)
+; ==================================================
+; Shift and add algorithm
+;
+mult_8x8:
+                    multiplicand              EQU s0            ; preserved
+                    multiplier                EQU s1            ; preserved
+                    bit_mask                  EQU s2            ; modified
+                    result_msb                EQU s3            ; modified   most -significant byte (MSB) of result
+                    result_lsb                EQU s4            ; modified   least-significant byte (LSB) of result
+
+
+                    LOAD      bit_mask,       $01               ; start with least-significant bit (lsb)
+                    LOAD      result_msb,     $00               ; clear product MSB
+                    LOAD      result_lsb,     $00               ; clear product LSB (not required)    
+
+                    ; loop through all bits in multiplier
+mult_8x8_loop:
+                    TEST      multiplier,     bit_mask          ; check if bit is set
+                    JUMP      Z,              mult_8x8_no_add   ; if bit is not set, skip addition		    
+
+                    ADD       result_msb,     multiplicand      ; addition only occurs in MSB
+
+mult_8x8_no_add:
+                    SRA       result_msb                        ; shift MSB right, CARRY into bit 7, lsb into CARRY
+                    SRA       result_lsb                        ; shift LSB right, lsb from result_msb into bit 7
+
+                    SL0       bit_mask                          ; shift bit_mask left to examine next bit in multiplier
+
+                    JUMP      NZ,             mult_8x8_loop     ; if all bit examined, then bit_mask = 0,
+		    RET
+		    
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko:
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+                    ORG       $3FC
+test_ok: 
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    RETI

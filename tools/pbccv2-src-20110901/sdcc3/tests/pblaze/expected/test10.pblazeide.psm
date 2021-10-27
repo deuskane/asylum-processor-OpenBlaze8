@@ -1,0 +1,213 @@
+;--------------------------------------------------------
+; File Created by SDCC : free open source ANSI-C Compiler
+; Version 3.0.1 #6227 (Feb 20 2011) (Linux)
+; This file was generated Fri Apr 22 14:08:53 2011
+;--------------------------------------------------------
+;--------------------------------------------------------
+; global & static initialisations
+;--------------------------------------------------------
+	_numbers_19	EQU $00
+	_numbers_18	EQU $01
+	_numbers_17	EQU $02
+	_numbers_16	EQU $03
+	_numbers_15	EQU $04
+	_numbers_14	EQU $05
+	_numbers_13	EQU $06
+	_numbers_12	EQU $07
+	_numbers_11	EQU $08
+	_numbers_10	EQU $09
+	_numbers_9	EQU $0a
+	_numbers_8	EQU $0b
+	_numbers_7	EQU $0c
+	_numbers_6	EQU $0d
+	_numbers_5	EQU $0e
+	_numbers_4	EQU $0f
+	_numbers_3	EQU $10
+	_numbers_2	EQU $11
+	_numbers_1	EQU $12
+	_numbers_0	EQU $13
+
+;------------------------------------------------------------
+;Allocation info for local variables in function 'main'
+;------------------------------------------------------------
+;------------------------------------------------------------
+	;	test10.c:5: volatile short numbers[ARRAY_SIZE] = {9,8,7,6,5,4,3,2,1,0};
+	LOAD	s0, _numbers_19
+	LOAD	s1, $00
+	STORE	s1, (s0)
+	ADD	s0, $01
+	LOAD	s1, $09
+	STORE	s1, (s0)
+	LOAD	s0, _numbers_19
+	ADD	s0, $02
+	LOAD	s1, $00
+	STORE	s1, (s0)
+	ADD	s0, $01
+	LOAD	s1, $08
+	STORE	s1, (s0)
+	LOAD	s0, _numbers_19
+	ADD	s0, $04
+	LOAD	s1, $00
+	STORE	s1, (s0)
+	ADD	s0, $01
+	LOAD	s1, $07
+	STORE	s1, (s0)
+	LOAD	s0, _numbers_19
+	ADD	s0, $06
+	LOAD	s1, $00
+	STORE	s1, (s0)
+	ADD	s0, $01
+	LOAD	s1, $06
+	STORE	s1, (s0)
+	LOAD	s0, _numbers_19
+	ADD	s0, $08
+	LOAD	s1, $00
+	STORE	s1, (s0)
+	ADD	s0, $01
+	LOAD	s1, $05
+	STORE	s1, (s0)
+	LOAD	s0, _numbers_19
+	ADD	s0, $0a
+	LOAD	s1, $00
+	STORE	s1, (s0)
+	ADD	s0, $01
+	LOAD	s1, $04
+	STORE	s1, (s0)
+	LOAD	s0, _numbers_19
+	ADD	s0, $0c
+	LOAD	s1, $00
+	STORE	s1, (s0)
+	ADD	s0, $01
+	LOAD	s1, $03
+	STORE	s1, (s0)
+	LOAD	s0, _numbers_19
+	ADD	s0, $0e
+	LOAD	s1, $00
+	STORE	s1, (s0)
+	ADD	s0, $01
+	LOAD	s1, $02
+	STORE	s1, (s0)
+	LOAD	s0, _numbers_19
+	ADD	s0, $10
+	LOAD	s1, $00
+	STORE	s1, (s0)
+	ADD	s0, $01
+	LOAD	s1, $01
+	STORE	s1, (s0)
+	LOAD	s0, _numbers_19
+	ADD	s0, $12
+	LOAD	s1, $00
+	STORE	s1, (s0)
+	ADD	s0, $01
+	LOAD	s1, $00
+	STORE	s1, (s0)
+	LOAD	sF, $3f
+	JUMP	__sdcc_program_startup
+;--------------------------------------------------------
+; Home
+;--------------------------------------------------------
+__sdcc_program_startup:
+	CALL	_main
+;	return from main will lock up
+__sdcc_loop:
+	JUMP	__sdcc_loop
+;--------------------------------------------------------
+; code
+;--------------------------------------------------------
+;------------------------------------------------------------
+;Allocation info for local variables in function 'main'
+;------------------------------------------------------------
+;------------------------------------------------------------
+_main:
+	;	test10.c:7: void main()
+	;	test10.c:11: for (i = (ARRAY_SIZE - 1); i > 0; i--)
+	LOAD	s0, $09
+	LOAD	s1, $00
+_L00107:
+	LOAD	s2, $00
+	COMP	s2, s1
+	JUMP	C, _LC00101
+	LOAD	s2, $00
+	COMP	s2, s0
+	JUMP	C, _LC00101
+	JUMP	_L00119
+_LC00101:
+	;	test10.c:13: for (j = 1; j <= i; j++)
+_L00116:
+	LOAD	s2, $01
+	LOAD	s3, $00
+_L00103:
+	COMP	s1, s3
+	JUMP	C, _L00118
+	COMP	s0, s2
+	JUMP	C, _L00118
+	;	test10.c:15: if (numbers[j-1] > numbers[j])
+	LOAD	s4, _numbers_19
+	LOAD	s5, s2
+	SUB	s5, $01
+	SL0	s5
+	ADD	s4, s5
+	FETCH	s6, (s4)
+	ADD	s4, $01
+	FETCH	s7, (s4)
+	LOAD	s4, _numbers_19
+	LOAD	s8, s2
+	LOAD	s9, s3
+	SL0	s8
+	SLA	s9
+	ADD	s4, s8
+	FETCH	sA, (s4)
+	ADD	s4, $01
+	STORE	s8, 14
+	FETCH	s8, (s4)
+	COMP	sA, s6
+	JUMP	C, _LC00102
+	COMP	s8, s7
+	JUMP	C, _LC00102
+	JUMP	_L00105
+_LC00102:
+	;	test10.c:17: temp = numbers[j-1];
+	LOAD	s4, _numbers_19
+	ADD	s4, s5
+	FETCH	s6, (s4)
+	ADD	s4, $01
+	FETCH	s7, (s4)
+	LOAD	s4, s7
+	LOAD	s8, s6
+	;	test10.c:18: numbers[j-1] = numbers[j];
+	LOAD	s6, _numbers_19
+	ADD	s6, s5
+	LOAD	s5, _numbers_19
+	FETCH	s7, 14
+	ADD	s5, s7
+	FETCH	sA, (s5)
+	ADD	s5, $01
+	STORE	s4, 14
+	FETCH	s4, (s5)
+	STORE	sA, (s6)
+	ADD	s6, $01
+	STORE	s4, (s6)
+	;	test10.c:19: numbers[j] = temp;
+	LOAD	s4, _numbers_19
+	ADD	s4, s7
+	STORE	s8, (s4)
+	ADD	s4, $01
+	FETCH	s5, 14
+	STORE	s5, (s4)
+_L00105:
+	;	test10.c:13: for (j = 1; j <= i; j++)
+	ADD	s2, $01
+	ADDC	s3, $00
+	JUMP	_L00103
+_L00118:
+_L00109:
+	;	test10.c:11: for (i = (ARRAY_SIZE - 1); i > 0; i--)
+	SUB	s0, $01
+	SUBC	s1, $00
+	JUMP	_L00107
+_L00119:
+_L00111:
+	RET
+;--------------------------------------------------------
+; interrupt vector 
+;--------------------------------------------------------

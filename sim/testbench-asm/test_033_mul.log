@@ -1,0 +1,142 @@
+
+Picoblaze Assembler based on kpicosim  Version 1.0
+Source File: /home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-asm/test_033_mul.psm
+
+Line  Addr Instr  Source Code
+   1              ; ;------------------------------------
+   2              ; ; Test 033
+   3              ; ; Multiplier Routine
+   4              ; ; Figure 3-14 of ug129
+   5              ; ;------------------------------------
+   6              
+   7              ; ;------------------------------------
+   8              ; ; directive compilation fichier
+   9              ; ;------------------------------------
+  10              
+  11              VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+  12              
+  13              ; ;------------------------------------
+  14              ; ; Constantes
+  15              ; ;------------------------------------
+  16              sp                  EQU       sF
+  17              
+  18              test_val_ok         EQU       $FA
+  19              test_val_ko         EQU       $ED
+  20              
+  21              ; ;------------------------------------
+  22              ; ; directives pour le simulateur:  definition des  E/S
+  23              ; ;------------------------------------
+  24              switch_id           EQU       $00
+  25              led_id              EQU       $20
+  26              debug_id            EQU       $e0
+  27              
+  28              switch              DSIN      switch_id
+  29              led                 DSOUT     led_id
+  30              debug               DSOUT     debug_id
+  31              
+  32              ; ;------------------------------------
+  33              ; ; MAIN
+  34              ; ;------------------------------------
+  35                                  ORG       $000
+  36              main:
+  37                                  result_msb_expected       EQU s5            ;
+  38                                  result_lsb_expected       EQU s6            ;
+  39              
+  40              		    ; 0 * 0 = 0
+  41  000  00000                      LOAD      multiplicand,        $00
+  42  001  00100                      LOAD      multiplier,          $00
+  43  002  00500                      LOAD      result_msb_expected, $00
+  44  003  00600                      LOAD      result_lsb_expected, $00
+  45  004  30025  		    CALL      mult_8x8
+  46  005  15640  		    COMP      result_lsb_expected, result_lsb
+  47  006  35430  		    JUMP      NZ, test_ko
+  48  007  15530  		    COMP      result_msb_expected, result_msb
+  49  008  35430  		    JUMP      NZ, test_ko
+  50              
+  51              		    ; 255*255 = 65025
+  52  009  000ff                      LOAD      multiplicand,        $ff
+  53  00a  001ff                      LOAD      multiplier,          $ff
+  54  00b  005fe                      LOAD      result_msb_expected, $fe
+  55  00c  00601                      LOAD      result_lsb_expected, $01
+  56  00d  30025  		    CALL      mult_8x8
+  57  00e  15640  		    COMP      result_lsb_expected, result_lsb
+  58  00f  35430  		    JUMP      NZ, test_ko
+  59  010  15530  		    COMP      result_msb_expected, result_msb
+  60  011  35430  		    JUMP      NZ, test_ko
+  61              
+  62              		    ; 38*21 = 798
+  63  012  00026                      LOAD      multiplicand,        $26
+  64  013  00115                      LOAD      multiplier,          $15
+  65  014  00503                      LOAD      result_msb_expected, $03
+  66  015  0061e                      LOAD      result_lsb_expected, $1e
+  67  016  30025  		    CALL      mult_8x8
+  68  017  15640  		    COMP      result_lsb_expected, result_lsb
+  69  018  35430  		    JUMP      NZ, test_ko
+  70  019  15530  		    COMP      result_msb_expected, result_msb
+  71  01a  35430  		    JUMP      NZ, test_ko
+  72              
+  73              		    ; 112*99 = 11088
+  74  01b  00070                      LOAD      multiplicand,        $70
+  75  01c  00163                      LOAD      multiplier,          $63
+  76  01d  0052b                      LOAD      result_msb_expected, $2b
+  77  01e  00650                      LOAD      result_lsb_expected, $50
+  78  01f  30025  		    CALL      mult_8x8
+  79  020  15640  		    COMP      result_lsb_expected, result_lsb
+  80  021  35430  		    JUMP      NZ, test_ko
+  81  022  15530  		    COMP      result_msb_expected, result_msb
+  82  023  35430  		    JUMP      NZ, test_ko
+  83              
+  84              
+  85  024  343fc  		    JUMP      test_ok
+  86              
+  87              ; Multiplier Routine (8-bit x 8-bit = 16-bit product)
+  88              ; ==================================================
+  89              ; Shift and add algorithm
+  90              ;
+  91              mult_8x8:
+  92                                  multiplicand              EQU s0            ; preserved
+  93                                  multiplier                EQU s1            ; preserved
+  94                                  bit_mask                  EQU s2            ; modified
+  95                                  result_msb                EQU s3            ; modified   most -significant byte (MSB) of result
+  96                                  result_lsb                EQU s4            ; modified   least-significant byte (LSB) of result
+  97              
+  98              
+  99  025  00201                      LOAD      bit_mask,       $01               ; start with least-significant bit (lsb)
+ 100  026  00300                      LOAD      result_msb,     $00               ; clear product MSB
+ 101  027  00400                      LOAD      result_lsb,     $00               ; clear product LSB (not required)    
+ 102              
+ 103                                  ; loop through all bits in multiplier
+ 104              mult_8x8_loop:
+ 105  028  13120                      TEST      multiplier,     bit_mask          ; check if bit is set
+ 106  029  3502b                      JUMP      Z,              mult_8x8_no_add   ; if bit is not set, skip addition		    
+ 107              
+ 108  02a  19300                      ADD       result_msb,     multiplicand      ; addition only occurs in MSB
+ 109              
+ 110              mult_8x8_no_add:
+ 111  02b  20308                      SRA       result_msb                        ; shift MSB right, CARRY into bit 7, lsb into CARRY
+ 112  02c  20408                      SRA       result_lsb                        ; shift LSB right, lsb from result_msb into bit 7
+ 113              
+ 114  02d  20206                      SL0       bit_mask                          ; shift bit_mask left to examine next bit in multiplier
+ 115              
+ 116  02e  35428                      JUMP      NZ,             mult_8x8_loop     ; if all bit examined, then bit_mask = 0,
+ 117  02f  2a000  		    RET
+ 118              		    
+ 119              ; ;------------------------------------
+ 120              ; ; Test ok/ko
+ 121              ; ;------------------------------------
+ 122              test_ko:
+ 123  030  00eed                      LOAD      sE, test_val_ko
+ 124  031  2cee0                      OUT       sE, debug_id
+ 125  032  34030                      JUMP      test_ko
+ 126              
+ 127                                  ORG       $3FC
+ 128              test_ok: 
+ 129                                  LOAD      sE, test_val_ok
+ 130                                  OUT       sE, debug_id
+ 131                                  JUMP      test_ok
+ 132              
+ 133              ; ;------------------------------------
+ 134              ; ; Interrupt VECTOR
+ 135              ; ;------------------------------------
+ 136                                  ORG       $3FF
+ 137                                  RETI

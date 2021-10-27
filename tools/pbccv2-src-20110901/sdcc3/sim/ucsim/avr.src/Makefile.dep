@@ -1,0 +1,98 @@
+arith_inst.o: arith_inst.cc avrcl.h ../sim.src/uccl.h ../stypes.h \
+  ../ddconfig.h ../custom.h ../pobjcl.h ../pobjt.h ../eventcl.h \
+  ../sim.src/hwcl.h ../sim.src/guiobjcl.h ../ddconfig.h \
+  ../cmd.src/newcmdcl.h ../appcl.h ../pobjcl.h ../optioncl.h ../stypes.h \
+  ../sim.src/argcl.h ../sim.src/simcl.h ../gui.src/guicl.h \
+  ../gui.src/ifcl.h ../sim.src/guiobjcl.h ../sim.src/uccl.h \
+  ../sim.src/argcl.h ../cmd.src/commandcl.h ../cmd.src/newcmdcl.h \
+  ../sim.src/memcl.h ../eventcl.h ../errorcl.h ../sim.src/brkcl.h \
+  ../sim.src/stackcl.h ../sim.src/memcl.h arith_cl.h logic_cl.h move_cl.h \
+  bit_cl.h jump_cl.h instcl.h regsavr.h
+avr.o: avr.cc ../ddconfig.h ../custom.h ../i_string.h ../ddconfig.h \
+  ../pobjcl.h ../pobjt.h ../eventcl.h ../sim.src/simcl.h \
+  ../cmd.src/newcmdcl.h ../appcl.h ../pobjcl.h ../optioncl.h ../stypes.h \
+  ../sim.src/argcl.h ../stypes.h ../cmd.src/commandcl.h \
+  ../cmd.src/newcmdcl.h ../gui.src/guicl.h ../gui.src/ifcl.h \
+  ../sim.src/guiobjcl.h ../sim.src/uccl.h ../sim.src/hwcl.h \
+  ../sim.src/guiobjcl.h ../sim.src/memcl.h ../eventcl.h ../errorcl.h \
+  ../sim.src/brkcl.h ../sim.src/stackcl.h ../sim.src/argcl.h \
+  ../sim.src/memcl.h portcl.h ../sim.src/hwcl.h avrcl.h ../sim.src/uccl.h \
+  arith_cl.h logic_cl.h move_cl.h bit_cl.h jump_cl.h instcl.h glob.h \
+  regsavr.h
+bit_inst.o: bit_inst.cc avrcl.h ../sim.src/uccl.h ../stypes.h \
+  ../ddconfig.h ../custom.h ../pobjcl.h ../pobjt.h ../eventcl.h \
+  ../sim.src/hwcl.h ../sim.src/guiobjcl.h ../ddconfig.h \
+  ../cmd.src/newcmdcl.h ../appcl.h ../pobjcl.h ../optioncl.h ../stypes.h \
+  ../sim.src/argcl.h ../sim.src/simcl.h ../gui.src/guicl.h \
+  ../gui.src/ifcl.h ../sim.src/guiobjcl.h ../sim.src/uccl.h \
+  ../sim.src/argcl.h ../cmd.src/commandcl.h ../cmd.src/newcmdcl.h \
+  ../sim.src/memcl.h ../eventcl.h ../errorcl.h ../sim.src/brkcl.h \
+  ../sim.src/stackcl.h ../sim.src/memcl.h arith_cl.h logic_cl.h move_cl.h \
+  bit_cl.h jump_cl.h instcl.h regsavr.h
+glob.o: glob.cc ../stypes.h ../ddconfig.h ../custom.h
+inst.o: inst.cc ../ddconfig.h ../custom.h avrcl.h ../sim.src/uccl.h \
+  ../stypes.h ../ddconfig.h ../pobjcl.h ../pobjt.h ../eventcl.h \
+  ../sim.src/hwcl.h ../sim.src/guiobjcl.h ../cmd.src/newcmdcl.h \
+  ../appcl.h ../pobjcl.h ../optioncl.h ../stypes.h ../sim.src/argcl.h \
+  ../sim.src/simcl.h ../gui.src/guicl.h ../gui.src/ifcl.h \
+  ../sim.src/guiobjcl.h ../sim.src/uccl.h ../sim.src/argcl.h \
+  ../cmd.src/commandcl.h ../cmd.src/newcmdcl.h ../sim.src/memcl.h \
+  ../eventcl.h ../errorcl.h ../sim.src/brkcl.h ../sim.src/stackcl.h \
+  ../sim.src/memcl.h arith_cl.h logic_cl.h move_cl.h bit_cl.h jump_cl.h \
+  instcl.h regsavr.h
+jump_inst.o: jump_inst.cc avrcl.h ../sim.src/uccl.h ../stypes.h \
+  ../ddconfig.h ../custom.h ../pobjcl.h ../pobjt.h ../eventcl.h \
+  ../sim.src/hwcl.h ../sim.src/guiobjcl.h ../ddconfig.h \
+  ../cmd.src/newcmdcl.h ../appcl.h ../pobjcl.h ../optioncl.h ../stypes.h \
+  ../sim.src/argcl.h ../sim.src/simcl.h ../gui.src/guicl.h \
+  ../gui.src/ifcl.h ../sim.src/guiobjcl.h ../sim.src/uccl.h \
+  ../sim.src/argcl.h ../cmd.src/commandcl.h ../cmd.src/newcmdcl.h \
+  ../sim.src/memcl.h ../eventcl.h ../errorcl.h ../sim.src/brkcl.h \
+  ../sim.src/stackcl.h ../sim.src/memcl.h arith_cl.h logic_cl.h move_cl.h \
+  bit_cl.h jump_cl.h instcl.h regsavr.h
+logic_inst.o: logic_inst.cc avrcl.h ../sim.src/uccl.h ../stypes.h \
+  ../ddconfig.h ../custom.h ../pobjcl.h ../pobjt.h ../eventcl.h \
+  ../sim.src/hwcl.h ../sim.src/guiobjcl.h ../ddconfig.h \
+  ../cmd.src/newcmdcl.h ../appcl.h ../pobjcl.h ../optioncl.h ../stypes.h \
+  ../sim.src/argcl.h ../sim.src/simcl.h ../gui.src/guicl.h \
+  ../gui.src/ifcl.h ../sim.src/guiobjcl.h ../sim.src/uccl.h \
+  ../sim.src/argcl.h ../cmd.src/commandcl.h ../cmd.src/newcmdcl.h \
+  ../sim.src/memcl.h ../eventcl.h ../errorcl.h ../sim.src/brkcl.h \
+  ../sim.src/stackcl.h ../sim.src/memcl.h arith_cl.h logic_cl.h move_cl.h \
+  bit_cl.h jump_cl.h instcl.h regsavr.h
+move_inst.o: move_inst.cc avrcl.h ../sim.src/uccl.h ../stypes.h \
+  ../ddconfig.h ../custom.h ../pobjcl.h ../pobjt.h ../eventcl.h \
+  ../sim.src/hwcl.h ../sim.src/guiobjcl.h ../ddconfig.h \
+  ../cmd.src/newcmdcl.h ../appcl.h ../pobjcl.h ../optioncl.h ../stypes.h \
+  ../sim.src/argcl.h ../sim.src/simcl.h ../gui.src/guicl.h \
+  ../gui.src/ifcl.h ../sim.src/guiobjcl.h ../sim.src/uccl.h \
+  ../sim.src/argcl.h ../cmd.src/commandcl.h ../cmd.src/newcmdcl.h \
+  ../sim.src/memcl.h ../eventcl.h ../errorcl.h ../sim.src/brkcl.h \
+  ../sim.src/stackcl.h ../sim.src/memcl.h arith_cl.h logic_cl.h move_cl.h \
+  bit_cl.h jump_cl.h instcl.h regsavr.h
+port.o: port.cc portcl.h ../sim.src/hwcl.h ../stypes.h ../ddconfig.h \
+  ../custom.h ../pobjcl.h ../pobjt.h ../eventcl.h ../sim.src/guiobjcl.h \
+  ../ddconfig.h ../cmd.src/newcmdcl.h ../appcl.h ../pobjcl.h \
+  ../optioncl.h ../stypes.h ../sim.src/argcl.h ../sim.src/simcl.h \
+  ../gui.src/guicl.h ../gui.src/ifcl.h ../sim.src/guiobjcl.h \
+  ../sim.src/uccl.h ../sim.src/hwcl.h ../sim.src/memcl.h ../eventcl.h \
+  ../errorcl.h ../sim.src/brkcl.h ../sim.src/stackcl.h ../sim.src/argcl.h \
+  ../cmd.src/commandcl.h ../cmd.src/newcmdcl.h
+savr.o: savr.cc ../globals.h ../ddconfig.h ../custom.h ../stypes.h \
+  ../appcl.h ../pobjcl.h ../pobjt.h ../eventcl.h ../optioncl.h \
+  ../sim.src/argcl.h ../pobjcl.h ../stypes.h ../sim.src/simcl.h \
+  ../cmd.src/newcmdcl.h ../ddconfig.h ../appcl.h ../cmd.src/commandcl.h \
+  ../cmd.src/newcmdcl.h ../gui.src/guicl.h ../gui.src/ifcl.h \
+  ../sim.src/guiobjcl.h ../sim.src/uccl.h ../sim.src/hwcl.h \
+  ../sim.src/guiobjcl.h ../sim.src/memcl.h ../eventcl.h ../errorcl.h \
+  ../sim.src/brkcl.h ../sim.src/stackcl.h ../sim.src/argcl.h simavrcl.h
+simavr.o: simavr.cc ../appcl.h ../ddconfig.h ../custom.h ../pobjcl.h \
+  ../pobjt.h ../eventcl.h ../optioncl.h ../stypes.h ../sim.src/argcl.h \
+  ../pobjcl.h ../stypes.h ../sim.src/simcl.h ../cmd.src/newcmdcl.h \
+  ../ddconfig.h ../cmd.src/commandcl.h ../cmd.src/newcmdcl.h \
+  ../gui.src/guicl.h ../gui.src/ifcl.h ../sim.src/guiobjcl.h \
+  ../sim.src/uccl.h ../sim.src/hwcl.h ../sim.src/guiobjcl.h \
+  ../sim.src/memcl.h ../eventcl.h ../errorcl.h ../sim.src/brkcl.h \
+  ../sim.src/stackcl.h ../sim.src/argcl.h simavrcl.h avrcl.h \
+  ../sim.src/uccl.h ../sim.src/memcl.h arith_cl.h logic_cl.h move_cl.h \
+  bit_cl.h jump_cl.h instcl.h

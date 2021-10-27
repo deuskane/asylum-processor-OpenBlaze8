@@ -1,0 +1,100 @@
+; ;------------------------------------
+; ; Test 039
+; ; Test EINT / RETI
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+it_latency          EQU       s0
+it_latency_cnt      EQU       s1
+cnt_loop            EQU       s2
+
+it_latency_loop     EQU       $10
+cnt_loop_expected   EQU       $0
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $e0
+it_id               EQU       $ff
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $000
+main: 
+
+		    EINT      
+                    DINT
+		    		    
+                    LOAD      it_latency    , it_latency_loop
+		    LOAD      cnt_loop      , $0
+
+loop:
+
+                    LOAD      it_latency_cnt, $00
+		    OUT       it_latency    , it_id
+
+                    ADD       it_latency_cnt, $1
+                    ADD       it_latency_cnt, $1
+                    ADD       it_latency_cnt, $1
+                    ADD       it_latency_cnt, $1
+                    ADD       it_latency_cnt, $1
+                    ADD       it_latency_cnt, $1
+                    ADD       it_latency_cnt, $1
+                    ADD       it_latency_cnt, $1
+                    ADD       it_latency_cnt, $1
+		    OUT       it_latency_cnt, led_id 
+
+		    SUB       it_latency    , $01
+		    JUMP      NZ,loop
+
+		    COMP      cnt_loop      , cnt_loop_expected
+		    
+                    JUMP      Z, test_ok
+                    JUMP      test_ko
+
+; ;------------------------------------
+; ; Interrupt Handler
+; ;------------------------------------
+it_handler :
+		    ADD       cnt_loop      , $1
+                    RETI      ENABLE
+
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko:
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+                    ORG       $3FC
+test_ok: 
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    JUMP      it_handler

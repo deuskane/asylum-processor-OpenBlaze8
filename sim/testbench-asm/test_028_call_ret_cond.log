@@ -1,0 +1,153 @@
+
+Picoblaze Assembler based on kpicosim  Version 1.0
+Source File: /home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-asm/test_028_call_ret_cond.psm
+
+Line  Addr Instr  Source Code
+   1              ; ;------------------------------------
+   2              ; ; Test 028
+   3              ; ; CALL + RET condionnel
+   4              ; ;------------------------------------
+   5              
+   6              ; ;------------------------------------
+   7              ; ; directive compilation fichier
+   8              ; ;------------------------------------
+   9              
+  10              VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+  11              
+  12              ; ;------------------------------------
+  13              ; ; Constantes
+  14              ; ;------------------------------------
+  15              sp                  EQU       sF
+  16              
+  17              test_val_ok         EQU       $FA
+  18              test_val_ko         EQU       $ED
+  19              
+  20              ; ;------------------------------------
+  21              ; ; directives pour le simulateur:  definition des  E/S
+  22              ; ;------------------------------------
+  23              switch_id           EQU       $00
+  24              led_id              EQU       $20
+  25              debug_id            EQU       $e0
+  26              
+  27              switch              DSIN      switch_id
+  28              led                 DSOUT     led_id
+  29              debug               DSOUT     debug_id
+  30              
+  31              ; ;------------------------------------
+  32              ; ; MAIN
+  33              ; ;------------------------------------
+  34                                  ORG       $000
+  35              main: 
+  36  000  00000                      LOAD      s0, $00
+  37  001  00100                      LOAD      s1, $00
+  38              
+  39  002  00204                      LOAD      s2, $04
+  40  003  00321                      LOAD      s3, $21
+  41  004  00404                      LOAD      s4, $04
+  42              
+  43              
+  44  005  00100                      LOAD      s1, $00
+  45  006  15230                      COMP      s2, s3              ; C NZ
+  46  007  31828                      CALL      C, set_s1_01_ret_c
+  47  008  19010                      ADD       s0, s1
+  48              
+  49  009  00100                      LOAD      s1, $00
+  50  00a  15230                      COMP      s2, s3              ; C NZ
+  51  00b  31c37                      CALL      NC, set_s1_ff_ret_nc
+  52  00c  19010                      ADD       s0, s1
+  53              
+  54  00d  00100                      LOAD      s1, $00
+  55  00e  15230                      COMP      s2, s3              ; C NZ
+  56  00f  31431                      CALL      NZ, set_s1_01_ret_nz
+  57  010  19010                      ADD       s0, s1
+  58              
+  59  011  00100                      LOAD      s1, $00
+  60  012  15230                      COMP      s2, s3              ; C NZ
+  61  013  3103a                      CALL      Z, set_s1_ff_ret_z
+  62  014  19010                      ADD       s0, s1
+  63              
+  64  015  00100                      LOAD      s1, $00
+  65  016  15240                      COMP      s2, s4              ; nC Z
+  66  017  31c2b                      CALL      NC, set_s1_01_ret_nc
+  67  018  19010                      ADD       s0, s1
+  68              
+  69  019  00100                      LOAD      s1, $00
+  70  01a  15240                      COMP      s2, s4              ; nC Z
+  71  01b  31834                      CALL      C, set_s1_ff_ret_c
+  72  01c  19010                      ADD       s0, s1
+  73              
+  74  01d  00100                      LOAD      s1, $00
+  75  01e  15240                      COMP      s2, s4              ; nC Z
+  76  01f  3102e                      CALL      Z, set_s1_01_ret_z
+  77  020  19010                      ADD       s0, s1
+  78              
+  79  021  00100                      LOAD      s1, $00
+  80  022  15240                      COMP      s2, s4              ; nC Z
+  81  023  3143d                      CALL      NZ, set_s1_ff_ret_nz
+  82  024  19010                      ADD       s0, s1
+  83              
+  84  025  14004                      COMP      s0, $04
+  85  026  353fc                      JUMP      Z, test_ok
+  86  027  34040                      JUMP      test_ko
+  87              
+  88              
+  89              set_s1_01_ret_c: 
+  90  028  00101                      LOAD      s1, $1
+  91  029  2b800                      RET       C
+  92  02a  34040                      JUMP      test_ko
+  93              
+  94              set_s1_01_ret_nc: 
+  95  02b  00101                      LOAD      s1, $1
+  96  02c  2bc00                      RET       NC
+  97  02d  34040                      JUMP      test_ko
+  98              
+  99              set_s1_01_ret_z: 
+ 100  02e  00101                      LOAD      s1, $1
+ 101  02f  2b000                      RET       Z
+ 102  030  34040                      JUMP      test_ko
+ 103              
+ 104              set_s1_01_ret_nz: 
+ 105  031  00101                      LOAD      s1, $1
+ 106  032  2b400                      RET       NZ
+ 107  033  34040                      JUMP      test_ko
+ 108              
+ 109              
+ 110              set_s1_ff_ret_c: 
+ 111  034  001ff                      LOAD      s1, $FF
+ 112  035  2b800                      RET       C
+ 113  036  34040                      JUMP      test_ko
+ 114              
+ 115              set_s1_ff_ret_nc: 
+ 116  037  001ff                      LOAD      s1, $FF
+ 117  038  2bc00                      RET       NC
+ 118  039  34040                      JUMP      test_ko
+ 119              
+ 120              set_s1_ff_ret_z: 
+ 121  03a  001ff                      LOAD      s1, $FF
+ 122  03b  2b000                      RET       Z
+ 123  03c  34040                      JUMP      test_ko
+ 124              
+ 125              set_s1_ff_ret_nz: 
+ 126  03d  001ff                      LOAD      s1, $FF
+ 127  03e  2b400                      RET       NZ
+ 128  03f  34040                      JUMP      test_ko
+ 129              
+ 130              ; ;------------------------------------
+ 131              ; ; Test ok/ko
+ 132              ; ;------------------------------------
+ 133              test_ko:
+ 134  040  00eed                      LOAD      sE, test_val_ko
+ 135  041  2cee0                      OUT       sE, debug_id
+ 136  042  34040                      JUMP      test_ko
+ 137              
+ 138                                  ORG       $3FC
+ 139              test_ok: 
+ 140                                  LOAD      sE, test_val_ok
+ 141                                  OUT       sE, debug_id
+ 142                                  JUMP      test_ok
+ 143              
+ 144              ; ;------------------------------------
+ 145              ; ; Interrupt VECTOR
+ 146              ; ;------------------------------------
+ 147                                  ORG       $3FF
+ 148                                  RETI      ENABLE

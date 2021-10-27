@@ -1,0 +1,53 @@
+#
+# Specification of devices supported by the PIC16 target of the
+# Small Devices C Compiler (SDCC).
+#
+# Lines starting with a hash '#' are ignored.
+# A new device specification must begin with a 'name' command.
+# Numbers can be given in any way acceptable for scanf's %d,
+# i.e., octal (0[0-7]*), decimal ([1-9][0-9]*), or hexadecimal
+# (0[xX][0-9a-fA-F]+).
+# Strings must not be quoted and may not contain whitespace!
+#
+# Valid commands are:
+# name <name>
+#       Begin specification of device type <name>, e.g. 18f6720.
+#       Aliases 'p<name>' and 'pic<name>' will be recognized as well.
+# using <name>
+#       Import specification from the named entry, which must be defined
+#       earlier. Later commands overrule imported ones.
+# ramsize <size>
+#       This device has <size> bytes of RAM.
+# split <offset>
+#       Addresses below <offset> refer to bank 0, addresses above <offset>
+#       refer to SFRs in bank 15 for references via the access bank.
+# configrange <first> <last>
+#       Configuration registers occupy addresses <first> to <last> (both
+#       included).
+# configword <address> <mask> <value>
+#       The config word at address <address> only implements the bits
+#       indicated via <mask> (all others will be forced to 0 by the
+#       compiler).
+#       Unless overridden in C code, use the given default <value>.
+# idlocrange <first> <last>
+#       ID locations occupy addresses <first> to <last> (both included).
+# idword <address> <value>
+#       Unless overridden in C code, use the given default <value>.
+#
+
+name        picoBlaze3
+ramsize     64
+split       0x40
+configrange 0x300001 0x30000d
+configword  0x300001 0x27 0xff
+configword  0x300002 0x0f 0xff
+configword  0x300003 0x0f 0xff
+configword  0x300005 0x01 0xff
+configword  0x300006 0x85 0xff
+configword  0x300008 0x0f 0xff
+configword  0x300009 0xc0 0xff
+configword  0x30000a 0x0f 0xff
+configword  0x30000b 0xe0 0xff
+configword  0x30000c 0x0f 0xff
+configword  0x30000d 0x40 0xff
+idlocrange  0x200000 0x200007

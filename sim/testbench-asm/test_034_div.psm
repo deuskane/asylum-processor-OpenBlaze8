@@ -1,0 +1,124 @@
+; ;------------------------------------
+; ; Test 033
+; ; Divide Routine
+; ; Figure 3-17 of ug129
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $e0
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $000
+main:
+                    quotient_expected       EQU s5            ;
+                    remainder_expected      EQU s6            ;
+
+		    ; 213/17 = 12 (9)
+                    LOAD      dividend,            $D5
+                    LOAD      divisor,             $11
+                    LOAD      quotient_expected,   $0c
+                    LOAD      remainder_expected,  $09
+		    CALL      div_8by8
+		    COMP      remainder_expected, remainder
+		    JUMP      NZ, test_ko
+		    COMP      quotient_expected,  quotient
+		    JUMP      NZ, test_ko
+
+		    ; 17/213 = 0 (17)
+                    LOAD      dividend,            $11
+                    LOAD      divisor,             $D5
+                    LOAD      quotient_expected,   $00
+                    LOAD      remainder_expected,  $11
+		    CALL      div_8by8
+		    COMP      remainder_expected, remainder
+		    JUMP      NZ, test_ko
+		    COMP      quotient_expected,  quotient
+		    JUMP      NZ, test_ko
+
+		    ; 129/37 = 3 (18)
+                    LOAD      dividend,            $81
+                    LOAD      divisor,             $25
+                    LOAD      quotient_expected,   $03
+                    LOAD      remainder_expected,  $12
+		    CALL      div_8by8
+		    COMP      remainder_expected, remainder
+		    JUMP      NZ, test_ko
+		    COMP      quotient_expected,  quotient
+		    JUMP      NZ, test_ko
+
+
+
+		    JUMP      test_ok
+
+; Divide Routine (8-bit / 8-bit = 8-bit result, remainder)
+; ==================================================
+; Shift and subtract algorithm
+
+div_8by8:
+                    dividend  EQU s0        ; preserved
+                    divisor   EQU s1        ; preserved
+                    quotient  EQU s2        ; modified
+                    remainder EQU s3        ; modified
+                    bit_mask  EQU s4        ; modified used to test bits in dividend (one hot encoded)
+
+                    LOAD remainder, $00     ; clear remainder 
+                    LOAD bit_mask,  $80     ; start with most-significant bit (msb)
+div_8by8_loop:
+                    TEST dividend, bit_mask ; test bit, set CARRY if bit is '1'
+		    SLA remainder           ; shift CARRY into lsb of remainder
+                    SL0 quotient            ; shift quotient left (multiply by 2)
+
+                    COMP remainder, divisor ; is remainder > divisor?
+                    JUMP C, div_8by8_no_sub ; if divisor is greater, continue to next bit
+		    SUB remainder, divisor  ; if remainder > divisor, then subtract
+		    ADD quotient,   $01     ; add one to quotient
+
+div_8by8_no_sub:
+                    SR0 bit_mask            ; shift to examine next bit position
+                    JUMP NZ, div_8by8_loop  ; if bit_mask=0, then all bits examined
+
+  	 	    RET
+		    
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko:
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+                    ORG       $3FC
+test_ok: 
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    RETI

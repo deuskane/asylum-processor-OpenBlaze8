@@ -1,0 +1,166 @@
+
+Picoblaze Assembler based on kpicosim  Version 1.0
+Source File: /home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-asm/test_011_xori.psm
+
+Line  Addr Instr  Source Code
+   1              ; ;------------------------------------
+   2              ; ; Test 011
+   3              ; ; Instruction XOR (immediat)
+   4              ; ; diff : flag z on res !
+   5              ; ;------------------------------------
+   6              
+   7              ; ;------------------------------------
+   8              ; ; directive compilation fichier
+   9              ; ;------------------------------------
+  10              
+  11              VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+  12              
+  13              ; ;------------------------------------
+  14              ; ; Constantes
+  15              ; ;------------------------------------
+  16              sp                  EQU       sF
+  17              
+  18              test_val_ok         EQU       $FA
+  19              test_val_ko         EQU       $ED
+  20              
+  21              ; ;------------------------------------
+  22              ; ; directives pour le simulateur:  definition des  E/S
+  23              ; ;------------------------------------
+  24              switch_id           EQU       $00
+  25              led_id              EQU       $20
+  26              debug_id            EQU       $e0
+  27              
+  28              switch              DSIN      switch_id
+  29              led                 DSOUT     led_id
+  30              debug               DSOUT     debug_id
+  31              
+  32              ; ;------------------------------------
+  33              ; ; MAIN
+  34              ; ;------------------------------------
+  35                                  ORG       $000
+  36              main: 
+  37  000  000a5                      LOAD      s0, $A5
+  38  001  001f0                      LOAD      s1, $F0
+  39  002  0020f                      LOAD      s2, $0F
+  40  003  003ff                      LOAD      s3, $FF
+  41  004  0045a                      LOAD      s4, $5A
+  42  005  00500                      LOAD      s5, $00
+  43              
+  44  006  01a00                      LOAD      sA, s0              ; sA <- $A5
+  45  007  0eaf0                      XOR       sA, $F0             ; sA <- sA xor $F0 <- $55
+  46              
+  47  008  35c0a                      JUMP      NC, test01_ok
+  48  009  34046                      JUMP      test_ko
+  49              test01_ok: 
+  50  00a  3540c                      JUMP      NZ, test02_ok
+  51  00b  34046                      JUMP      test_ko
+  52              test02_ok: 
+  53  00c  14a55                      COMP      sA, $55
+  54  00d  3500f                      JUMP      Z, test03_ok
+  55  00e  34046                      JUMP      test_ko
+  56              test03_ok: 
+  57              
+  58  00f  01a00                      LOAD      sA, s0              ; sA <- $A5
+  59  010  0ea0f                      XOR       sA, $0F             ; sA <- sA xor $0F <- $AA
+  60              
+  61  011  35c13                      JUMP      NC, test11_ok
+  62  012  34046                      JUMP      test_ko
+  63              test11_ok: 
+  64  013  35415                      JUMP      NZ, test12_ok
+  65  014  34046                      JUMP      test_ko
+  66              test12_ok: 
+  67  015  14aaa                      COMP      sA, $AA
+  68  016  35018                      JUMP      Z, test13_ok
+  69  017  34046                      JUMP      test_ko
+  70              test13_ok: 
+  71              
+  72  018  01a00                      LOAD      sA, s0              ; sA <- $A5
+  73  019  0eaff                      XOR       sA, $FF             ; sA <- sA xor $FF <- $5A
+  74              
+  75  01a  35c1c                      JUMP      NC, test21_ok
+  76  01b  34046                      JUMP      test_ko
+  77              test21_ok: 
+  78  01c  3541e                      JUMP      NZ, test22_ok
+  79  01d  34046                      JUMP      test_ko
+  80              test22_ok: 
+  81  01e  14a5a                      COMP      sA, $5A
+  82  01f  35021                      JUMP      Z, test23_ok
+  83  020  34046                      JUMP      test_ko
+  84              test23_ok: 
+  85              
+  86  021  01a00                      LOAD      sA, s0              ; sA <- $A5
+  87  022  0ea5a                      XOR       sA, $5A             ; sA <- sA xor $5A <- $FF
+  88              
+  89  023  35c25                      JUMP      NC, test31_ok
+  90  024  34046                      JUMP      test_ko
+  91              test31_ok: 
+  92  025  35427                      JUMP      NZ, test32_ok
+  93  026  34046                      JUMP      test_ko
+  94              test32_ok: 
+  95  027  14aff                      COMP      sA, $FF
+  96  028  3502a                      JUMP      Z, test33_ok
+  97  029  34046                      JUMP      test_ko
+  98              test33_ok: 
+  99              
+ 100  02a  01a00                      LOAD      sA, s0              ; sA <- $A5
+ 101  02b  0ea00                      XOR       sA, $00             ; sA <- sA xor $00 <- $A5
+ 102              
+ 103  02c  35c2e                      JUMP      NC, test41_ok
+ 104  02d  34046                      JUMP      test_ko
+ 105              test41_ok: 
+ 106  02e  35430                      JUMP      NZ, test42_ok
+ 107  02f  34046                      JUMP      test_ko
+ 108              test42_ok: 
+ 109  030  14aa5                      COMP      sA, $A5
+ 110  031  35033                      JUMP      Z, test43_ok
+ 111  032  34046                      JUMP      test_ko
+ 112              test43_ok: 
+ 113              
+ 114  033  01a50                      LOAD      sA, s5              ; sA <- $00
+ 115  034  0eaa5                      XOR       sA, $A5             ; sA <- sA xor $A5 <- $A5
+ 116              
+ 117  035  35c37                      JUMP      NC, test51_ok
+ 118  036  34046                      JUMP      test_ko
+ 119              test51_ok: 
+ 120  037  35439                      JUMP      NZ, test52_ok
+ 121  038  34046                      JUMP      test_ko
+ 122              test52_ok: 
+ 123  039  14aa5                      COMP      sA, $A5
+ 124  03a  3503c                      JUMP      Z, test53_ok
+ 125  03b  34046                      JUMP      test_ko
+ 126              test53_ok: 
+ 127              
+ 128  03c  01a00                      LOAD      sA, s0              ; sA <- $A5
+ 129  03d  0eaa5                      XOR       sA, $A5             ; sA <- sA xor $A5 <- $00
+ 130              
+ 131  03e  35c40                      JUMP      NC, test61_ok
+ 132  03f  34046                      JUMP      test_ko
+ 133              test61_ok: 
+ 134  040  35042                      JUMP      Z, test62_ok
+ 135  041  34046                      JUMP      test_ko
+ 136              test62_ok: 
+ 137  042  14a00                      COMP      sA, $00
+ 138  043  35045                      JUMP      Z, test63_ok
+ 139  044  34046                      JUMP      test_ko
+ 140              test63_ok: 
+ 141  045  343fc                      JUMP      test_ok
+ 142              
+ 143              ; ;------------------------------------
+ 144              ; ; Test ok/ko
+ 145              ; ;------------------------------------
+ 146              test_ko:
+ 147  046  00eed                      LOAD      sE, test_val_ko
+ 148  047  2cee0                      OUT       sE, debug_id
+ 149  048  34046                      JUMP      test_ko
+ 150              
+ 151                                  ORG       $3FC
+ 152              test_ok: 
+ 153                                  LOAD      sE, test_val_ok
+ 154                                  OUT       sE, debug_id
+ 155                                  JUMP      test_ok
+ 156              
+ 157              ; ;------------------------------------
+ 158              ; ; Interrupt VECTOR
+ 159              ; ;------------------------------------
+ 160                                  ORG       $3FF
+ 161                                  RETI      ENABLE

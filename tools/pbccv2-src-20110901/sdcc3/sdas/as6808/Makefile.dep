@@ -1,0 +1,33 @@
+m08ext.o: m08ext.c ../asxxsrc/asxxxx.h ../asxxsrc/../../sdccconf.h \
+  ../asxxsrc/../../custom.h m6808.h
+m08pst.o: m08pst.c ../asxxsrc/asxxxx.h ../asxxsrc/../../sdccconf.h \
+  ../asxxsrc/../../custom.h m6808.h
+m08mch.o: m08mch.c ../asxxsrc/asxxxx.h ../asxxsrc/../../sdccconf.h \
+  ../asxxsrc/../../custom.h m6808.h
+m08adr.o: m08adr.c ../asxxsrc/asxxxx.h ../asxxsrc/../../sdccconf.h \
+  ../asxxsrc/../../custom.h m6808.h
+asdbg.o: ../asxxsrc/asdbg.c ../../support/Util/dbuf_string.h \
+  ../../support/Util/dbuf.h ../asxxsrc/asxxxx.h \
+  ../asxxsrc/../../sdccconf.h ../asxxsrc/../../custom.h
+asdata.o: ../asxxsrc/asdata.c ../asxxsrc/asxxxx.h \
+  ../asxxsrc/../../sdccconf.h ../asxxsrc/../../custom.h
+asexpr.o: ../asxxsrc/asexpr.c ../asxxsrc/sdas.h ../asxxsrc/asxxxx.h \
+  ../asxxsrc/../../sdccconf.h ../asxxsrc/../../custom.h
+aslex.o: ../asxxsrc/aslex.c ../../support/Util/dbuf_string.h \
+  ../../support/Util/dbuf.h ../asxxsrc/asxxxx.h \
+  ../asxxsrc/../../sdccconf.h ../asxxsrc/../../custom.h
+aslist.o: ../asxxsrc/aslist.c ../asxxsrc/asxxxx.h \
+  ../asxxsrc/../../sdccconf.h ../asxxsrc/../../custom.h
+asmain.o: ../asxxsrc/asmain.c ../asxxsrc/sdas.h ../asxxsrc/asxxxx.h \
+  ../asxxsrc/../../sdccconf.h ../asxxsrc/../../custom.h
+asout.o: ../asxxsrc/asout.c ../asxxsrc/sdas.h ../asxxsrc/asxxxx.h \
+  ../asxxsrc/../../sdccconf.h ../asxxsrc/../../custom.h
+assubr.o: ../asxxsrc/assubr.c ../asxxsrc/sdas.h ../asxxsrc/asxxxx.h \
+  ../asxxsrc/../../sdccconf.h ../asxxsrc/../../custom.h
+assym.o: ../asxxsrc/assym.c ../asxxsrc/asxxxx.h \
+  ../asxxsrc/../../sdccconf.h ../asxxsrc/../../custom.h
+sdas.o: ../asxxsrc/sdas.c ../asxxsrc/sdas.h
+strcmpi.o: ../asxxsrc/strcmpi.c
+dbuf.o: ../../support/Util/dbuf.c ../../support/Util/dbuf.h
+dbuf_string.o: ../../support/Util/dbuf_string.c \
+  ../../support/Util/dbuf_string.h ../../support/Util/dbuf.h

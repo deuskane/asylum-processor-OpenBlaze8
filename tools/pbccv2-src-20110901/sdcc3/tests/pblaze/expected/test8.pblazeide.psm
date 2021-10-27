@@ -1,0 +1,144 @@
+;--------------------------------------------------------
+; File Created by SDCC : free open source ANSI-C Compiler
+; Version 3.0.1 #6227 (Feb 20 2011) (Linux)
+; This file was generated Fri Apr 22 14:09:02 2011
+;--------------------------------------------------------
+;--------------------------------------------------------
+; global & static initialisations
+;--------------------------------------------------------
+	_main_c_1_1_0	EQU $00
+
+	LOAD	sF, $3f
+	JUMP	__sdcc_program_startup
+;--------------------------------------------------------
+; Home
+;--------------------------------------------------------
+__sdcc_program_startup:
+	CALL	_main
+;	return from main will lock up
+__sdcc_loop:
+	JUMP	__sdcc_loop
+;--------------------------------------------------------
+; code
+;--------------------------------------------------------
+;------------------------------------------------------------
+;Allocation info for local variables in function 'main'
+;------------------------------------------------------------
+;------------------------------------------------------------
+_main:
+	;	test8.c:3: void main()
+	;	test8.c:5: volatile char c = 5;
+	LOAD	s0, $05
+	STORE	s0, _main_c_1_1_0
+	;	test8.c:8: switch(c)
+	FETCH	s0, _main_c_1_1_0
+	COMP	s0, $0a
+	JUMP	NZ, _LC00101
+	JUMP	_L00101
+_LC00101:
+	COMP	s0, $0b
+	JUMP	NZ, _LC00102
+	JUMP	_L00102
+_LC00102:
+	COMP	s0, $0c
+	JUMP	NZ, _LC00103
+	JUMP	_L00103
+_LC00103:
+	COMP	s0, $0d
+	JUMP	NZ, _LC00104
+	JUMP	_L00104
+_LC00104:
+	COMP	s0, $0e
+	JUMP	NZ, _LC00105
+	JUMP	_L00105
+_LC00105:
+	JUMP	_L00106
+	;	test8.c:10: case 10: c = 11; break;
+_L00101:
+	LOAD	s0, $0b
+	STORE	s0, _main_c_1_1_0
+	JUMP	_L00107
+	;	test8.c:11: case 11: c = 22; break;
+_L00102:
+	LOAD	s0, $16
+	STORE	s0, _main_c_1_1_0
+	JUMP	_L00107
+	;	test8.c:12: case 12: c = 33; break;
+_L00103:
+	LOAD	s0, $21
+	STORE	s0, _main_c_1_1_0
+	JUMP	_L00107
+	;	test8.c:13: case 13: c = 44; break;
+_L00104:
+	LOAD	s0, $2c
+	STORE	s0, _main_c_1_1_0
+	JUMP	_L00107
+	;	test8.c:14: case 14: c = 55; break;
+_L00105:
+	LOAD	s0, $37
+	STORE	s0, _main_c_1_1_0
+	JUMP	_L00107
+	;	test8.c:15: default: c = 99;
+_L00106:
+	LOAD	s0, $63
+	STORE	s0, _main_c_1_1_0
+	;	test8.c:17: }  
+_L00107:
+	;	test8.c:20: switch(c)
+	FETCH	s0, _main_c_1_1_0
+	COMP	s0, $04
+	JUMP	NZ, _LC00106
+	JUMP	_L00111
+_LC00106:
+	COMP	s0, $0a
+	JUMP	NZ, _LC00107
+	JUMP	_L00108
+_LC00107:
+	COMP	s0, $17
+	JUMP	NZ, _LC00108
+	JUMP	_L00109
+_LC00108:
+	COMP	s0, $1f
+	JUMP	NZ, _LC00109
+	JUMP	_L00110
+_LC00109:
+	COMP	s0, $3b
+	JUMP	NZ, _LC00110
+	JUMP	_L00112
+_LC00110:
+	JUMP	_L00113
+	;	test8.c:22: case 10: c = 11; break;
+_L00108:
+	LOAD	s0, $0b
+	STORE	s0, _main_c_1_1_0
+	JUMP	_L00115
+	;	test8.c:23: case 23: c = 22; break;
+_L00109:
+	LOAD	s0, $16
+	STORE	s0, _main_c_1_1_0
+	JUMP	_L00115
+	;	test8.c:24: case 31: c = 33; break;
+_L00110:
+	LOAD	s0, $21
+	STORE	s0, _main_c_1_1_0
+	JUMP	_L00115
+	;	test8.c:25: case 4: c = 44; break;
+_L00111:
+	LOAD	s0, $2c
+	STORE	s0, _main_c_1_1_0
+	JUMP	_L00115
+	;	test8.c:26: case 59: c = 55; break;
+_L00112:
+	LOAD	s0, $37
+	STORE	s0, _main_c_1_1_0
+	JUMP	_L00115
+	;	test8.c:27: default: c = 99;
+_L00113:
+	LOAD	s0, $63
+	STORE	s0, _main_c_1_1_0
+	;	test8.c:29: }
+_L00115:
+	RET
+;--------------------------------------------------------
+; interrupt vector 
+;--------------------------------------------------------

@@ -1,0 +1,114 @@
+
+Picoblaze Assembler based on kpicosim  Version 1.0
+Source File: /home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-asm/test_027_call_ret.psm
+
+Line  Addr Instr  Source Code
+   1              ; ;------------------------------------
+   2              ; ; Test 027
+   3              ; ; CALL + RET Incondionnel imbtiqué
+   4              ; ;------------------------------------
+   5              
+   6              ; ;------------------------------------
+   7              ; ; directive compilation fichier
+   8              ; ;------------------------------------
+   9              
+  10              VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+  11              
+  12              ; ;------------------------------------
+  13              ; ; Constantes
+  14              ; ;------------------------------------
+  15              sp                  EQU       sF
+  16              
+  17              test_val_ok         EQU       $FA
+  18              test_val_ko         EQU       $ED
+  19              
+  20              ; ;------------------------------------
+  21              ; ; directives pour le simulateur:  definition des  E/S
+  22              ; ;------------------------------------
+  23              switch_id           EQU       $00
+  24              led_id              EQU       $20
+  25              debug_id            EQU       $e0
+  26              
+  27              switch              DSIN      switch_id
+  28              led                 DSOUT     led_id
+  29              debug               DSOUT     debug_id
+  30              
+  31              ; ;------------------------------------
+  32              ; ; MAIN
+  33              ; ;------------------------------------
+  34                                  ORG       $000
+  35              main: 
+  36              
+  37  000  30007                      CALL      set_s0_89
+  38  001  3000b                      CALL      set_s1_76
+  39  002  14089                      COMP      s0, $89
+  40  003  35425                      JUMP      NZ, test_ko
+  41  004  14176                      COMP      s1, $76
+  42  005  35425                      JUMP      NZ, test_ko
+  43  006  343fc                      JUMP      test_ok
+  44              
+  45              set_s0_89: 
+  46  007  00000                      LOAD      s0, $00
+  47  008  3000f                      CALL      set_s0_b0
+  48  009  2a000                      RET       
+  49  00a  34025                      JUMP      test_ko
+  50              
+  51              set_s1_76: 
+  52  00b  001ff                      LOAD      s1, $FF
+  53  00c  3001a                      CALL      unset_s1_b0
+  54  00d  2a000                      RET       
+  55  00e  34025                      JUMP      test_ko
+  56              
+  57              set_s0_b0: 
+  58  00f  0c001                      OR        s0, $01
+  59  010  30013                      CALL      set_s0_b3
+  60  011  2a000                      RET       
+  61  012  34025                      JUMP      test_ko
+  62              
+  63              set_s0_b3: 
+  64  013  0c008                      OR        s0, $08
+  65  014  30017                      CALL      set_s0_b7
+  66  015  2a000                      RET       
+  67  016  34025                      JUMP      test_ko
+  68              
+  69              set_s0_b7: 
+  70  017  0c080                      OR        s0, $80
+  71  018  2a000                      RET       
+  72  019  34025                      JUMP      test_ko
+  73              
+  74              unset_s1_b0: 
+  75  01a  0a1fe                      AND       s1, $FE
+  76  01b  3001e                      CALL      unset_s1_b3
+  77  01c  2a000                      RET       
+  78  01d  34025                      JUMP      test_ko
+  79              
+  80              unset_s1_b3: 
+  81  01e  0a1f7                      AND       s1, $F7
+  82  01f  30022                      CALL      unset_s1_b7
+  83  020  2a000                      RET       
+  84  021  34025                      JUMP      test_ko
+  85              
+  86              unset_s1_b7: 
+  87  022  0a17f                      AND       s1, $7F
+  88  023  2a000                      RET       
+  89  024  34025                      JUMP      test_ko
+  90              
+  91              ; ;------------------------------------
+  92              ; ; Test ok/ko
+  93              ; ;------------------------------------
+  94              test_ko:
+  95  025  00eed                      LOAD      sE, test_val_ko
+  96  026  2cee0                      OUT       sE, debug_id
+  97  027  34025                      JUMP      test_ko
+  98              
+  99                                  ORG       $3FC
+ 100              test_ok: 
+ 101                                  LOAD      sE, test_val_ok
+ 102                                  OUT       sE, debug_id
+ 103                                  JUMP      test_ok
+ 104              
+ 105              ; ;------------------------------------
+ 106              ; ; Interrupt VECTOR
+ 107              ; ;------------------------------------
+ 108                                  ORG       $3FF
+ 109                                  RETI      ENABLE

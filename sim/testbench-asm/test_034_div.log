@@ -1,0 +1,129 @@
+
+Picoblaze Assembler based on kpicosim  Version 1.0
+Source File: /home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-asm/test_034_div.psm
+
+Line  Addr Instr  Source Code
+   1              ; ;------------------------------------
+   2              ; ; Test 033
+   3              ; ; Divide Routine
+   4              ; ; Figure 3-17 of ug129
+   5              ; ;------------------------------------
+   6              
+   7              ; ;------------------------------------
+   8              ; ; directive compilation fichier
+   9              ; ;------------------------------------
+  10              
+  11              VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+  12              
+  13              ; ;------------------------------------
+  14              ; ; Constantes
+  15              ; ;------------------------------------
+  16              sp                  EQU       sF
+  17              
+  18              test_val_ok         EQU       $FA
+  19              test_val_ko         EQU       $ED
+  20              
+  21              ; ;------------------------------------
+  22              ; ; directives pour le simulateur:  definition des  E/S
+  23              ; ;------------------------------------
+  24              switch_id           EQU       $00
+  25              led_id              EQU       $20
+  26              debug_id            EQU       $e0
+  27              
+  28              switch              DSIN      switch_id
+  29              led                 DSOUT     led_id
+  30              debug               DSOUT     debug_id
+  31              
+  32              ; ;------------------------------------
+  33              ; ; MAIN
+  34              ; ;------------------------------------
+  35                                  ORG       $000
+  36              main:
+  37                                  quotient_expected       EQU s5            ;
+  38                                  remainder_expected      EQU s6            ;
+  39              
+  40              		    ; 213/17 = 12 (9)
+  41  000  000d5                      LOAD      dividend,            $D5
+  42  001  00111                      LOAD      divisor,             $11
+  43  002  0050c                      LOAD      quotient_expected,   $0c
+  44  003  00609                      LOAD      remainder_expected,  $09
+  45  004  3001c  		    CALL      div_8by8
+  46  005  15630  		    COMP      remainder_expected, remainder
+  47  006  35428  		    JUMP      NZ, test_ko
+  48  007  15520  		    COMP      quotient_expected,  quotient
+  49  008  35428  		    JUMP      NZ, test_ko
+  50              
+  51              		    ; 17/213 = 0 (17)
+  52  009  00011                      LOAD      dividend,            $11
+  53  00a  001d5                      LOAD      divisor,             $D5
+  54  00b  00500                      LOAD      quotient_expected,   $00
+  55  00c  00611                      LOAD      remainder_expected,  $11
+  56  00d  3001c  		    CALL      div_8by8
+  57  00e  15630  		    COMP      remainder_expected, remainder
+  58  00f  35428  		    JUMP      NZ, test_ko
+  59  010  15520  		    COMP      quotient_expected,  quotient
+  60  011  35428  		    JUMP      NZ, test_ko
+  61              
+  62              		    ; 129/37 = 3 (18)
+  63  012  00081                      LOAD      dividend,            $81
+  64  013  00125                      LOAD      divisor,             $25
+  65  014  00503                      LOAD      quotient_expected,   $03
+  66  015  00612                      LOAD      remainder_expected,  $12
+  67  016  3001c  		    CALL      div_8by8
+  68  017  15630  		    COMP      remainder_expected, remainder
+  69  018  35428  		    JUMP      NZ, test_ko
+  70  019  15520  		    COMP      quotient_expected,  quotient
+  71  01a  35428  		    JUMP      NZ, test_ko
+  72              
+  73              
+  74              
+  75  01b  343fc  		    JUMP      test_ok
+  76              
+  77              ; Divide Routine (8-bit / 8-bit = 8-bit result, remainder)
+  78              ; ==================================================
+  79              ; Shift and subtract algorithm
+  80              
+  81              div_8by8:
+  82                                  dividend  EQU s0        ; preserved
+  83                                  divisor   EQU s1        ; preserved
+  84                                  quotient  EQU s2        ; modified
+  85                                  remainder EQU s3        ; modified
+  86                                  bit_mask  EQU s4        ; modified used to test bits in dividend (one hot encoded)
+  87              
+  88  01c  00300                      LOAD remainder, $00     ; clear remainder 
+  89  01d  00480                      LOAD bit_mask,  $80     ; start with most-significant bit (msb)
+  90              div_8by8_loop:
+  91  01e  13040                      TEST dividend, bit_mask ; test bit, set CARRY if bit is '1'
+  92  01f  20300  		    SLA remainder           ; shift CARRY into lsb of remainder
+  93  020  20206                      SL0 quotient            ; shift quotient left (multiply by 2)
+  94              
+  95  021  15310                      COMP remainder, divisor ; is remainder > divisor?
+  96  022  35825                      JUMP C, div_8by8_no_sub ; if divisor is greater, continue to next bit
+  97  023  1d310  		    SUB remainder, divisor  ; if remainder > divisor, then subtract
+  98  024  18201  		    ADD quotient,   $01     ; add one to quotient
+  99              
+ 100              div_8by8_no_sub:
+ 101  025  2040e                      SR0 bit_mask            ; shift to examine next bit position
+ 102  026  3541e                      JUMP NZ, div_8by8_loop  ; if bit_mask=0, then all bits examined
+ 103              
+ 104  027  2a000    	 	    RET
+ 105              		    
+ 106              ; ;------------------------------------
+ 107              ; ; Test ok/ko
+ 108              ; ;------------------------------------
+ 109              test_ko:
+ 110  028  00eed                      LOAD      sE, test_val_ko
+ 111  029  2cee0                      OUT       sE, debug_id
+ 112  02a  34028                      JUMP      test_ko
+ 113              
+ 114                                  ORG       $3FC
+ 115              test_ok: 
+ 116                                  LOAD      sE, test_val_ok
+ 117                                  OUT       sE, debug_id
+ 118                                  JUMP      test_ok
+ 119              
+ 120              ; ;------------------------------------
+ 121              ; ; Interrupt VECTOR
+ 122              ; ;------------------------------------
+ 123                                  ORG       $3FF
+ 124                                  RETI

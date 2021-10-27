@@ -1,0 +1,95 @@
+
+Picoblaze Assembler based on kpicosim  Version 1.0
+Source File: /home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-c/test_uadd32.psm
+
+Line  Addr Instr  Source Code
+   1              ;--------------------------------------------------------
+   2              ; File Created by SDCC : free open source ANSI-C Compiler
+   3              ; Version 3.0.1 #6227 (Oct 27 2021) (Linux)
+   4              ; This file was generated Wed Oct 27 11:55:24 2021
+   5              ;--------------------------------------------------------
+   6              ;--------------------------------------------------------
+   7              ; global & static initialisations
+   8              ;--------------------------------------------------------
+   9              
+  10  000  00f3f  	LOAD	sF, 3f
+  11  001  34002  	JUMP	__sdcc_program_startup
+  12              ;--------------------------------------------------------
+  13              ; Home
+  14              ;--------------------------------------------------------
+  15              __sdcc_program_startup:
+  16  002  30019  	CALL	_main
+  17              ;	return from main will lock up
+  18              __sdcc_loop:
+  19  003  34003  	JUMP	__sdcc_loop
+  20              ;--------------------------------------------------------
+  21              ; code
+  22              ;--------------------------------------------------------
+  23              	;	/home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-c/test_uadd32.c:16: uint32_t uadd32(uint32_t i0, uint32_t i1)
+  24              _uadd32:
+  25  004  010b0  	LOAD	s0, sB
+  26  005  011c0  	LOAD	s1, sC
+  27  006  012d0  	LOAD	s2, sD
+  28  007  013e0  	LOAD	s3, sE
+  29              	;	/home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-c/test_uadd32.c:18: return i0+i1;
+  30  008  18f01  	ADD	sF, 01
+  31  009  074f0  	FETCH	s4, (sF)
+  32  00a  18f01  	ADD	sF, 01
+  33  00b  075f0  	FETCH	s5, (sF)
+  34  00c  18f01  	ADD	sF, 01
+  35  00d  076f0  	FETCH	s6, (sF)
+  36  00e  18f01  	ADD	sF, 01
+  37  00f  077f0  	FETCH	s7, (sF)
+  38  010  19070  	ADD	s0, s7
+  39  011  1b160  	ADDCY	s1, s6
+  40  012  1b250  	ADDCY	s2, s5
+  41  013  1b340  	ADDCY	s3, s4
+  42  014  01e30  	LOAD	sE, s3
+  43  015  01d20  	LOAD	sD, s2
+  44  016  01c10  	LOAD	sC, s1
+  45  017  01b00  	LOAD	sB, s0
+  46  018  2a000  	RETURN
+  47              	;	/home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-c/test_uadd32.c:21: void main()
+  48              _main:
+  49              	;	/home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-c/test_uadd32.c:28: z = uadd32(x,y);
+  50  019  000ca  	LOAD	s0, ca
+  51  01a  2f0f0  	STORE	s0, (sF)
+  52  01b  1cf01  	SUB	sF, 01
+  53  01c  000de  	LOAD	s0, de
+  54  01d  2f0f0  	STORE	s0, (sF)
+  55  01e  1cf01  	SUB	sF, 01
+  56  01f  000fe  	LOAD	s0, fe
+  57  020  2f0f0  	STORE	s0, (sF)
+  58  021  1cf01  	SUB	sF, 01
+  59  022  000ca  	LOAD	s0, ca
+  60  023  2f0f0  	STORE	s0, (sF)
+  61  024  1cf01  	SUB	sF, 01
+  62  025  00bef  	LOAD	sB, ef
+  63  026  00cbe  	LOAD	sC, be
+  64  027  00dad  	LOAD	sD, ad
+  65  028  00ede  	LOAD	sE, de
+  66  029  30004  	CALL	_uadd32
+  67  02a  010b0  	LOAD	s0, sB
+  68  02b  011c0  	LOAD	s1, sC
+  69  02c  012d0  	LOAD	s2, sD
+  70  02d  013e0  	LOAD	s3, sE
+  71              	;	/home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-c/test_uadd32.c:30: if (z == z_expected)
+  72  02e  140b9  	COMPARE	s0, b9
+  73  02f  35438  	JUMP	NZ, _L00104
+  74  030  1419d  	COMPARE	s1, 9d
+  75  031  35438  	JUMP	NZ, _L00104
+  76  032  142ac  	COMPARE	s2, ac
+  77  033  35438  	JUMP	NZ, _L00104
+  78  034  143a9  	COMPARE	s3, a9
+  79  035  35438  	JUMP	NZ, _L00104
+  80              	;	/home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-c/test_uadd32.c:31: TEST_OK;
+  81  036  000fa  	LOAD	s0, fa
+  82  037  2c0e0  	OUTPUT	s0, e0
+  83              _L00104:
+  84              	;	/home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-c/test_uadd32.c:33: TEST_KO;
+  85  038  000ed  	LOAD	s0, ed
+  86  039  2c0e0  	OUTPUT	s0, e0
+  87  03a  2a000  	RETURN
+  88              ;--------------------------------------------------------
+  89              ; interrupt vector 
+  90              ;--------------------------------------------------------

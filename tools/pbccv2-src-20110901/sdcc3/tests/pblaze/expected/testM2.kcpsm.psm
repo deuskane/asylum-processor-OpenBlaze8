@@ -1,0 +1,230 @@
+;--------------------------------------------------------
+; File Created by SDCC : free open source ANSI-C Compiler
+; Version 3.0.1 #6227 (Feb 20 2011) (Linux)
+; This file was generated Fri Apr 22 14:32:23 2011
+;--------------------------------------------------------
+;--------------------------------------------------------
+; global & static initialisations
+;--------------------------------------------------------
+	CONSTANT	_fun_val_1_1_0, 00
+	CONSTANT	_pole_7, 01
+	CONSTANT	_pole_6, 02
+	CONSTANT	_pole_5, 03
+	CONSTANT	_pole_4, 04
+	CONSTANT	_pole_3, 05
+	CONSTANT	_pole_2, 06
+	CONSTANT	_pole_1, 07
+	CONSTANT	_pole_0, 08
+	CONSTANT	_text_4, 09
+	CONSTANT	_text_3, 0a
+	CONSTANT	_text_2, 0b
+	CONSTANT	_text_1, 0c
+	CONSTANT	_text_0, 0d
+	CONSTANT	_nepole_1, 0e
+	CONSTANT	_nepole_0, 0f
+	CONSTANT	_main_a_1_1_0, 10
+	CONSTANT	_main_b_1_1_0, 11
+
+;------------------------------------------------------------
+;Allocation info for local variables in function 'main'
+;------------------------------------------------------------
+;------------------------------------------------------------
+	;	testM2.c:3: int pole[] = {100,200,300,400};
+	LOAD	s0, _pole_7
+	LOAD	s1, 00
+	STORE	s1, (s0)
+	ADD	s0, 01
+	LOAD	s1, 64
+	STORE	s1, (s0)
+	SUB	s0, 01
+	LOAD	s1, s0
+	ADD	s1, 02
+	LOAD	s2, 00
+	STORE	s2, (s1)
+	ADD	s1, 01
+	LOAD	s2, c8
+	STORE	s2, (s1)
+	ADD	s1, 01
+	LOAD	s2, 01
+	STORE	s2, (s1)
+	ADD	s1, 01
+	LOAD	s2, 2c
+	STORE	s2, (s1)
+	ADD	s1, 01
+	LOAD	s0, 01
+	STORE	s0, (s1)
+	ADD	s1, 01
+	LOAD	s0, 90
+	STORE	s0, (s1)
+	LOAD	sF, 3f
+	JUMP	__sdcc_program_startup
+;--------------------------------------------------------
+; Home
+;--------------------------------------------------------
+__sdcc_program_startup:
+	CALL	_main
+;	return from main will lock up
+__sdcc_loop:
+	JUMP	__sdcc_loop
+;--------------------------------------------------------
+; code
+;--------------------------------------------------------
+;------------------------------------------------------------
+;Allocation info for local variables in function 'main'
+;------------------------------------------------------------
+;------------------------------------------------------------
+	;	testM2.c:10: char fun( volatile char *a, int b, char c, char *d)
+_fun:
+	LOAD	s0, sC
+	LOAD	s1, sD
+	LOAD	s2, sE
+	;	testM2.c:12: volatile char val = 0;
+	LOAD	s3, 00
+	STORE	s3, _fun_val_1_1_0
+	;	testM2.c:13: char t1 = *d;
+	ADD	sF, 01
+	FETCH	s3, (sF)
+	FETCH	s4, (s3)
+	;	testM2.c:15: val = val * c;
+	FETCH	s5, _fun_val_1_1_0
+	LOAD	sB, s5
+	LOAD	sC, s2
+	CALL	__mulschar
+	LOAD	s2, sB
+	STORE	s2, _fun_val_1_1_0
+	;	testM2.c:16: b = pole[3] & pole[1];
+	LOAD	s2, _pole_7
+	LOAD	s5, s2
+	ADD	s5, 06
+	FETCH	s6, (s5)
+	ADD	s5, 01
+	FETCH	s7, (s5)
+	ADD	s2, 02
+	FETCH	s5, (s2)
+	ADD	s2, 01
+	FETCH	s8, (s2)
+	AND	s7, s8
+	AND	s6, s5
+	;	testM2.c:17: text[2] = 'R';
+	LOAD	s0, _text_4
+	LOAD	s1, s0
+	ADD	s1, 02
+	LOAD	s2, 52
+	STORE	s2, (s1)
+	;	testM2.c:18: *d = text[3];
+	ADD	s0, 03
+	FETCH	s1, (s0)
+	STORE	s1, (s3)
+	;	testM2.c:19: return t1 + b + nepole;
+	ADD	s4, s7
+	FETCH	s1, _nepole_0
+	LOAD	s0, s1
+	ADD	s4, s0
+	LOAD	sB, s4
+_L00101:
+	RETURN
+;------------------------------------------------------------
+;Allocation info for local variables in function 'main'
+;------------------------------------------------------------
+;------------------------------------------------------------
+_main:
+	;	testM2.c:22: void main()
+	;	testM2.c:24: volatile char a = 10;
+	LOAD	s0, 0a
+	STORE	s0, _main_a_1_1_0
+	;	testM2.c:25: volatile char b = 20;
+	LOAD	s0, 14
+	STORE	s0, _main_b_1_1_0
+	;	testM2.c:26: char c = 30;
+	LOAD	s0, 1e
+	STORE	s0, 14
+	;	testM2.c:27: gptr = &nepole;
+	LOAD	s0, _nepole_1
+	LOAD	s1, s0
+	;	testM2.c:28: vgptr = &nepole;
+	;	testM2.c:29: pole[1] = 150;
+	LOAD	s2, _pole_7
+	LOAD	s3, s2
+	ADD	s3, 02
+	LOAD	s4, 00
+	STORE	s4, (s3)
+	ADD	s3, 01
+	LOAD	s4, 96
+	STORE	s4, (s3)
+	;	testM2.c:30: pole[0] = *gptr;
+	FETCH	s3, (s1)
+	ADD	s1, 01
+	FETCH	s4, (s1)
+	STORE	s3, (s2)
+	ADD	s2, 01
+	STORE	s4, (s2)
+	;	testM2.c:31: *vgptr = 18;
+	LOAD	s1, 00
+	STORE	s1, (s0)
+	ADD	s0, 01
+	LOAD	s1, 12
+	STORE	s1, (s0)
+	;	testM2.c:32: fun(&a,555,c, &c);
+	LOAD	s0, 14
+	FETCH	s2, 14
+	LOAD	s1, s2
+	LOAD	s2, _main_a_1_1_0
+	STORE	s0, (sF)
+	SUB	sF, 01
+	LOAD	sB, s2
+	LOAD	sC, 2b
+	LOAD	sD, 02
+	LOAD	sE, s1
+	CALL	_fun
+	;	testM2.c:33: nepole = c;
+	FETCH	s1, 14
+	LOAD	s0, s1
+	LOAD	s1, 00
+	TEST	s0, 80
+	SUBCY	s1, 00
+_L00101:
+	STORE	s1, _nepole_1
+	STORE	s0, _nepole_0
+	RETURN
+
+__mulschar:
+	LOAD	sA, 00
+	TEST	sB, 80
+	JUMP	Z, _L00104
+	XOR	sB, FF
+	ADD	sB, 01
+	LOAD	sA, 01
+_L00104:
+	TEST	sC, 80
+	JUMP	Z, _L00105
+	XOR	sC, FF
+	ADD	sC, 01
+	XOR	sA, 01
+_L00105:
+	CALL	__muluchar
+	TEST	sA, 01
+	JUMP	Z, _L00106
+	XOR	sB, FF
+	XOR	sC, FF
+	ADD	sB, 01
+	ADDCY	sC, 00
+_L00106:
+	RETURN
+
+__muluchar:
+	LOAD	sE, 08
+	LOAD	sD, sC
+	LOAD	sC, 00
+_L00108:
+	TEST	sB, 01
+	JUMP	Z, _L00107
+	ADD	sC, sD
+_L00107:
+	SR0	sC
+	SRA	sB
+	SUB	sE, 01
+	JUMP	NZ, _L00108
+	RETURN
+;--------------------------------------------------------
+; interrupt vector 
+;--------------------------------------------------------

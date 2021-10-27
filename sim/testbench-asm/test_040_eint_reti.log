@@ -1,0 +1,101 @@
+
+Picoblaze Assembler based on kpicosim  Version 1.0
+Source File: /home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-asm/test_040_eint_reti.psm
+
+Line  Addr Instr  Source Code
+   1              ; ;------------------------------------
+   2              ; ; Test 039
+   3              ; ; Test EINT / RETI
+   4              ; ;------------------------------------
+   5              
+   6              ; ;------------------------------------
+   7              ; ; directive compilation fichier
+   8              ; ;------------------------------------
+   9              
+  10              VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+  11              
+  12              ; ;------------------------------------
+  13              ; ; Constantes
+  14              ; ;------------------------------------
+  15              sp                  EQU       sF
+  16              
+  17              it_latency          EQU       s0
+  18              it_latency_cnt      EQU       s1
+  19              cnt_loop            EQU       s2
+  20              
+  21              it_latency_loop     EQU       $10
+  22              cnt_loop_expected   EQU       $1
+  23              
+  24              test_val_ok         EQU       $FA
+  25              test_val_ko         EQU       $ED
+  26              
+  27              ; ;------------------------------------
+  28              ; ; directives pour le simulateur:  definition des  E/S
+  29              ; ;------------------------------------
+  30              switch_id           EQU       $00
+  31              led_id              EQU       $20
+  32              debug_id            EQU       $e0
+  33              it_id               EQU       $ff
+  34              
+  35              switch              DSIN      switch_id
+  36              led                 DSOUT     led_id
+  37              debug               DSOUT     debug_id
+  38              
+  39              ; ;------------------------------------
+  40              ; ; MAIN
+  41              ; ;------------------------------------
+  42                                  ORG       $000
+  43              main: 
+  44              
+  45  000  3c001  		    EINT      
+  46  001  00010                      LOAD      it_latency    , it_latency_loop
+  47  002  00200  		    LOAD      cnt_loop      , $0
+  48              loop:
+  49  003  00100  		    LOAD      it_latency_cnt, $00
+  50  004  2c0ff  		    OUT       it_latency    , it_id
+  51              
+  52  005  18101                      ADD       it_latency_cnt, $1
+  53  006  18101                      ADD       it_latency_cnt, $1
+  54  007  18101                      ADD       it_latency_cnt, $1
+  55  008  18101                      ADD       it_latency_cnt, $1
+  56  009  18101                      ADD       it_latency_cnt, $1
+  57  00a  18101                      ADD       it_latency_cnt, $1
+  58  00b  18101                      ADD       it_latency_cnt, $1
+  59  00c  18101                      ADD       it_latency_cnt, $1
+  60  00d  18101                      ADD       it_latency_cnt, $1
+  61  00e  2c120  		    OUT       it_latency_cnt, led_id 
+  62              
+  63  00f  1c001  		    SUB       it_latency    , $01
+  64  010  35403  		    JUMP      NZ,loop
+  65              
+  66  011  14201  		    COMP      cnt_loop      , cnt_loop_expected
+  67              		    
+  68  012  353fc                      JUMP      Z, test_ok
+  69  013  34016                      JUMP      test_ko
+  70              
+  71              ; ;------------------------------------
+  72              ; ; Interrupt Handler
+  73              ; ;------------------------------------
+  74              it_handler :
+  75  014  18201  		    ADD       cnt_loop      , $1
+  76  015  38000                      RETI      DISABLE
+  77              
+  78              ; ;------------------------------------
+  79              ; ; Test ok/ko
+  80              ; ;------------------------------------
+  81              test_ko:
+  82  016  00eed                      LOAD      sE, test_val_ko
+  83  017  2cee0                      OUT       sE, debug_id
+  84  018  34016                      JUMP      test_ko
+  85              
+  86                                  ORG       $3FC
+  87              test_ok: 
+  88                                  LOAD      sE, test_val_ok
+  89                                  OUT       sE, debug_id
+  90                                  JUMP      test_ok
+  91              
+  92              ; ;------------------------------------
+  93              ; ; Interrupt VECTOR
+  94              ; ;------------------------------------
+  95                                  ORG       $3FF
+  96                                  JUMP      it_handler

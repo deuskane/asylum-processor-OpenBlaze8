@@ -1,0 +1,155 @@
+
+Picoblaze Assembler based on kpicosim  Version 1.0
+Source File: /home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-asm/test_016_comp.psm
+
+Line  Addr Instr  Source Code
+   1              ; ;------------------------------------
+   2              ; ; Test 016
+   3              ; ;------------------------------------
+   4              
+   5              ; ;------------------------------------
+   6              ; ; directive compilation fichier
+   7              ; ;------------------------------------
+   8              
+   9              VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+  10              
+  11              ; ;------------------------------------
+  12              ; ; Constantes
+  13              ; ;------------------------------------
+  14              sp                  EQU       sF
+  15              
+  16              test_val_ok         EQU       $FA
+  17              test_val_ko         EQU       $ED
+  18              
+  19              ; ;------------------------------------
+  20              ; ; directives pour le simulateur:  definition des  E/S
+  21              ; ;------------------------------------
+  22              switch_id           EQU       $00
+  23              led_id              EQU       $20
+  24              debug_id            EQU       $e0
+  25              
+  26              switch              DSIN      switch_id
+  27              led                 DSOUT     led_id
+  28              debug               DSOUT     debug_id
+  29              
+  30              ; ;------------------------------------
+  31              ; ; MAIN
+  32              ; ;------------------------------------
+  33                                  ORG       $000
+  34              main: 
+  35              
+  36  000  0005a                      LOAD      s0, $5A
+  37  001  0013c                      LOAD      s1, $3C
+  38  002  002a5                      LOAD      s2, $A5
+  39  003  003c3                      LOAD      s3, $C3
+  40  004  004ff                      LOAD      s4, $FF
+  41  005  00501                      LOAD      s5, $01
+  42              
+  43              ; -----------------
+  44  006  15000                      COMP      s0, s0              ; compare $5A with $5A
+  45  007  35843                      JUMP      C, test_ko
+  46  008  35443                      JUMP      NZ, test_ko
+  47              
+  48  009  15010                      COMP      s0, s1              ; compare $5A with $3C
+  49  00a  35843                      JUMP      C, test_ko
+  50  00b  35043                      JUMP      Z, test_ko
+  51              
+  52  00c  15020                      COMP      s0, s2              ; compare $5A with $A5
+  53  00d  35c43                      JUMP      NC, test_ko
+  54  00e  35043                      JUMP      Z, test_ko
+  55              
+  56  00f  15030                      COMP      s0, s3              ; compare $5A with $c3
+  57  010  35c43                      JUMP      NC, test_ko
+  58  011  35043                      JUMP      Z, test_ko
+  59              
+  60              ; -----------------
+  61  012  15100                      COMP      s1, s0              ; compare $3C with $5A
+  62  013  35c43                      JUMP      NC, test_ko
+  63  014  35043                      JUMP      Z, test_ko
+  64              
+  65  015  15110                      COMP      s1, s1              ; compare $3C with $3C
+  66  016  35843                      JUMP      C, test_ko
+  67  017  35443                      JUMP      NZ, test_ko
+  68              
+  69  018  15120                      COMP      s1, s2              ; compare $3C with $A5
+  70  019  35c43                      JUMP      NC, test_ko
+  71  01a  35043                      JUMP      Z, test_ko
+  72              
+  73  01b  15130                      COMP      s1, s3              ; compare $3C with $c3
+  74  01c  35c43                      JUMP      NC, test_ko
+  75  01d  35043                      JUMP      Z, test_ko
+  76              
+  77              ; -----------------
+  78  01e  15200                      COMP      s2, s0              ; compare $a5 with $5A
+  79  01f  35843                      JUMP      C, test_ko
+  80  020  35043                      JUMP      Z, test_ko
+  81              
+  82  021  15210                      COMP      s2, s1              ; compare $a5 with $3C
+  83  022  35843                      JUMP      C, test_ko
+  84  023  35043                      JUMP      Z, test_ko
+  85              
+  86  024  15220                      COMP      s2, s2              ; compare $a5 with $A5
+  87  025  35843                      JUMP      C, test_ko
+  88  026  35443                      JUMP      NZ, test_ko
+  89              
+  90  027  15230                      COMP      s2, s3              ; compare $a5 with $c3
+  91  028  35c43                      JUMP      NC, test_ko
+  92  029  35043                      JUMP      Z, test_ko
+  93              
+  94              ; -----------------
+  95  02a  15300                      COMP      s3, s0              ; compare $c3 with $5A
+  96  02b  35843                      JUMP      C, test_ko
+  97  02c  35043                      JUMP      Z, test_ko
+  98              
+  99  02d  15310                      COMP      s3, s1              ; compare $c3 with $3C
+ 100  02e  35843                      JUMP      C, test_ko
+ 101  02f  35043                      JUMP      Z, test_ko
+ 102              
+ 103  030  15320                      COMP      s3, s2              ; compare $c3 with $A5
+ 104  031  35843                      JUMP      C, test_ko
+ 105  032  35043                      JUMP      Z, test_ko
+ 106              
+ 107  033  15330                      COMP      s3, s3              ; compare $c3 with $c3
+ 108  034  35843                      JUMP      C, test_ko
+ 109  035  35443                      JUMP      NZ, test_ko
+ 110              
+ 111              ; -----------------
+ 112  036  15440                      COMP      s4, s4              ; compare $ff with $ff
+ 113  037  35843                      JUMP      C, test_ko
+ 114  038  35443                      JUMP      NZ, test_ko
+ 115              
+ 116  039  15450                      COMP      s4, s5              ; compare $ff with $01
+ 117  03a  35843                      JUMP      C, test_ko
+ 118  03b  35043                      JUMP      Z, test_ko
+ 119              
+ 120              ; -----------------
+ 121  03c  15540                      COMP      s5, s4              ; compare $01 with $ff
+ 122  03d  35c43                      JUMP      NC, test_ko
+ 123  03e  35043                      JUMP      Z, test_ko
+ 124              
+ 125  03f  15550                      COMP      s5, s5              ; compare $01 with $01
+ 126  040  35843                      JUMP      C, test_ko
+ 127  041  35443                      JUMP      NZ, test_ko
+ 128              
+ 129              
+ 130  042  343fc                      JUMP      test_ok
+ 131              
+ 132              ; ;------------------------------------
+ 133              ; ; Test ok/ko
+ 134              ; ;------------------------------------
+ 135              test_ko:
+ 136  043  00eed                      LOAD      sE, test_val_ko
+ 137  044  2cee0                      OUT       sE, debug_id
+ 138  045  34043                      JUMP      test_ko
+ 139              
+ 140                                  ORG       $3FC
+ 141              test_ok: 
+ 142                                  LOAD      sE, test_val_ok
+ 143                                  OUT       sE, debug_id
+ 144                                  JUMP      test_ok
+ 145              
+ 146              ; ;------------------------------------
+ 147              ; ; Interrupt VECTOR
+ 148              ; ;------------------------------------
+ 149                                  ORG       $3FF
+ 150                                  RETI      ENABLE

@@ -1,0 +1,95 @@
+
+Picoblaze Assembler based on kpicosim  Version 1.0
+Source File: /home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-asm/test_030_fetch_store.psm
+
+Line  Addr Instr  Source Code
+   1              ; ;------------------------------------
+   2              ; ; Test 030
+   3              ; ; fetch/store indirect address
+   4              ; ;------------------------------------
+   5              
+   6              ; ;------------------------------------
+   7              ; ; directive compilation fichier
+   8              ; ;------------------------------------
+   9              
+  10              VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+  11              
+  12              ; ;------------------------------------
+  13              ; ; Constantes
+  14              ; ;------------------------------------
+  15              sp                  EQU       sF
+  16              
+  17              test_val_ok         EQU       $FA
+  18              test_val_ko         EQU       $ED
+  19              
+  20              ; ;------------------------------------
+  21              ; ; directives pour le simulateur:  definition des  E/S
+  22              ; ;------------------------------------
+  23              switch_id           EQU       $00
+  24              led_id              EQU       $20
+  25              debug_id            EQU       $e0
+  26              
+  27              switch              DSIN      switch_id
+  28              led                 DSOUT     led_id
+  29              debug               DSOUT     debug_id
+  30              
+  31              ; ;------------------------------------
+  32              ; ; MAIN
+  33              ; ;------------------------------------
+  34                                  ORG       $000
+  35              main: 
+  36              
+  37  000  00000                      LOAD      s0, $00             ; address
+  38  001  00100                      LOAD      s1, $00             ; data
+  39  002  00221                      LOAD      s2, $21             ; data init
+  40              
+  41  003  01120                      LOAD      s1, s2
+  42  004  34008                      JUMP      store_loop_test
+  43              store_loop_body: 
+  44  005  2f100                      STORE     s1, s0
+  45  006  18001                      ADD       s0, $1
+  46  007  18101                      ADD       s1, $1
+  47              
+  48              store_loop_test: 
+  49  008  14040                      COMP      s0, $40
+  50  009  35405                      JUMP      NZ, store_loop_body
+  51              
+  52              
+  53  00a  00000                      LOAD      s0, $0
+  54  00b  01120                      LOAD      s1, s2
+  55  00c  34013                      JUMP      fetch_loop_test
+  56              fetch_loop_body: 
+  57  00d  07300                      FETCH     s3, s0
+  58  00e  2c320                      out       s3,led_id
+  59  00f  15130                      COMP      s1, s3
+  60  010  35416                      JUMP      NZ, test_ko
+  61  011  18001                      ADD       s0, $1
+  62  012  18101                      ADD       s1, $1
+  63              
+  64              fetch_loop_test: 
+  65  013  14040                      COMP      s0, $40
+  66  014  3540d                      JUMP      NZ, fetch_loop_body
+  67              
+  68              
+  69              
+  70  015  343fc                      JUMP      test_ok
+  71              
+  72              ; ;------------------------------------
+  73              ; ; Test ok/ko
+  74              ; ;------------------------------------
+  75              test_ko:
+  76  016  00eed                      LOAD      sE, test_val_ko
+  77  017  2cee0                      OUT       sE, debug_id
+  78  018  34016                      JUMP      test_ko
+  79              
+  80                                  ORG       $3FC
+  81              test_ok: 
+  82                                  LOAD      sE, test_val_ok
+  83                                  OUT       sE, debug_id
+  84                                  JUMP      test_ok
+  85              
+  86              ; ;------------------------------------
+  87              ; ; Interrupt VECTOR
+  88              ; ;------------------------------------
+  89                                  ORG       $3FF
+  90                                  RETI      ENABLE

@@ -1,0 +1,70 @@
+
+Picoblaze Assembler based on kpicosim  Version 1.0
+Source File: /home/semai/Work/REPO_HOME/asylum/OpenBlaze8/tools/../sim/testbench-asm/test_037_in_out.psm
+
+Line  Addr Instr  Source Code
+   1              ; ;------------------------------------
+   2              ; ; Test 037
+   3              ; ; Test input
+   4              ; ; Warning !!!
+   5              ; ; In testbench HDL, switch = ~led
+   6              ; ; In simulation, set manually switch value
+   7              ; ;------------------------------------
+   8              
+   9              ; ;------------------------------------
+  10              ; ; directive compilation fichier
+  11              ; ;------------------------------------
+  12              
+  13              VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+  14              
+  15              ; ;------------------------------------
+  16              ; ; Constantes
+  17              ; ;------------------------------------
+  18              sp                  EQU       sF
+  19              
+  20              test_val_ok         EQU       $FA
+  21              test_val_ko         EQU       $ED
+  22              
+  23              ; ;------------------------------------
+  24              ; ; directives pour le simulateur:  definition des  E/S
+  25              ; ;------------------------------------
+  26              switch_id           EQU       $00
+  27              led_id              EQU       $20
+  28              debug_id            EQU       $e0
+  29              
+  30              switch              DSIN      switch_id
+  31              led                 DSOUT     led_id
+  32              debug               DSOUT     debug_id
+  33              
+  34              ; ;------------------------------------
+  35              ; ; MAIN
+  36              ; ;------------------------------------
+  37                                  ORG       $00
+  38              main:
+  39  000  0003c                      LOAD      s0, $3C
+  40  001  002ff                      LOAD      s2, $FF
+  41  002  0f200                      XOR       s2, s0
+  42  003  2c020                      OUT       s0, led_id
+  43  004  04100                      IN        s1, switch_id
+  44  005  15120                      COMP      s1, s2
+  45  006  353fc                      JUMP      Z, test_ok
+  46              
+  47              ; ;------------------------------------
+  48              ; ; Test ok/ko
+  49              ; ;------------------------------------
+  50              test_ko:
+  51  007  00eed                      LOAD      sE, test_val_ko
+  52  008  2cee0                      OUT       sE, debug_id
+  53  009  34007                      JUMP      test_ko
+  54              
+  55                                  ORG       $3FC
+  56              test_ok:
+  57                                  LOAD      sE, test_val_ok
+  58                                  OUT       sE, debug_id
+  59                                  JUMP      test_ok
+  60              
+  61              ; ;------------------------------------
+  62              ; ; Interrupt VECTOR
+  63              ; ;------------------------------------
+  64                                  ORG       $3FF
+  65                                  RETI      ENABLE
