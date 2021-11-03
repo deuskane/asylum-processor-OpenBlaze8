@@ -14,6 +14,7 @@
 # Revisions  :
 # Date        Version  Author   Description
 # 2021-10-26  1.0      mrosiere Created
+# 2021-11-03  1.1      mrosiere Use generator
 #-----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------
@@ -30,29 +31,31 @@
 function build_add_target()
 {
     file_name=${1}
-    test_name=${2}
+    file_type=${2}
     target_name=${3}
 
-    cat <<EOT >> /tmp/test_core_files.txt
-  files_${target_name}:
-    files:
-      - ${file_name}
-    file_type : vhdlSource
+    cat <<EOT >> /tmp/test_core_generate.txt
+  gen_${target_name}:
+    generator : pbcc_gen
+    parameters:
+      file: ${file_name}
+      type: ${file_type}
 
 EOT
 
 	cat <<EOT >> /tmp/test_core_targets.txt
-  ${target_name}:
+  sim_${target_name}:
     << : *sim
     description     : Simulation tof the test ${file_name}
     filesets_append :
       - files_sim
-      - files_${target_name}
+      - pbcc_dep
+    generate : [gen_${target_name}]
 
 EOT
 
 	cat <<EOT >> /tmp/test_make.txt
-TARGETS += ${target_name}
+TARGETS += sim_${target_name}
 EOT
 }
 
@@ -135,8 +138,9 @@ function build_picoasm()
 #-----------------------------------------------------------------------------
 function build_main()
 {
-    BUILD_SDCC=true
-    BUILD_PICOASM=true
+    BUILD_SDCC=false
+    BUILD_PICOASM=false
+    GENERATE_ROM=false
 
     # Directory
     dir_tools=`/bin/pwd`
@@ -158,7 +162,7 @@ function build_main()
     fi
 
     # Picoasm Compilation
-    if ${BUILD_PICASM};
+    if ${BUILD_PICOASM};
     then
 	build_picoasm ${dir_picoasm} ${dir_install}
     fi
@@ -175,60 +179,73 @@ function build_main()
     rm -f ${dir_test_c}/*.hex
     rm -f ${dir_test_c}/*.log
 
-    # Compilation of all C files
-    for f in `find ${dir_test_c}/*.c`; do
-	${dir_install}/bin/sdcc -I ${dir_install}/share/sdcc/include -V -S --dialect=kcpsm3 ${f} -o ${f/.c/.psm}
 
-    	if test $? -ne 0; then exit; fi
-    done
+    if ${GENERATE_ROM};
+    then
+	# Compilation of all C files
+	for f in `find ${dir_test_c}/*.c`; do
+	    ${dir_install}/bin/sdcc -I ${dir_install}/share/sdcc/include -V -S --dialect=kcpsm3 ${f} -o ${f/.c/.psm}
 
-    # Translate all PSM file
-    for f in `find ${dir_test_c}/*.psm`; do
+    	    if test $? -ne 0; then exit; fi
+	done
+
+	# Translate all PSM file
+	for f in `find ${dir_test_c}/*.psm`; do
+	    
+	    ${dir_install}/bin/picoasm -i $f -t ${dir_install}/share/picoasm/generic/ROM_form.vhd -v -m OpenBlaze8_ROM -a kcpsm3
+
+	    if test $? -ne 0; then break; fi
+	    
+	done
+
+	for f in `find ${dir_test_asm}/*.psm`; do
+	    
+	    ${dir_install}/bin/picoasm -i $f -t ${dir_install}/share/picoasm/generic/ROM_form.vhd -v -m OpenBlaze8_ROM -a pblazeide
+
+	    if test $? -ne 0; then break; fi
+	    
+	done
+    fi
 	
-	${dir_install}/bin/picoasm -i $f -t ${dir_install}/share/picoasm/generic/ROM_form.vhd -v -m OpenBlaze8_ROM -a kcpsm3
-
-	if test $? -ne 0; then break; fi
-	
-    done
-
-    for f in `find ${dir_test_asm}/*.psm`; do
-	
-	${dir_install}/bin/picoasm -i $f -t ${dir_install}/share/picoasm/generic/ROM_form.vhd -v -m OpenBlaze8_ROM -a pblazeide
-
-	if test $? -ne 0; then break; fi
-	
-    done
-
-    rm -f /tmp/test_core_files.txt
+    rm -f /tmp/test_core_filesets.txt
+    rm -f /tmp/test_core_generate.txt
     rm -f /tmp/test_core_targets.txt
     rm -f /tmp/test_make.txt
 
-    for f in `find ${dir_test_asm}/*.vhd`; do
+    touch /tmp/test_core_filesets.txt
+    touch /tmp/test_core_generate.txt
+    touch /tmp/test_core_targets.txt
+    touch /tmp/test_make.txt
 
-	file_name=${f}
-	test_name=`basename ${f/.vhd/}`
-	target_name=sim_asm_${test_name}
+    dir_ip=${dir_ip}/
+    for f in `find ${dir_test_asm}/*.psm`; do
+
+	file_name=${f/${dir_ip}/}
+	test_name=`basename ${f/.psm/}`
+	target_name=asm_${test_name}
 	
-	build_add_target ${file_name} ${test_name} ${target_name}
+	build_add_target ${file_name} "pblazeide" ${target_name}
 	
     done
 
-    for f in `find ${dir_test_c}/*.vhd`; do
+    for f in `find ${dir_test_c}/*.c`; do
 
-	file_name=${f}
-	test_name=`basename ${f/.vhd/}`
-	target_name=sim_c_${test_name}
+	file_name=${f/${dir_ip}/}
+	test_name=`basename ${f/.c/}`
+	target_name=c_${test_name}
 
-	build_add_target ${file_name} ${test_name} ${target_name}
+	build_add_target ${file_name} "c" ${target_name}
 	
     done
 
     # Edit Core File
-    sed -i '/<FILES_BEGIN>/,/<FILES_END>/{/<FILES_BEGIN>/!{/<FILES_END>/!d}}'         ${file_core}
-    sed -i '/<TARGETS_BEGIN>/,/<TARGETS_END>/{/<TARGETS_BEGIN>/!{/<TARGETS_END>/!d}}' ${file_core}
+    sed -i '/<FILESETS_BEGIN>/,/<FILESETS_END>/{/<FILESETS_BEGIN>/!{/<FILESETS_END>/!d}}' ${file_core}
+    sed -i '/<GENERATE_BEGIN>/,/<GENERATE_END>/{/<GENERATE_BEGIN>/!{/<GENERATE_END>/!d}}' ${file_core}
+    sed -i '/<TARGETS_BEGIN>/,/<TARGETS_END>/{/<TARGETS_BEGIN>/!{/<TARGETS_END>/!d}}'     ${file_core}
 
-    sed -i '/<FILES_BEGIN>/r /tmp/test_core_files.txt'                                ${file_core}
-    sed -i '/<TARGETS_BEGIN>/r /tmp/test_core_targets.txt'                            ${file_core}
+    sed -i '/<FILESETS_BEGIN>/r /tmp/test_core_filesets.txt'                              ${file_core}
+    sed -i '/<GENERATE_BEGIN>/r /tmp/test_core_generate.txt'                              ${file_core}
+    sed -i '/<TARGETS_BEGIN>/r  /tmp/test_core_targets.txt'                               ${file_core}
 
     # Edit Targets
     cp /tmp/test_make.txt ${file_make}
