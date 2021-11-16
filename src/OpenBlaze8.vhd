@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2014-03-21
--- Last update: 2021-10-15
+-- Last update: 2021-11-16
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -48,8 +48,7 @@ entity OpenBlaze8 is
     read_strobe_o     : out std_logic;
     write_strobe_o    : out std_logic;
     interrupt_i       : in  std_logic;
-    interrupt_ack_o   : out std_logic;
-    debug_o           : out OpenBlaze8_debug_t
+    interrupt_ack_o   : out std_logic
     );
 end OpenBlaze8;
 
@@ -381,8 +380,4 @@ architecture rtl of OpenBlaze8 is
      ,it_en_i                     => it_en            
     );
 
-    -----------------------------------------------------------------------------
-    -- Debug
-    -----------------------------------------------------------------------------
-    debug_o.dummy <= '1';
 end rtl;

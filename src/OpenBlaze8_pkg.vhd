@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2016-11-16
--- Last update: 2016-11-20
+-- Last update: 2021-11-16
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -25,10 +25,6 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 package OpenBlaze8_pkg is
-
-type OpenBlaze8_debug_t is record
-  dummy : std_logic;
-end record OpenBlaze8_debug_t;
   
 component OpenBlaze8 is
   -- =====[ Parameters ]==========================
@@ -52,8 +48,7 @@ component OpenBlaze8 is
     read_strobe_o     : out std_logic;
     write_strobe_o    : out std_logic;
     interrupt_i       : in  std_logic;
-    interrupt_ack_o   : out std_logic;
-    debug_o           : out OpenBlaze8_debug_t
+    interrupt_ack_o   : out std_logic
     );
 end component;
   

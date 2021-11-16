@@ -1,1 +1,1 @@
-CORE    = asylum:processor:OpenBlaze8:1.0
+CORE    = asylum:processor:OpenBlaze8:1.1.0

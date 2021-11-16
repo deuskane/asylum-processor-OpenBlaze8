@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2016-11-20
--- Last update: 2021-10-15
+-- Last update: 2021-11-16
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -64,7 +64,6 @@ architecture tb of tb_OpenBlaze8 is
   signal dut_write_strobe_o    : std_logic;
   signal dut_interrupt_i       : std_logic;
   signal dut_interrupt_ack_o   : std_logic;
-  signal dut_debug_o           : OpenBlaze8_debug_t;
 
   signal ref_clock_i           : std_logic := '0';
 --signal ref_clock_enable_i    : std_logic;
@@ -78,7 +77,6 @@ architecture tb of tb_OpenBlaze8 is
   signal ref_write_strobe_o    : std_logic;
   signal ref_interrupt_i       : std_logic;
   signal ref_interrupt_ack_o   : std_logic;
---signal ref_debug_o           : OpenBlaze8_debug_t;
 
   type mem_t is array (0 to 2**8-1) of std_logic_vector(8 -1 downto 0);
   signal mem                   : mem_t;
@@ -121,7 +119,6 @@ begin  -- architecture tb
     ,write_strobe_o    => dut_write_strobe_o 
     ,interrupt_i       => dut_interrupt_i    
     ,interrupt_ack_o   => dut_interrupt_ack_o
-    ,debug_o           => dut_debug_o        
      );
 
   -----------------------------------------------------------------------------
