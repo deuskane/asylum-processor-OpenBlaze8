@@ -368,7 +368,7 @@ targets:
   #<TARGETS_BEGIN>
   sim_asm_test_000_default:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_000_default.psm
+    description     : Simulation of the test sim/testbench-asm/test_000_default.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -376,7 +376,7 @@ targets:
 
   sim_asm_test_001_test_ok:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_001_test_ok.psm
+    description     : Simulation of the test sim/testbench-asm/test_001_test_ok.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -384,7 +384,7 @@ targets:
 
   sim_asm_test_002_jump:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_002_jump.psm
+    description     : Simulation of the test sim/testbench-asm/test_002_jump.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -392,7 +392,7 @@ targets:
 
   sim_asm_test_003_jump:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_003_jump.psm
+    description     : Simulation of the test sim/testbench-asm/test_003_jump.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -400,7 +400,7 @@ targets:
 
   sim_asm_test_004_comp:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_004_comp.psm
+    description     : Simulation of the test sim/testbench-asm/test_004_comp.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -408,7 +408,7 @@ targets:
 
   sim_asm_test_005_comp:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_005_comp.psm
+    description     : Simulation of the test sim/testbench-asm/test_005_comp.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -416,7 +416,7 @@ targets:
 
   sim_asm_test_006_and:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_006_and.psm
+    description     : Simulation of the test sim/testbench-asm/test_006_and.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -424,7 +424,7 @@ targets:
 
   sim_asm_test_007_or:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_007_or.psm
+    description     : Simulation of the test sim/testbench-asm/test_007_or.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -432,7 +432,7 @@ targets:
 
   sim_asm_test_008_xor:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_008_xor.psm
+    description     : Simulation of the test sim/testbench-asm/test_008_xor.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -440,7 +440,7 @@ targets:
 
   sim_asm_test_009_andi:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_009_andi.psm
+    description     : Simulation of the test sim/testbench-asm/test_009_andi.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -448,7 +448,7 @@ targets:
 
   sim_asm_test_010_ori:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_010_ori.psm
+    description     : Simulation of the test sim/testbench-asm/test_010_ori.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -456,7 +456,7 @@ targets:
 
   sim_asm_test_011_xori:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_011_xori.psm
+    description     : Simulation of the test sim/testbench-asm/test_011_xori.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -464,7 +464,7 @@ targets:
 
   sim_asm_test_012_add:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_012_add.psm
+    description     : Simulation of the test sim/testbench-asm/test_012_add.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -472,7 +472,7 @@ targets:
 
   sim_asm_test_013_addi:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_013_addi.psm
+    description     : Simulation of the test sim/testbench-asm/test_013_addi.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -480,7 +480,7 @@ targets:
 
   sim_asm_test_014_sub:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_014_sub.psm
+    description     : Simulation of the test sim/testbench-asm/test_014_sub.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -488,7 +488,7 @@ targets:
 
   sim_asm_test_015_subi:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_015_subi.psm
+    description     : Simulation of the test sim/testbench-asm/test_015_subi.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -496,7 +496,7 @@ targets:
 
   sim_asm_test_016_comp:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_016_comp.psm
+    description     : Simulation of the test sim/testbench-asm/test_016_comp.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -504,7 +504,7 @@ targets:
 
   sim_asm_test_017_compi:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_017_compi.psm
+    description     : Simulation of the test sim/testbench-asm/test_017_compi.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -512,7 +512,7 @@ targets:
 
   sim_asm_test_018_rl:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_018_rl.psm
+    description     : Simulation of the test sim/testbench-asm/test_018_rl.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -520,7 +520,7 @@ targets:
 
   sim_asm_test_019_rr:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_019_rr.psm
+    description     : Simulation of the test sim/testbench-asm/test_019_rr.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -528,7 +528,7 @@ targets:
 
   sim_asm_test_020_sl0:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_020_sl0.psm
+    description     : Simulation of the test sim/testbench-asm/test_020_sl0.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -536,7 +536,7 @@ targets:
 
   sim_asm_test_021_sl1:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_021_sl1.psm
+    description     : Simulation of the test sim/testbench-asm/test_021_sl1.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -544,7 +544,7 @@ targets:
 
   sim_asm_test_022_sla:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_022_sla.psm
+    description     : Simulation of the test sim/testbench-asm/test_022_sla.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -552,7 +552,7 @@ targets:
 
   sim_asm_test_023_slx:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_023_slx.psm
+    description     : Simulation of the test sim/testbench-asm/test_023_slx.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -560,7 +560,7 @@ targets:
 
   sim_asm_test_024_sr:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_024_sr.psm
+    description     : Simulation of the test sim/testbench-asm/test_024_sr.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -568,7 +568,7 @@ targets:
 
   sim_asm_test_025_call:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_025_call.psm
+    description     : Simulation of the test sim/testbench-asm/test_025_call.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -576,7 +576,7 @@ targets:
 
   sim_asm_test_026_call_ret:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_026_call_ret.psm
+    description     : Simulation of the test sim/testbench-asm/test_026_call_ret.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -584,7 +584,7 @@ targets:
 
   sim_asm_test_027_call_ret:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_027_call_ret.psm
+    description     : Simulation of the test sim/testbench-asm/test_027_call_ret.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -592,7 +592,7 @@ targets:
 
   sim_asm_test_028_call_ret_cond:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_028_call_ret_cond.psm
+    description     : Simulation of the test sim/testbench-asm/test_028_call_ret_cond.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -600,7 +600,7 @@ targets:
 
   sim_asm_test_029_fetch_store:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_029_fetch_store.psm
+    description     : Simulation of the test sim/testbench-asm/test_029_fetch_store.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -608,7 +608,7 @@ targets:
 
   sim_asm_test_030_fetch_store:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_030_fetch_store.psm
+    description     : Simulation of the test sim/testbench-asm/test_030_fetch_store.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -616,7 +616,7 @@ targets:
 
   sim_asm_test_031_fetch_store:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_031_fetch_store.psm
+    description     : Simulation of the test sim/testbench-asm/test_031_fetch_store.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -624,7 +624,7 @@ targets:
 
   sim_asm_test_032_stack_depth:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_032_stack_depth.psm
+    description     : Simulation of the test sim/testbench-asm/test_032_stack_depth.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -632,7 +632,7 @@ targets:
 
   sim_asm_test_033_mul:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_033_mul.psm
+    description     : Simulation of the test sim/testbench-asm/test_033_mul.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -640,7 +640,7 @@ targets:
 
   sim_asm_test_034_div:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_034_div.psm
+    description     : Simulation of the test sim/testbench-asm/test_034_div.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -648,7 +648,7 @@ targets:
 
   sim_asm_test_035_test:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_035_test.psm
+    description     : Simulation of the test sim/testbench-asm/test_035_test.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -656,7 +656,7 @@ targets:
 
   sim_asm_test_036_test:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_036_test.psm
+    description     : Simulation of the test sim/testbench-asm/test_036_test.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -664,7 +664,7 @@ targets:
 
   sim_asm_test_037_in_out:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_037_in_out.psm
+    description     : Simulation of the test sim/testbench-asm/test_037_in_out.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -672,7 +672,7 @@ targets:
 
   sim_asm_test_038_in_out:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_038_in_out.psm
+    description     : Simulation of the test sim/testbench-asm/test_038_in_out.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -680,7 +680,7 @@ targets:
 
   sim_asm_test_039_eint_reti:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_039_eint_reti.psm
+    description     : Simulation of the test sim/testbench-asm/test_039_eint_reti.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -688,7 +688,7 @@ targets:
 
   sim_asm_test_040_eint_reti:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_040_eint_reti.psm
+    description     : Simulation of the test sim/testbench-asm/test_040_eint_reti.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -696,7 +696,7 @@ targets:
 
   sim_asm_test_041_eint_reti:
     << : *sim
-    description     : Simulation tof the test sim/testbench-asm/test_041_eint_reti.psm
+    description     : Simulation of the test sim/testbench-asm/test_041_eint_reti.psm
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -704,7 +704,7 @@ targets:
 
   sim_c_test_uadd32:
     << : *sim
-    description     : Simulation tof the test sim/testbench-c/test_uadd32.c
+    description     : Simulation of the test sim/testbench-c/test_uadd32.c
     filesets_append :
       - files_sim
       - pbcc_dep
@@ -712,7 +712,7 @@ targets:
 
   sim_c_test_umul32:
     << : *sim
-    description     : Simulation tof the test sim/testbench-c/test_umul32.c
+    description     : Simulation of the test sim/testbench-c/test_umul32.c
     filesets_append :
       - files_sim
       - pbcc_dep

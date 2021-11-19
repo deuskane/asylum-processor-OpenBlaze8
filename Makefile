@@ -1,28 +1,33 @@
 #-----------------------------------------------------------------------------
-# Title      : Makefile
-# Project    : OpenBlaze8
-#-----------------------------------------------------------------------------
-# File       : Makefile
-# Author     : mrosiere
-#-----------------------------------------------------------------------------
-# Description: 
-#-----------------------------------------------------------------------------
-# Copyright (c) 2021
-#-----------------------------------------------------------------------------
-# Revisions  :
-# Date        Version  Author   Description
-# 2021-10-26  1.0      mrosiere Created
+# Auto-generate file
 #-----------------------------------------------------------------------------
 
 #=============================================================================
 # Variables
 #=============================================================================
-include mk/defs.mk
+SHELL      = /bin/bash
+FILE_CORE  = OpenBlaze8.core
+CORE      ?= $(shell grep name $(FILE_CORE) | head -n1| cut -d' ' -f3)
 include mk/targets.mk
 
 #=============================================================================
 # Rules
 #=============================================================================
+
+help    :
+	@echo "=========| Variables"
+	@echo "CORE     : $(CORE)"
+	@echo ""
+	@echo "=========| Rules"
+	@echo "help     : Print this message"
+	@echo "run      : run all targets"
+	@echo "run_%    : run one target"
+	@echo "clean    : delete build directory"
+	@echo ""
+	@echo "=========| Targets"
+	@for target in $(TARGETS); do echo $${target}; done
+
+.PHONY  : list
 
 run	: $(addprefix run_,$(TARGETS))
 
@@ -33,6 +38,7 @@ run_%	:
 	fusesoc run --build-root build-$* --run --target $* $(CORE)
 
 .PHONY	: run_%
+
 
 clean	:
 	rm -fr build build-*
