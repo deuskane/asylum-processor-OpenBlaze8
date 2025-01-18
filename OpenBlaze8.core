@@ -362,7 +362,7 @@ targets:
     tools :
       ghdl :
         analyze_options : ["-fsynopsys"]
-        run_options     : ["--vcd=dut.vcd"]
+        run_options     : ["--vcd=dut.vcd","--ieee-asserts=disable"]
 
   # Next line is a pragma, don't modify
   #<TARGETS_BEGIN>
