@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2014-05-22
--- Last update: 2016-11-20
+-- Last update: 2025-07-09
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -57,8 +57,6 @@ architecture rtl of OpenBlaze8_Flags is
   signal flag_z_r           : std_logic;
   signal flag_z_preserved_r : std_logic;
 
-  signal cycle_1   : std_logic;
-  
 begin  -- rtl
 
   -----------------------------------------------------------------------------

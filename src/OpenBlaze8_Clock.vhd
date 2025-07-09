@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2014-03-22
--- Last update: 2016-11-20
+-- Last update: 2025-07-09
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -79,18 +79,18 @@ begin  -- rtl
   end generate gen_div2_n;
 
   -- =====[ Transition ]==========================
-  transition: process (clock_i,reset_internal)
+  process (clock_i,reset_internal)
   begin  -- process transition
     if reset_internal = '1' then
       -- asynchronous reset
       cycle_phase_r <= '0';
-      else
-        if clock_i'event and clock_i = '1' then
-          if clock_enable_i = '1' then
-            cycle_phase_r <= not cycle_phase_r;
-          end if;
-        end if;
+    elsif rising_edge(clock_i)
+    then
+      if clock_enable_i = '1'
+      then
+        cycle_phase_r <= not cycle_phase_r;
+      end if;
     end if;
-  end process transition;
+  end process;
 
 end rtl;
