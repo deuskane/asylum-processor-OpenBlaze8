@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2016-11-20
--- Last update: 2021-11-16
+-- Last update: 2025-08-20
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -20,11 +20,14 @@
 -------------------------------------------------------------------------------
 
 library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+use     ieee.std_logic_1164.all;
+use     ieee.numeric_std.all;
+use     ieee.std_logic_textio.all;
+use     std.textio.all;
+
 library work;
-use work.math_pkg.all;
-use work.OpenBlaze8_pkg.all;
+use     work.math_pkg.all;
+use     work.OpenBlaze8_pkg.all;
 
 entity tb_OpenBlaze8 is
   
@@ -47,6 +50,10 @@ architecture tb of tb_OpenBlaze8 is
   constant TB_IT_PORT_ID           : std_logic_vector(DATA_WIDTH -1 downto 0) := X"FF";
   constant TB_LED_PORT_ID          : std_logic_vector(DATA_WIDTH -1 downto 0) := X"20";
   constant TB_SWITCH_PORT_ID       : std_logic_vector(DATA_WIDTH -1 downto 0) := X"00";
+  constant TB_WATCH0_PORT_ID       : std_logic_vector(DATA_WIDTH -1 downto 0) := X"C0";
+  constant TB_WATCH1_PORT_ID       : std_logic_vector(DATA_WIDTH -1 downto 0) := X"C1";
+  constant TB_WATCH2_PORT_ID       : std_logic_vector(DATA_WIDTH -1 downto 0) := X"C2";
+  constant TB_WATCH3_PORT_ID       : std_logic_vector(DATA_WIDTH -1 downto 0) := X"C3";
   constant TB_EXPECTED_PORT_ID     : std_logic_vector(DATA_WIDTH -1 downto 0) := X"E0";
   constant TB_EXPECTED_OUT_PORT_OK : std_logic_vector(DATA_WIDTH -1 downto 0) := X"FA";
   constant TB_EXPECTED_OUT_PORT_KO : std_logic_vector(DATA_WIDTH -1 downto 0) := X"ED";
@@ -88,9 +95,34 @@ architecture tb of tb_OpenBlaze8 is
 -----------------------------------------------------
   -- Test signals
   -----------------------------------------------------
-  signal test_done : std_logic := '0';
-  signal test_ok   : std_logic := '0';
- 
+  signal   test_done : std_logic := '0';
+  signal   test_ok   : std_logic := '0';
+
+  signal   watch32b  : std_logic_vector(32-1 downto 0);
+
+  function to_hstring(vec : std_logic_vector) return string is
+    constant hex_chars : string := "0123456789ABCDEF";
+    variable result    : string(1 to (vec'length + 3) / 4);
+    variable nibble    : std_logic_vector(3 downto 0);
+    variable i         : integer;
+begin
+    for idx in 0 to result'length - 1 loop
+        i := vec'length - 1 - idx * 4;
+        if i < 3 then
+            nibble := (others => '0');
+            for j in 0 to i loop
+                nibble(3 - j) := vec(j);
+            end loop;
+        else
+            nibble := vec(i downto i - 3);
+        end if;
+        result(idx + 1) := hex_chars(to_integer(unsigned(nibble)) + 1);
+    end loop;
+    return result;
+end function;
+
+  
+  
 begin  -- architecture tb
 
   -----------------------------------------------------------------------------
@@ -268,6 +300,8 @@ begin  -- architecture tb
   -----------------------------------------------------------------------------
 
   l_tb_verif: process (ref_clock_i) is
+    variable var_watch32b  : std_logic_vector(32-1 downto 0);
+
   begin  -- process l_tb_verif
     if (ref_clock_i'event and ref_clock_i = '0')
     then  -- falling clock edge
@@ -294,6 +328,22 @@ begin  -- architecture tb
           end if;        
         end if;
 
+        var_watch32b := watch32b;
+        if (dut_write_strobe_o = '1') and (dut_port_id_o = TB_WATCH0_PORT_ID) then
+          var_watch32b(8-1  downto  0) := dut_out_port_o;
+        end if;
+        if (dut_write_strobe_o = '1') and (dut_port_id_o = TB_WATCH1_PORT_ID) then
+          var_watch32b(16-1 downto  8) := dut_out_port_o;
+        end if;
+        if (dut_write_strobe_o = '1') and (dut_port_id_o = TB_WATCH2_PORT_ID) then
+          var_watch32b(24-1 downto 16) := dut_out_port_o;
+        end if;
+        if (dut_write_strobe_o = '1') and (dut_port_id_o = TB_WATCH3_PORT_ID) then
+          var_watch32b(32-1 downto 24) := dut_out_port_o;
+          report "[TESTBENCH] Watch   : " & to_hstring(var_watch32b);
+        end if;
+        watch32b <= var_watch32b;
+        
         if (dut_write_strobe_o = '1') and (dut_port_id_o = TB_EXPECTED_PORT_ID) then
           case dut_out_port_o is
             when TB_EXPECTED_OUT_PORT_OK => report "[TESTBENCH] Test OK : Trigger OK detected"      ; test_done <= '1';

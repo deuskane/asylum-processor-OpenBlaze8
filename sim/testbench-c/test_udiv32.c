@@ -1,17 +1,5 @@
 #include <stdint.h>
-
-// define portu
-extern char PBLAZEPORT[];
-
-#define PORT_WR(_ADDR_,_DATA_) PBLAZEPORT[_ADDR_] = _DATA_
-#define PORT_RD(_ADDR_)        PBLAZEPORT[_ADDR_]
-
-#define LED       0x20
-#define IT        0xff
-#define SWITCH    0x00
-#define TEST      0xe0
-#define TEST_KO   PORT_WR(TEST,0xED)
-#define TEST_OK   PORT_WR(TEST,0xFA)
+#include "testbench.h"
 
 uint32_t udiv32(uint32_t i0, uint32_t i1)
 {
@@ -27,8 +15,12 @@ void main()
 
   z = udiv32(x,y);
 
-  if (z == z_expected)
-    TEST_OK;
+  watch32b(x);
+  watch32b(y);
+  watch32b(z);
+  
+  if (z != z_expected)
+    TEST_KO;
 
-  TEST_KO;
+  TEST_OK;
 }

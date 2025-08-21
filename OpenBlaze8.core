@@ -325,8 +325,8 @@ targets:
     default_tool    : ghdl
     tools :
       ghdl :
-        analyze_options : ["-fsynopsys"]
-        run_options     : ["--vcd=dut.vcd","--ieee-asserts=disable"]
+        analyze_options : ["-Wall","-fsynopsys"]
+        run_options     : ["--fst=dut.fst","--ieee-asserts=disable"]
 
   # Next line is a pragma, don't modify
   #<TARGETS_BEGIN>
