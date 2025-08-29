@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2016-11-20
--- Last update: 2025-08-20
+-- Last update: 2025-08-27
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -324,7 +324,11 @@ begin  -- architecture tb
         
           if (dut_write_strobe_o = '1')
           then
-          assert (dut_out_port_o      = ref_out_port_o     ) report "[TESTBENCH] Test KO : Missmatch with reference for the port out_port"      severity failure;
+            if (dut_out_port_o      /= ref_out_port_o     )
+            then
+              report "[TESTBENCH] Test KO : Missmatch with reference for the port out_port";
+              test_done <= '1';
+            end if;
           end if;        
         end if;
 

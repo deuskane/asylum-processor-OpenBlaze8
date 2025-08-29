@@ -234,22 +234,22 @@ generate:
     parameters:
       file   : sim/testbench-asm/test_041_eint_reti.psm
       type   : pblazeide
-  gen_c_test_uadd32:
+  gen_c_test_uadd16:
     generator : pbcc_gen
     parameters:
-      file   : sim/testbench-c/test_uadd32.c
+      file   : sim/testbench-c/test_uadd16.c
       type   : c
       cflags : --verbose --all-callee-saves
-  gen_c_test_udiv32:
+  gen_c_test_udiv16:
     generator : pbcc_gen
     parameters:
-      file   : sim/testbench-c/test_udiv32.c
+      file   : sim/testbench-c/test_udiv16.c
       type   : c
       cflags : --verbose --all-callee-saves
-  gen_c_test_umul32:
+  gen_c_test_umul16:
     generator : pbcc_gen
     parameters:
-      file   : sim/testbench-c/test_umul32.c
+      file   : sim/testbench-c/test_umul16.c
       type   : c
       cflags : --verbose --all-callee-saves
   #<GENERATE_END>
@@ -262,7 +262,7 @@ filesets:
   #---------------------------------------
   pbcc_dep:
     depend:
-      - asylum:utils:generators:1.0.0      
+      - asylum:utils:generators
 
   #---------------------------------------
   # Source Files
@@ -666,29 +666,29 @@ targets:
       - pbcc_dep
     generate : [gen_asm_test_041_eint_reti]
 
-  sim_c_test_uadd32:
+  sim_c_test_uadd16:
     << : *sim
-    description     : Simulation of the test sim/testbench-c/test_uadd32.c
+    description     : Simulation of the test sim/testbench-c/test_uadd16.c
     filesets_append :
       - files_sim
       - pbcc_dep
-    generate : [gen_c_test_uadd32]
+    generate : [gen_c_test_uadd16]
 
-  sim_c_test_udiv32:
+  sim_c_test_udiv16:
     << : *sim
-    description     : Simulation of the test sim/testbench-c/test_udiv32.c
+    description     : Simulation of the test sim/testbench-c/test_udiv16.c
     filesets_append :
       - files_sim
       - pbcc_dep
-    generate : [gen_c_test_udiv32]
+    generate : [gen_c_test_udiv16]
 
-  sim_c_test_umul32:
+  sim_c_test_umul16:
     << : *sim
-    description     : Simulation of the test sim/testbench-c/test_umul32.c
+    description     : Simulation of the test sim/testbench-c/test_umul16.c
     filesets_append :
       - files_sim
       - pbcc_dep
-    generate : [gen_c_test_umul32]
+    generate : [gen_c_test_umul16]
 
   #<TARGETS_END>
   # Previous line is a pragma, don't modify

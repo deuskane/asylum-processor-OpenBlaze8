@@ -42,7 +42,7 @@ sim_asm_test_038_in_out        : Simulation of the test sim/testbench-asm/test_0
 sim_asm_test_039_eint_reti     : Simulation of the test sim/testbench-asm/test_039_eint_reti.psm
 sim_asm_test_040_eint_reti     : Simulation of the test sim/testbench-asm/test_040_eint_reti.psm
 sim_asm_test_041_eint_reti     : Simulation of the test sim/testbench-asm/test_041_eint_reti.psm
-sim_c_test_uadd32              : Simulation of the test sim/testbench-c/test_uadd32.c
-sim_c_test_udiv32              : Simulation of the test sim/testbench-c/test_udiv32.c
-sim_c_test_umul32              : Simulation of the test sim/testbench-c/test_umul32.c
+sim_c_test_uadd16              : Simulation of the test sim/testbench-c/test_uadd16.c
+sim_c_test_udiv16              : Simulation of the test sim/testbench-c/test_udiv16.c
+sim_c_test_umul16              : Simulation of the test sim/testbench-c/test_umul16.c
 
