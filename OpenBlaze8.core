@@ -286,7 +286,7 @@ filesets:
       - hdl/OpenBlaze8.vhd
     file_type : vhdlSource
     depend    :
-      - ">=asylum:component:ram_1r1w:1.0.0"
+      - ">=asylum:component:ram:1.0.0"
       - ">=asylum:component:stack:1.0.0"
       
   #---------------------------------------
