@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2014-03-21
--- Last update: 2021-11-16
+-- Last update: 2025-09-06
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -20,11 +20,11 @@
 -------------------------------------------------------------------------------
 
 library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+use     ieee.std_logic_1164.all;
+use     ieee.numeric_std.all;
 library work;
-use work.math_pkg.all;
-use work.OpenBlaze8_pkg.all;
+use     work.math_pkg.all;
+use     work.OpenBlaze8_pkg.all;
 
 entity OpenBlaze8 is
   -- =====[ Parameters ]==========================
@@ -135,7 +135,7 @@ architecture rtl of OpenBlaze8 is
     -----------------------------------------------------------------------------
     -- Instance
     -----------------------------------------------------------------------------
-    ins_OpenBlaze8_Clock : entity work.OpenBlaze8_Clock(rtl)
+    ins_OpenBlaze8_Clock : OpenBlaze8_Clock
     generic map (
       multi_cycle                 => MULTI_CYCLE
       )
@@ -148,7 +148,7 @@ architecture rtl of OpenBlaze8 is
      ,cycle_phase_o               => cycle_phase
     );
 
-    ins_OpenBlaze8_Program_Counter : entity work.OpenBlaze8_Program_Counter(rtl)
+    ins_OpenBlaze8_Program_Counter : OpenBlaze8_Program_Counter
     generic map(
       size_addr_inst              => ADDR_INST_WIDTH
       )
@@ -164,7 +164,7 @@ architecture rtl of OpenBlaze8 is
      ,inst_address_o              => address_o
     );
 
-    ins_OpenBlaze8_Stack : entity work.OpenBlaze8_Stack(rtl)
+    ins_OpenBlaze8_Stack : OpenBlaze8_Stack
     generic map(
       size_stack                  => STACK_DEPTH    
      ,size_addr_inst              => ADDR_INST_WIDTH
@@ -179,7 +179,7 @@ architecture rtl of OpenBlaze8 is
      ,stack_pop_data_o            => stack_pop_data
     );
 
-    ins_OpenBlaze8_Decode : entity work.OpenBlaze8_Decode(rtl)
+    ins_OpenBlaze8_Decode : OpenBlaze8_Decode
     port map(
       clock_i                     => clock_internal       
      ,clock_enable_i              => clock_enable_i
@@ -195,7 +195,7 @@ architecture rtl of OpenBlaze8 is
      ,decode_inhib_i              => decode_inhib
       );
 
-    ins_OpenBlaze8_Operand : entity work.OpenBlaze8_Operand(rtl)
+    ins_OpenBlaze8_Operand : OpenBlaze8_Operand
     generic map (
       size_data                   => DATA_WIDTH
      ) 
@@ -211,7 +211,7 @@ architecture rtl of OpenBlaze8 is
      ,operand_op2_o               => alu_op2
       );
 
-   ins_OpenBlaze8_RegFile : entity work.OpenBlaze8_RegFile(rtl)
+   ins_OpenBlaze8_RegFile : OpenBlaze8_RegFile
     generic map (
       size_data                   => DATA_WIDTH
      ,nb_reg                      => REGFILE_DEPTH
@@ -230,7 +230,7 @@ architecture rtl of OpenBlaze8 is
      ,regy_data_o                 => reg2_read_data
       );
     
-    ins_OpenBlaze8_ALU : entity work.OpenBlaze8_ALU(rtl)
+    ins_OpenBlaze8_ALU : OpenBlaze8_ALU
     generic map (
       size_data                   => DATA_WIDTH
      )
@@ -256,7 +256,7 @@ architecture rtl of OpenBlaze8 is
      ,flag_z_o                    => flag_z_next
     );
 
-    ins_OpenBlaze8_RAM : entity work.OpenBlaze8_RAM(rtl)
+    ins_OpenBlaze8_RAM : OpenBlaze8_RAM
     generic map(
       size_data                   => DATA_WIDTH
      ,size_ram                    => RAM_DEPTH 
@@ -272,7 +272,7 @@ architecture rtl of OpenBlaze8 is
      ,ram_write_data_i            => ram_write_data
       );
 
-    ins_OpenBlaze8_LoadStore : entity work.OpenBlaze8_LoadStore(rtl)
+    ins_OpenBlaze8_LoadStore : OpenBlaze8_LoadStore
     generic map(
       size_data                   => DATA_WIDTH
      )
@@ -293,7 +293,7 @@ architecture rtl of OpenBlaze8 is
      ,write_strobe_o              => write_strobe_o
      );
 
-    ins_OpenBlaze8_Result : entity work.OpenBlaze8_Result(rtl)
+    ins_OpenBlaze8_Result : OpenBlaze8_Result
     generic map (
       size_data                   => DATA_WIDTH
      )
@@ -308,7 +308,7 @@ architecture rtl of OpenBlaze8 is
      ,res_o                       => reg1_write_data
     );
 
-    ins_OpenBlaze8_Flags : entity work.OpenBlaze8_Flags(rtl)
+    ins_OpenBlaze8_Flags : OpenBlaze8_Flags
     port map(
       clock_i                     => clock_internal       
      ,clock_enable_i              => clock_enable_i
@@ -323,7 +323,7 @@ architecture rtl of OpenBlaze8 is
      ,flag_restore_i              => flag_restore
      );
 
-    ins_OpenBlaze8_Interrupt : entity work.OpenBlaze8_Interrupt(rtl)
+    ins_OpenBlaze8_Interrupt : OpenBlaze8_Interrupt
     port map(
       clock_i                     => clock_internal       
      ,clock_enable_i              => clock_enable_i
@@ -336,7 +336,7 @@ architecture rtl of OpenBlaze8 is
      ,interrupt_ack_o             => interrupt_ack_o
     );
 
-    ins_OpenBlaze8_Control : entity work.OpenBlaze8_Control(rtl)
+    ins_OpenBlaze8_Control : OpenBlaze8_Control
     port map(
       clock_i                     => clock_internal       
      ,clock_enable_i              => clock_enable_i
