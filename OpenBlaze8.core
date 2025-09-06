@@ -16,9 +16,10 @@ CAPI=2:
 # 2021-10-26  1.0.0    mrosiere Created
 # 2021-11-03  1.0.1    mrosiere Use generator
 # 2021-11-16  1.1.0    mrosiere Delete Debug Bus
+# 2025-09-06  1.1.1    mrosiere Use package
 #-----------------------------------------------------------------------------
 
-name : asylum:processor:OpenBlaze8:1.1.0
+name : asylum:processor:OpenBlaze8:1.1.1
 description : OpenBlaze8
 
 generate:
