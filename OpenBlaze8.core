@@ -269,7 +269,7 @@ filesets:
   # Source Files
   #---------------------------------------
   files_hdl:
-    files     :
+    files        :
       - hdl/OpenBlaze8_pkg.vhd
       - hdl/OpenBlaze8_ALU.vhd
       - hdl/OpenBlaze8_Clock.vhd
@@ -285,8 +285,9 @@ filesets:
       - hdl/OpenBlaze8_Result.vhd
       - hdl/OpenBlaze8_Stack.vhd
       - hdl/OpenBlaze8.vhd
-    file_type : vhdlSource
-    depend    :
+    file_type    : vhdlSource
+    logical_name : asylum
+    depend       :
       - ">=asylum:component:ram:1.0.0"
       - ">=asylum:component:stack:1.0.0"
       

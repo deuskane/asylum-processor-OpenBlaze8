@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2016-11-20
--- Last update: 2025-08-27
+-- Last update: 2025-09-07
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -25,9 +25,9 @@ use     ieee.numeric_std.all;
 use     ieee.std_logic_textio.all;
 use     std.textio.all;
 
-library work;
-use     work.math_pkg.all;
-use     work.OpenBlaze8_pkg.all;
+library asylum;
+use     asylum.math_pkg.all;
+use     asylum.OpenBlaze8_pkg.all;
 
 entity tb_OpenBlaze8 is
   

@@ -1,8 +1,8 @@
 library IEEE;
 use     IEEE.STD_LOGIC_1164.ALL;
 use     IEEE.NUMERIC_STD.ALL;
-library work;
-use     work.math_pkg.all;
+library asylum;
+use     asylum.math_pkg.all;
 
 package OpenBlaze8_pkg is
 -- [COMPONENT_INSERT][BEGIN]

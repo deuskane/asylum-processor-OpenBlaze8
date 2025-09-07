@@ -22,9 +22,9 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-library work;
-use work.math_pkg.all;
-use work.stack_pkg.all;
+library asylum;
+use asylum.math_pkg.all;
+use asylum.stack_pkg.all;
 
 entity OpenBlaze8_Stack is
   -- =====[ Parameters ]==========================
