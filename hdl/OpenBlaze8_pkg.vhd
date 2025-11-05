@@ -9,12 +9,13 @@ package OpenBlaze8_pkg is
 component OpenBlaze8 is
   -- =====[ Parameters ]==========================
   generic (
-     STACK_DEPTH     : natural := 32;
-     RAM_DEPTH       : natural := 64;
-     DATA_WIDTH      : natural := 8;
-     ADDR_INST_WIDTH : natural := 10;
-     REGFILE_DEPTH   : natural := 16;
-     MULTI_CYCLE     : natural := 1);
+     STACK_DEPTH       : natural := 32;
+     RAM_DEPTH         : natural := 64;
+     DATA_WIDTH        : natural := 8;
+     ADDR_INST_WIDTH   : natural := 10;
+     REGFILE_DEPTH     : natural := 16;
+     REGFILE_SYNC_READ : boolean := true;
+     MULTI_CYCLE       : natural := 1);
   -- =====[ Interfaces ]==========================
   port (
     clock_i           : in  std_logic;
@@ -425,7 +426,8 @@ component OpenBlaze8_RegFile is
   -- =====[ Parameters ]==========================
   generic (
      size_data      : natural := 8;
-     nb_reg         : natural := 16
+     nb_reg         : natural := 16;
+     SYNC_READ      : boolean := false
    );
   -- =====[ Interfaces ]==========================
   port (

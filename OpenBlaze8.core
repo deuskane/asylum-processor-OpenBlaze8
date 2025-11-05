@@ -17,9 +17,10 @@ CAPI=2:
 # 2021-11-03  1.0.1    mrosiere Use generator
 # 2021-11-16  1.1.0    mrosiere Delete Debug Bus
 # 2025-09-06  1.1.1    mrosiere Use package
+# 2025-11-05  1.2.0    mrosiere Add parameter for sync/async regfile
 #-----------------------------------------------------------------------------
 
-name : asylum:processor:OpenBlaze8:1.1.1
+name : asylum:processor:OpenBlaze8:1.2.0
 description : OpenBlaze8
 
 generate:

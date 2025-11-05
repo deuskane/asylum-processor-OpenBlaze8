@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2014-05-21
--- Last update: 2025-09-06
+-- Last update: 2025-11-05
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -17,6 +17,7 @@
 -- Revisions  :
 -- Date        Version  Author  Description
 -- 2014-05-21  1.0      mrosiere	Created
+-- 2025-11-05  1.1      mrosiere Add parameter for sync/async regfile
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -30,7 +31,8 @@ entity OpenBlaze8_RegFile is
   -- =====[ Parameters ]==========================
   generic (
      size_data      : natural := 8;
-     nb_reg         : natural := 16
+     nb_reg         : natural := 16;
+     SYNC_READ      : boolean := false
    );
   -- =====[ Interfaces ]==========================
   port (
@@ -62,8 +64,9 @@ begin  -- rtl
   -----------------------------------------------------------------------------
   RAMx : ram_1r1w
     generic map (
-      WIDTH => size_data
-     ,DEPTH => nb_reg
+      WIDTH     => size_data
+     ,DEPTH     => nb_reg
+     ,SYNC_READ => SYNC_READ 
       )
     port map(
       clk_i   => clock_i
@@ -79,8 +82,9 @@ begin  -- rtl
 
   RAMy : ram_1r1w
     generic map (
-      WIDTH => size_data
-     ,DEPTH => nb_reg
+      WIDTH     => size_data
+     ,DEPTH     => nb_reg
+     ,SYNC_READ => SYNC_READ
       )
     port map(
       clk_i   => clock_i

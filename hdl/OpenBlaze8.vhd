@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2014-03-21
--- Last update: 2025-09-06
+-- Last update: 2025-11-05
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -17,6 +17,7 @@
 -- Revisions  :
 -- Date        Version  Author  Description
 -- 2014-03-21  1.0      mrosiere	Created
+-- 2025-11-05  1.1      mrosiere Add parameter for sync/async regfile
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -29,12 +30,13 @@ use     asylum.OpenBlaze8_pkg.all;
 entity OpenBlaze8 is
   -- =====[ Parameters ]==========================
   generic (
-     STACK_DEPTH     : natural := 32;
-     RAM_DEPTH       : natural := 64;
-     DATA_WIDTH      : natural := 8;
-     ADDR_INST_WIDTH : natural := 10;
-     REGFILE_DEPTH   : natural := 16;
-     MULTI_CYCLE     : natural := 1);
+     STACK_DEPTH       : natural := 32;
+     RAM_DEPTH         : natural := 64;
+     DATA_WIDTH        : natural := 8;
+     ADDR_INST_WIDTH   : natural := 10;
+     REGFILE_DEPTH     : natural := 16;
+     REGFILE_SYNC_READ : boolean := true;
+     MULTI_CYCLE       : natural := 1);
   -- =====[ Interfaces ]==========================
   port (
     clock_i           : in  std_logic;
@@ -215,6 +217,7 @@ architecture rtl of OpenBlaze8 is
     generic map (
       size_data                   => DATA_WIDTH
      ,nb_reg                      => REGFILE_DEPTH
+     ,SYNC_READ                   => REGFILE_SYNC_READ 
      )
     port map(
       clock_i                     => clock_internal       
