@@ -3,6 +3,7 @@ use     IEEE.STD_LOGIC_1164.ALL;
 use     IEEE.NUMERIC_STD.ALL;
 library asylum;
 use     asylum.math_pkg.all;
+use     asylum.sbi_pkg.all;
 
 package OpenBlaze8_pkg is
 -- [COMPONENT_INSERT][BEGIN]
@@ -446,6 +447,36 @@ component OpenBlaze8_RAM is
     ram_write_data_i    : in  std_logic_vector(size_data downto 1)
     );
 end component OpenBlaze8_RAM;
+
+component sbi_OpenBlaze8 is
+  generic (
+     STACK_DEPTH       : natural := 32;
+     RAM_DEPTH         : natural := 64;
+     DATA_WIDTH        : natural := 8;
+     ADDR_INST_WIDTH   : natural := 10;
+     REGFILE_DEPTH     : natural := 16;
+     REGFILE_SYNC_READ : boolean := false;
+     MULTI_CYCLE       : natural := 1);
+  port   (
+    clk_i            : in    std_logic;
+    cke_i            : in    std_logic;
+    arstn_i          : in    std_logic; -- asynchronous reset
+
+    -- Instructions
+    ics_o            : out std_logic;
+    iaddr_o          : out std_logic_vector(ADDR_INST_WIDTH-1 downto 0);
+    idata_i          : in  std_logic_vector(18-1 downto 0);
+    
+    -- Bus
+    sbi_ini_o        : out   sbi_ini_t;
+    sbi_tgt_i        : in    sbi_tgt_t;
+
+    -- To/From IT Ctrl
+    interrupt_i      : in    std_logic;
+    interrupt_ack_o  : out   std_logic
+    );
+  
+end component sbi_OpenBlaze8;
 
 -- [COMPONENT_INSERT][END]
 
