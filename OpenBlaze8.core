@@ -19,9 +19,10 @@ CAPI=2:
 # 2025-09-06  1.1.1    mrosiere Use package
 # 2025-11-05  1.2.0    mrosiere Add parameter for sync/async regfile
 # 2025-11-22  1.3.0    mrosiere Add sbi wrapper
+# 2026-05-24  1.3.1    mrosiere Fix internal cke condition
 #-----------------------------------------------------------------------------
 
-name        : asylum:processor:OpenBlaze8:1.3.0
+name        : asylum:processor:OpenBlaze8:1.3.1
 description : OpenBlaze8
 
 generate:

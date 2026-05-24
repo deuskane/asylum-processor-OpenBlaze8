@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2025-11-22
+-- Last update: 2026-05-24
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -23,6 +23,7 @@
 -- 2025-04-14  1.4      mrosiere Add output ics_o
 -- 2025-05-08  1.5      mrosiere data cs depend of re and we
 -- 2025-11-05  1.6      mrosiere Add parameter for sync/async regfile
+-- 2026-05-24  1.7      mrosiere Fix internal cke condition
 -------------------------------------------------------------------------------
 
 library IEEE;
@@ -71,7 +72,7 @@ architecture rtl of sbi_OpenBlaze8 is
 begin  -- architecture rtl
 
   arst    <= not arstn_i;
-  cke     <= cke_i and sbi_tgt_i.ready;
+  cke     <= cke_i and (not sbi_ini_o.cs or sbi_tgt_i.ready);
   ics_o   <= cke;
   
   ins_OpenBlaze8 : OpenBlaze8
