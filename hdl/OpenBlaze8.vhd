@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2014-03-21
--- Last update: 2025-11-05
+-- Last update: 2026-06-14
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -35,8 +35,7 @@ entity OpenBlaze8 is
      DATA_WIDTH        : natural := 8;
      ADDR_INST_WIDTH   : natural := 10;
      REGFILE_DEPTH     : natural := 16;
-     REGFILE_SYNC_READ : boolean := true;
-     MULTI_CYCLE       : natural := 1);
+     REGFILE_SYNC_READ : boolean := true);
   -- =====[ Interfaces ]==========================
   port (
     clock_i           : in  std_logic;
@@ -138,9 +137,6 @@ architecture rtl of OpenBlaze8 is
     -- Instance
     -----------------------------------------------------------------------------
     ins_OpenBlaze8_Clock : OpenBlaze8_Clock
-    generic map (
-      multi_cycle                 => MULTI_CYCLE
-      )
     port map (
       clock_i                     => clock_i
      ,clock_enable_i              => clock_enable_i
