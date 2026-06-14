@@ -6,7 +6,7 @@
 -- Author     : Mathieu Rosiere
 -- Company    : 
 -- Created    : 2017-03-30
--- Last update: 2026-05-24
+-- Last update: 2026-06-14
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -41,8 +41,7 @@ entity sbi_OpenBlaze8 is
      DATA_WIDTH        : natural := 8;
      ADDR_INST_WIDTH   : natural := 10;
      REGFILE_DEPTH     : natural := 16;
-     REGFILE_SYNC_READ : boolean := false;
-     MULTI_CYCLE       : natural := 1);
+     REGFILE_SYNC_READ : boolean := false);
   port   (
     clk_i            : in    std_logic;
     cke_i            : in    std_logic;
@@ -82,8 +81,7 @@ begin  -- architecture rtl
      DATA_WIDTH        => DATA_WIDTH       ,
      ADDR_INST_WIDTH   => ADDR_INST_WIDTH  ,
      REGFILE_DEPTH     => REGFILE_DEPTH    ,
-     REGFILE_SYNC_READ => REGFILE_SYNC_READ,
-     MULTI_CYCLE       => MULTI_CYCLE    
+     REGFILE_SYNC_READ => REGFILE_SYNC_READ
      )
   port map(
     clock_i           => clk_i          ,

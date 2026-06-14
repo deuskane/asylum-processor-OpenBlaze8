@@ -15,8 +15,7 @@ component OpenBlaze8 is
      DATA_WIDTH        : natural := 8;
      ADDR_INST_WIDTH   : natural := 10;
      REGFILE_DEPTH     : natural := 16;
-     REGFILE_SYNC_READ : boolean := true;
-     MULTI_CYCLE       : natural := 1);
+     REGFILE_SYNC_READ : boolean := true);
   -- =====[ Interfaces ]==========================
   port (
     clock_i           : in  std_logic;
@@ -93,9 +92,6 @@ component OpenBlaze8_ALU is
 end component OpenBlaze8_ALU;
 
 component OpenBlaze8_Clock is
-  -- =====[ Parameters ]==========================
-  generic (
-     multi_cycle    : natural := 1);
   -- =====[ Interfaces ]==========================
   port (
     clock_i              : in  std_logic;
@@ -455,8 +451,7 @@ component sbi_OpenBlaze8 is
      DATA_WIDTH        : natural := 8;
      ADDR_INST_WIDTH   : natural := 10;
      REGFILE_DEPTH     : natural := 16;
-     REGFILE_SYNC_READ : boolean := false;
-     MULTI_CYCLE       : natural := 1);
+     REGFILE_SYNC_READ : boolean := false);
   port   (
     clk_i            : in    std_logic;
     cke_i            : in    std_logic;

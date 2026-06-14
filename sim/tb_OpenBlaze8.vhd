@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2016-11-20
--- Last update: 2025-09-07
+-- Last update: 2026-06-14
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -41,7 +41,6 @@ architecture tb of tb_OpenBlaze8 is
   constant DATA_WIDTH              : natural := 8;
   constant ADDR_INST_WIDTH         : natural := 10;
   constant REGFILE_DEPTH           : natural := 16;
-  constant MULTI_CYCLE             : natural := 1;
 
   constant TB_PERIOD               : time    := 10 ns;
   constant TB_DURATION             : natural := 10000;
@@ -136,7 +135,6 @@ begin  -- architecture tb
     ,DATA_WIDTH      => DATA_WIDTH     
     ,ADDR_INST_WIDTH => ADDR_INST_WIDTH
     ,REGFILE_DEPTH   => REGFILE_DEPTH  
-    ,MULTI_CYCLE     => MULTI_CYCLE    
     )
     port map
     (clock_i           => dut_clock_i        

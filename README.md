@@ -32,7 +32,6 @@ OpenBlaze8 is a configurable 8-bit microprocessor core design in VHDL targeting 
 - **Interrupt handling** with interrupt acknowledgment
 - **Configurable register file** (16 registers by default)
 - **Internal RAM** for data storage
-- **Multi-cycle operation** support for resource-constrained designs
 
 ### Key Features
 
@@ -71,7 +70,6 @@ The OpenBlaze8 entity is the top-level module that instantiates all sub-modules 
 | `ADDR_INST_WIDTH` | natural | 10 | Width of instruction address bus in bits |
 | `REGFILE_DEPTH` | natural | 16 | Number of general-purpose registers |
 | `REGFILE_SYNC_READ` | boolean | true | Enable synchronous (true) or asynchronous (false) register file reads |
-| `MULTI_CYCLE` | natural | 1 | Multi-cycle operation support (0-N cycles) |
 
 #### Ports
 
@@ -156,7 +154,6 @@ Manages clock distribution and cycle phase tracking for multi-cycle operations.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `multi_cycle` | natural | 1 | Multi-cycle mode configuration |
 
 #### Ports
 
@@ -237,7 +234,6 @@ Decodes the 18-bit instruction word into control signals.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `multi_cycle` | natural | 1 | Multi-cycle configuration |
 
 #### Ports
 
@@ -787,7 +783,6 @@ All major parameters are configurable via VHDL generics:
 - Memory sizes (stack, RAM, register file)
 - Instruction address width
 - Register file read mode (sync/async)
-- Multi-cycle operation support
 
 ### Instruction Set
 

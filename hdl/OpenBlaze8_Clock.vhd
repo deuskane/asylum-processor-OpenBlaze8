@@ -6,7 +6,7 @@
 -- Author     : mrosiere
 -- Company    : 
 -- Created    : 2014-03-22
--- Last update: 2025-07-09
+-- Last update: 2026-06-14
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -26,9 +26,6 @@ library asylum;
 use asylum.math_pkg.all;
 
 entity OpenBlaze8_Clock is
-  -- =====[ Parameters ]==========================
-  generic (
-     multi_cycle    : natural := 1);
   -- =====[ Interfaces ]==========================
   port (
     clock_i              : in  std_logic;
@@ -70,13 +67,7 @@ begin  -- rtl
   -----------------------------------------------------------------------------
   -- Clock divider
   -----------------------------------------------------------------------------
-  gen_div2: if multi_cycle = 0 generate
-    clock_o       <= not cycle_phase_r;
-  end generate gen_div2;
-
-  gen_div2_n: if multi_cycle /= 0 generate
-    clock_o       <= clock_i;
-  end generate gen_div2_n;
+  clock_o        <= clock_i;
 
   -- =====[ Transition ]==========================
   process (clock_i,reset_internal)
