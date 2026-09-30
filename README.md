@@ -1,3 +1,5 @@
+[![CI](https://github.com/deuskane/asylum-processor-OpenBlaze8/actions/workflows/ci.yml/badge.svg)](https://github.com/deuskane/asylum-processor-OpenBlaze8/actions/workflows/ci.yml)
+
 # OpenBlaze8 - 8-bit Microprocessor Core
 
 ## Table of Contents
