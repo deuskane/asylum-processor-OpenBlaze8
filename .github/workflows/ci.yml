@@ -7,8 +7,230 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  nonreg-sim:
-    # Call the workflow from CI repo
+#<GENERATE_BEGIN>
+  sim_asm_test_000_default:
     uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
     with:
-      nonreg_type: sim
+      name: sim_asm_test_000_default
+
+  sim_asm_test_001_test_ok:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_001_test_ok
+
+  sim_asm_test_002_jump:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_002_jump
+
+  sim_asm_test_003_jump:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_003_jump
+
+  sim_asm_test_004_comp:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_004_comp
+
+  sim_asm_test_005_comp:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_005_comp
+
+  sim_asm_test_006_and:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_006_and
+
+  sim_asm_test_007_or:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_007_or
+
+  sim_asm_test_008_xor:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_008_xor
+
+  sim_asm_test_009_andi:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_009_andi
+
+  sim_asm_test_010_ori:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_010_ori
+
+  sim_asm_test_011_xori:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_011_xori
+
+  sim_asm_test_012_add:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_012_add
+
+  sim_asm_test_013_addi:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_013_addi
+
+  sim_asm_test_014_sub:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_014_sub
+
+  sim_asm_test_015_subi:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_015_subi
+
+  sim_asm_test_016_comp:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_016_comp
+
+  sim_asm_test_017_compi:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_017_compi
+
+  sim_asm_test_018_rl:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_018_rl
+
+  sim_asm_test_019_rr:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_019_rr
+
+  sim_asm_test_020_sl0:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_020_sl0
+
+  sim_asm_test_021_sl1:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_021_sl1
+
+  sim_asm_test_022_sla:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_022_sla
+
+  sim_asm_test_023_slx:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_023_slx
+
+  sim_asm_test_024_sr:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_024_sr
+
+  sim_asm_test_025_call:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_025_call
+
+  sim_asm_test_026_call_ret:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_026_call_ret
+
+  sim_asm_test_027_call_ret:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_027_call_ret
+
+  sim_asm_test_028_call_ret_cond:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_028_call_ret_cond
+
+  sim_asm_test_029_fetch_store:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_029_fetch_store
+
+  sim_asm_test_030_fetch_store:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_030_fetch_store
+
+  sim_asm_test_031_fetch_store:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_031_fetch_store
+
+  sim_asm_test_032_stack_depth:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_032_stack_depth
+
+  sim_asm_test_033_mul:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_033_mul
+
+  sim_asm_test_034_div:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_034_div
+
+  sim_asm_test_035_test:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_035_test
+
+  sim_asm_test_036_test:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_036_test
+
+  sim_asm_test_037_in_out:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_037_in_out
+
+  sim_asm_test_038_in_out:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_038_in_out
+
+  sim_asm_test_039_eint_reti:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_039_eint_reti
+
+  sim_asm_test_040_eint_reti:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_040_eint_reti
+
+  sim_asm_test_041_eint_reti:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_asm_test_041_eint_reti
+
+  sim_c_test_uadd16:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_c_test_uadd16
+
+  sim_c_test_udiv16:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_c_test_udiv16
+
+  sim_c_test_umul16:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: sim_c_test_umul16
+
+#<GENERATE_END>
