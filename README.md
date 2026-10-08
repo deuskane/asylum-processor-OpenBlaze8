@@ -1,799 +1,481 @@
+<!--
+  README GENERATION INSTRUCTIONS (for the next regeneration run)
+  ----------------------------------------------------------------
+  This README follows the common Asylum IP model. Regenerate it from the
+  sources, never from the previous README text alone.
+
+  Sources of truth (in priority order):
+    1. hdl/*.vhd            : entities, generics, ports, packages
+    2. hdl/csr/*.hjson      : register map (regtool); *_csr.md/.h are generated
+    3. <IP>.core            : VLNV (name), filesets, targets, depends, revisions
+    4. mk/targets.txt       : target list shown by `make help`; mk/defs.mk
+    5. sim/, syn/, esw/, boards/ : testbenches, constraints, software
+  Section order (keep it, same headings in every IP):
+    CI badge / Title + one-line description + VLNV / Table of Contents /
+    Introduction (Key Features) / Block Diagram / Top-Level (Parameters,
+    Ports, Instantiation Example) / HDL Modules / Register Map /
+    Verification / Synthesis / Design Notes (optional) /
+    Directory Structure / Dependencies
+  Rules:
+    - Language: English. Tables: Parameters = Name|Type|Default|Description,
+      Ports = Name|Direction|Type|Description (grouped by interface).
+    - Register Map: link to the generated hdl/csr/<X>_csr.md (plus the
+      .hjson source and _csr.h header); never copy register tables here.
+    - Top-Level = sbi_* wrapper if present, else the entity used by the
+      `default` target, else the main entity (libraries: list packages).
+    - Write "This IP has no software-visible registers." / "No dedicated
+      synthesis target ..." instead of removing a section.
+    - Keep still-accurate hand-written content (ISA tables, results,
+      images) in "Design Notes"; drop anything not backed by the sources.
+    - Block diagram: doc/<NAME>.drawio (NAME = 4th field of the VLNV),
+      top entity box with generics on top, inputs left, outputs right,
+      bus interfaces as bold arrows, internal blocks colour-coded
+      (CSR yellow, FIFO/memory green, core logic blue, external grey).
+      Update it whenever ports/generics/sub-blocks change.
+    - Do not edit generated files (hdl/csr/*_csr.*) or the CI badge URL.
+-->
 [![CI](https://github.com/deuskane/asylum-processor-OpenBlaze8/actions/workflows/ci.yml/badge.svg)](https://github.com/deuskane/asylum-processor-OpenBlaze8/actions/workflows/ci.yml)
 
-# OpenBlaze8 - 8-bit Microprocessor Core
+# asylum-processor-OpenBlaze8
+
+**8-bit soft processor, cycle-accurate clone of the Xilinx PicoBlaze-3 (KCPSM3), written in portable RTL with an SBI bus wrapper.**
+
+VLNV: `asylum:processor:OpenBlaze8:1.3.2`
 
 ## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Module Documentation](#module-documentation)
-   - [Top-Level Module (OpenBlaze8)](#top-level-module-openblaze8)
-   - [ALU Module](#alu-module)
-   - [Clock Module](#clock-module)
-   - [Control Module](#control-module)
-   - [Decode Module](#decode-module)
-   - [Flags Module](#flags-module)
-   - [Interrupt Module](#interrupt-module)
-   - [Load/Store Module](#loadstore-module)
-   - [Operand Module](#operand-module)
-   - [Program Counter Module](#program-counter-module)
-   - [RegFile Module](#regfile-module)
-   - [Result Module](#result-module)
-   - [Stack Module](#stack-module)
-   - [RAM Module](#ram-module)
-3. [Verification](#verification)
-4. [Build and Simulation](#build-and-simulation)
-
----
+2. [Block Diagram](#block-diagram)
+3. [Top-Level](#top-level)
+4. [HDL Modules](#hdl-modules)
+5. [Register Map](#register-map)
+6. [Verification](#verification)
+7. [Synthesis](#synthesis)
+8. [Design Notes](#design-notes)
+9. [Directory Structure](#directory-structure)
+10. [Dependencies](#dependencies)
 
 ## Introduction
 
-OpenBlaze8 is a configurable 8-bit microprocessor core design in VHDL targeting embedded systems and FPGA implementations. The core implements a PicoBlaze-like architecture with support for:
+OpenBlaze8 re-implements the KCPSM3 (PicoBlaze-3) micro-controller of Xilinx without any vendor primitive: it executes the same 18-bit instruction set with the same timing (two clock cycles per instruction) and the same port / interrupt behaviour, so programs written for KCPSM3 (`.psm`, kcpsm3 or pBlazIDE syntax) or compiled with the PicoBlaze port of SDCC run unchanged. The core is split into small modules (decode, control, ALU, register file, stack, scratch-pad RAM...) and its memories use the generic `asylum:component:ram` / `asylum:component:stack` cores.
 
-- **8-bit data operations** with configurable data width
-- **Stack-based architecture** for function calls and returns
-- **Interrupt handling** with interrupt acknowledgment
-- **Configurable register file** (16 registers by default)
-- **Internal RAM** for data storage
+The `sbi_OpenBlaze8` wrapper maps the PicoBlaze IO port interface onto the Asylum SBI bus (`port_id` = address, `out_port` = write data, `in_port` = read data) and stalls the core while the addressed target is not ready. It is the OpenBlaze8 CPU option of the PicoSoC (`cpu_wrapper`, `CPU_MODEL = "OpenBlaze8"`).
 
 ### Key Features
 
-- **Modular Design**: Clear separation of concerns with dedicated modules for ALU, control, decoding, and memory management
-- **Configurable Parameters**: Stack depth, RAM depth, register file size, and instruction address width are all configurable
-- **Synchronous/Asynchronous Register File**: Support for both synchronous and asynchronous reads
-- **Flag Management**: Carry and Zero flags with interrupt context save/restore
-- **I/O Subsystem**: Read and write strobes for external I/O communication
+- PicoBlaze-3 compatible instruction set: LOAD, logic, arithmetic with carry, COMPARE / TEST, 10 shift / rotate operations, INPUT / OUTPUT, FETCH / STORE, JUMP / CALL / RETURN (conditional on Z / NZ / C / NC), RETURNI, ENABLE / DISABLE INTERRUPT
+- Two clock cycles per instruction, global clock enable (`clock_enable_i` / `cke_i`)
+- Configurable register file depth (`REGFILE_DEPTH`, 16 by default) with synchronous or asynchronous read (`REGFILE_SYNC_READ`)
+- Configurable scratch-pad RAM (`RAM_DEPTH`, 64 bytes by default) and CALL/RETURN stack (`STACK_DEPTH`, 32 by default, oldest entry overwritten on overflow)
+- ZERO and CARRY flags, saved on interrupt entry and restored by RETURNI
+- One interrupt input, vector at the last program address (all ones), `interrupt_ack` output
+- 256 IO ports, mapped on the SBI bus by `sbi_OpenBlaze8` (8-bit address, 8-bit data, wait states through `sbi_tgt_i.ready`)
+- Verified in lock-step against the original Xilinx `kcpsm3` netlist with 42 assembler and 3 C test programs
 
-### Design Philosophy
+## Block Diagram
 
-The architecture follows a classic 5-stage pipeline approach with clear module boundaries:
-1. **Clock Module** - Clock distribution and timing control
-2. **Program Counter** - Instruction address generation
-3. **Decode** - Instruction decoding
-4. **Control** - Sequencing and control signal generation
-5. **Execution** - ALU, memory access, and result management
+Diagram: [doc/OpenBlaze8.drawio](doc/OpenBlaze8.drawio) (open with diagrams.net or the VS Code Draw.io extension).
 
----
+- `sbi_OpenBlaze8` inverts `arstn_i` into the core reset, gates the core clock enable with the SBI handshake (`cke = cke_i and (not cs or ready)`) and outputs it as `ics_o` (instruction fetch enable).
+- `OpenBlaze8_Decode` splits the instruction into opcodes, register numbers and the 10-bit immediate; `OpenBlaze8_Control` decodes the opcode into the enables of every other block, phased by `OpenBlaze8_Clock` (`cycle_phase`).
+- `OpenBlaze8_Program_Counter` selects PC+1, the jump / call target, the stack top (+1 for RETURN, as-is for RETURNI) or the interrupt vector; `OpenBlaze8_Stack` holds the return addresses.
+- `OpenBlaze8_RegFile` provides `sX` / `sY`, `OpenBlaze8_Operand` selects `sY` or the constant `kk`, `OpenBlaze8_ALU` computes the result and the next C / Z flags stored in `OpenBlaze8_Flags`.
+- `OpenBlaze8_Result` writes back the ALU result, the scratch-pad data (`OpenBlaze8_RAM`, FETCH) or the input port (`OpenBlaze8_LoadStore`, INPUT) into `sX`. `OpenBlaze8_Interrupt` masks, samples and acknowledges `interrupt_i`.
 
-## Module Documentation
+## Top-Level
 
-### Top-Level Module (OpenBlaze8)
+Top-level entity: **`sbi_OpenBlaze8`** ([hdl/sbi_OpenBlaze8.vhd](hdl/sbi_OpenBlaze8.vhd)), library `asylum`, component declared in `asylum.OpenBlaze8_pkg`. The `default` target of the core uses the bare core `OpenBlaze8` as toplevel (see [HDL Modules](#hdl-modules)).
 
-The OpenBlaze8 entity is the top-level module that instantiates all sub-modules and manages their interconnections.
+### Parameters
 
-**File**: `hdl/OpenBlaze8.vhd`
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `STACK_DEPTH` | natural | `32` | Number of entries of the CALL/RETURN stack |
+| `RAM_DEPTH` | natural | `64` | Size of the scratch-pad RAM in bytes (FETCH / STORE) |
+| `DATA_WIDTH` | natural | `8` | Data path width (the ALU shift logic and the instruction format assume 8) |
+| `ADDR_INST_WIDTH` | natural | `10` | Program address width (at most 10, the immediate field width) |
+| `REGFILE_DEPTH` | natural | `16` | Number of registers (at most 16, 4-bit register fields) |
+| `REGFILE_SYNC_READ` | boolean | `false` | Register file read mode: `true` synchronous, `false` asynchronous (note: the default of the bare `OpenBlaze8` is `true`) |
 
-#### Generics
+### Ports
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `STACK_DEPTH` | natural | 32 | Depth of the call stack for function calls and returns |
-| `RAM_DEPTH` | natural | 64 | Size of the internal RAM in bytes |
-| `DATA_WIDTH` | natural | 8 | Width of data operands in bits |
-| `ADDR_INST_WIDTH` | natural | 10 | Width of instruction address bus in bits |
-| `REGFILE_DEPTH` | natural | 16 | Number of general-purpose registers |
-| `REGFILE_SYNC_READ` | boolean | true | Enable synchronous (true) or asynchronous (false) register file reads |
+#### Clock & Reset
 
-#### Ports
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `clk_i` | in | std_logic | Clock |
+| `cke_i` | in | std_logic | Clock enable |
+| `arstn_i` | in | std_logic | Reset, active low (inverted and used as the core `reset_i`) |
 
-| Port Name | Direction | Width | Description |
-|-----------|-----------|-------|-------------|
-| `clock_i` | in | 1 | System clock |
-| `clock_enable_i` | in | 1 | Clock enable signal for gated clocking |
-| `reset_i` | in | 1 | Synchronous active-high reset |
-| `address_o` | out | ADDR_INST_WIDTH | Instruction address for ROM |
-| `instruction_i` | in | 18 | Instruction word from ROM |
-| `port_id_o` | out | DATA_WIDTH | I/O port identifier for reads/writes |
-| `in_port_i` | in | DATA_WIDTH | Input data from external ports |
-| `out_port_o` | out | DATA_WIDTH | Output data to external ports |
-| `read_strobe_o` | out | 1 | Read strobe for I/O operations |
-| `write_strobe_o` | out | 1 | Write strobe for I/O operations |
-| `interrupt_i` | in | 1 | External interrupt request signal |
-| `interrupt_ack_o` | out | 1 | Interrupt acknowledgment signal |
+#### Instruction
 
-#### Functionality
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `ics_o` | out | std_logic | Instruction memory enable (internal clock enable, low while the SBI access is stalled) |
+| `iaddr_o` | out | std_logic_vector(ADDR_INST_WIDTH-1 downto 0) | Program counter (instruction address) |
+| `idata_i` | in | std_logic_vector(17 downto 0) | Instruction |
 
-The top-level module:
-- Coordinates all submodules through internal signal routing
-- Manages instruction fetching and execution
-- Handles external I/O communication
-- Processes interrupt requests and saves/restores processor state
-- Implements the main instruction pipeline
+#### Bus (SBI)
 
----
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `sbi_ini_o` | out | sbi_ini_t | SBI request: `cs` = `re` or `we`, `re` = READ_STROBE, `we` = WRITE_STROBE, `addr` = PORT_ID, `wdata` = OUT_PORT (both `DATA_WIDTH` bits) |
+| `sbi_tgt_i` | in | sbi_tgt_t | SBI response: `rdata` = IN_PORT, `ready` (core stalled while `cs = 1` and `ready = 0`) |
 
-### ALU Module
+#### Interrupts
 
-The Arithmetic and Logic Unit performs all arithmetic, logical, and shift operations.
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `interrupt_i` | in | std_logic | Interrupt request (level, sampled when interrupts are enabled) |
+| `interrupt_ack_o` | out | std_logic | Interrupt acknowledge (one cycle) |
 
-**File**: `hdl/OpenBlaze8_ALU.vhd`
+### Instantiation Example
 
-#### Generics
+```vhdl
+library asylum;
+use     asylum.sbi_pkg.all;
+use     asylum.OpenBlaze8_pkg.all;
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `size_data` | natural | 8 | Width of data operands |
-
-#### Ports
-
-| Port Name | Direction | Width | Description |
-|-----------|-----------|-------|-------------|
-| `clock_i` | in | 1 | System clock |
-| `clock_enable_i` | in | 1 | Clock enable signal |
-| `reset_i` | in | 1 | Synchronous reset |
-| `alu_op_arith_cy_i` | in | 1 | High for ADDCY/SUBCY instructions |
-| `alu_op_arith_i` | in | 1 | Arithmetic operation type (0=Add, 1=Sub) |
-| `alu_op_logic_i` | in | 2 | Logic operation select (AND, OR, XOR) |
-| `alu_op_rotate_shift_right_i` | in | 1 | Direction of rotate/shift (1=right) |
-| `alu_op_rotate_shift_i` | in | 2 | Rotate/shift source of inserted bits |
-| `alu_op_rotate_shift_cst_i` | in | 1 | Rotate/shift insert constant value |
-| `alu_op_type_i` | in | 2 | Operation type (00=Load, 01=Rotate/Shift, 10=Logic, 11=Arith) |
-| `alu_op_flag_c_i` | in | 2 | Carry flag operation mode |
-| `alu_op1_i` | in | size_data | First operand |
-| `alu_op2_i` | in | size_data | Second operand |
-| `flag_c_i` | in | 1 | Carry flag input |
-| `flag_z_i` | in | 1 | Zero flag input |
-| `alu_res_o` | out | size_data | ALU result |
-| `flag_c_o` | out | 1 | Carry flag output |
-| `flag_z_o` | out | 1 | Zero flag output |
-
-#### Functionality
-
-Implements:
-- **Arithmetic Operations**: ADD, ADDC, SUB, SUBC with carry propagation
-- **Logical Operations**: AND, OR, XOR
-- **Rotate/Shift Operations**: Rotate Left (RL), Rotate Right (RR), Shift operations with multiple insertion modes
-- **Flag Updates**: Updates carry and zero flags based on result
-
----
-
-### Clock Module
-
-Manages clock distribution and cycle phase tracking for multi-cycle operations.
-
-**File**: `hdl/OpenBlaze8_Clock.vhd`
-
-#### Generics
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-
-#### Ports
-
-| Port Name | Direction | Width | Description |
-|-----------|-----------|-------|-------------|
-| `clock_i` | in | 1 | Input system clock |
-| `clock_enable_i` | in | 1 | Clock enable input |
-| `reset_i` | in | 1 | Synchronous reset |
-| `reset_o` | out | 1 | Internal reset output |
-| `clock_o` | out | 1 | Output clock signal |
-| `cycle_phase_o` | out | 1 | Cycle phase indicator (0=first, 1=second) |
-
-#### Functionality
-
-- Distributes clock to all modules
-- Generates cycle phase signal for multi-cycle operations
-- Provides synchronous reset distribution
-- Supports clock division for reduced frequency operation
-
----
-
-### Control Module
-
-Generates control signals for ALU, register file, and program counter based on decoded instructions.
-
-**File**: `hdl/OpenBlaze8_Control.vhd`
-
-#### Generics
-
-None
-
-#### Ports (Selected Important Ports)
-
-| Port Name | Direction | Width | Description |
-|-----------|-----------|-------|-------------|
-| `clock_i` | in | 1 | System clock |
-| `clock_enable_i` | in | 1 | Clock enable |
-| `reset_i` | in | 1 | Synchronous reset |
-| `cycle_phase_i` | in | 1 | Cycle phase from Clock module |
-| `decode_opcode1_i` | in | 5 | Instruction type opcode |
-| `decode_opcode2_i` | in | 4 | Instruction operation opcode |
-| `decode_operand_mux_i` | in | 1 | Select immediate or register operand |
-| `decode_branch_cond_i` | in | 3 | Branch condition flags to evaluate |
-| `decode_inhib_o` | out | 1 | Inhibit instruction during interrupt |
-| `pc_write_en_o` | out | 1 | Program counter write enable |
-| `pc_next_mux_o` | out | 3 | Program counter source select |
-| `stack_push_val_o` | out | 1 | Stack push enable |
-| `stack_pop_ack_o` | out | 1 | Stack pop acknowledge |
-| `regx_read_en_o` | out | 1 | Register X read enable |
-| `regx_write_en_o` | out | 1 | Register X write enable |
-| `regy_read_en_o` | out | 1 | Register Y read enable |
-| `alu_op_arith_cy_o` | out | 1 | Arithmetic with carry signal |
-| `alu_op_arith_o` | out | 1 | Arithmetic operation select |
-| `alu_op_logic_o` | out | 2 | Logic operation select |
-| `alu_op_type_o` | out | 2 | ALU operation type |
-| `flag_write_c_o` | out | 1 | Carry flag write enable |
-| `flag_write_z_o` | out | 1 | Zero flag write enable |
-
-#### Functionality
-
-Decodes instruction types and generates appropriate control signals:
-- ALU control signals for arithmetic, logic, and shift operations
-- Register file access control
-- Program counter selection for branches, calls, and returns
-- Stack control for function calls
-- Flag update controls
-- Interrupt inhibition during critical operations
-
----
-
-### Decode Module
-
-Decodes the 18-bit instruction word into control signals.
-
-**File**: `hdl/OpenBlaze8_Decode.vhd`
-
-#### Generics
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-
-#### Ports
-
-| Port Name | Direction | Width | Description |
-|-----------|-----------|-------|-------------|
-| `clock_i` | in | 1 | System clock |
-| `clock_enable_i` | in | 1 | Clock enable |
-| `reset_i` | in | 1 | Synchronous reset |
-| `instruction_i` | in | 18 | Instruction word from ROM |
-| `decode_opcode1_o` | out | 5 | Primary opcode |
-| `decode_opcode2_o` | out | 4 | Secondary opcode |
-| `decode_operand_mux_o` | out | 1 | Operand select (0=imm, 1=reg) |
-| `decode_branch_cond_o` | out | 3 | Branch condition select |
-| `decode_num_regx_o` | out | 4 | Register X address |
-| `decode_num_regy_o` | out | 4 | Register Y address |
-| `decode_imm_o` | out | 10 | 10-bit immediate value |
-| `decode_inhib_i` | in | 1 | Inhibit signal from control |
-
-#### Instruction Format
-
-The 18-bit instruction is formatted as:
-```
-[17:14] - opcode1 (Primary instruction type)
-[13]    - operand_mux or branch_cond[2]
-[12:9]  - Register X address
-[8:5]   - Register Y address
-[4:1]   - opcode2 (Secondary instruction type)
-[10:1]  - 10-bit immediate value
+  ins_cpu : entity asylum.sbi_OpenBlaze8
+    generic map
+    ( STACK_DEPTH       => 32
+     ,RAM_DEPTH         => 256
+     ,DATA_WIDTH        => 8
+     ,ADDR_INST_WIDTH   => 10
+     ,REGFILE_DEPTH     => 16
+     ,REGFILE_SYNC_READ => true
+    )
+    port map
+    ( clk_i           => clk
+     ,cke_i           => '1'
+     ,arstn_i         => arst_b
+     ,ics_o           => inst_cs
+     ,iaddr_o         => inst_addr        -- (9 downto 0)
+     ,idata_i         => inst_data        -- (17 downto 0)
+     ,sbi_ini_o       => sbi_ini          -- sbi_ini_t(addr(7 downto 0), wdata(7 downto 0))
+     ,sbi_tgt_i       => sbi_tgt          -- sbi_tgt_t(rdata(7 downto 0))
+     ,interrupt_i     => it
+     ,interrupt_ack_o => it_ack
+    );
 ```
 
-#### Functionality
-
-- Extracts opcode fields from instruction word
-- Identifies register operands
-- Extracts immediate values for immediate mode operations
-- Detects branch conditions
-- Modifies decoded instruction during interrupt (nop behavior)
-
----
-
-### Flags Module
-
-Manages processor flags (Carry and Zero) with context saving for interrupt handling.
-
-**File**: `hdl/OpenBlaze8_Flags.vhd`
-
-#### Generics
-
-None
-
-#### Ports
-
-| Port Name | Direction | Width | Description |
-|-----------|-----------|-------|-------------|
-| `clock_i` | in | 1 | System clock |
-| `clock_enable_i` | in | 1 | Clock enable |
-| `reset_i` | in | 1 | Synchronous reset |
-| `flag_c_o` | out | 1 | Carry flag output |
-| `flag_z_o` | out | 1 | Zero flag output |
-| `flag_c_i` | in | 1 | Carry flag input (from ALU) |
-| `flag_z_i` | in | 1 | Zero flag input (from ALU) |
-| `flag_write_c_i` | in | 1 | Write carry flag enable |
-| `flag_write_z_i` | in | 1 | Write zero flag enable |
-| `flag_save_i` | in | 1 | Save flags on interrupt |
-| `flag_restore_i` | in | 1 | Restore flags on RETI |
-
-#### Functionality
-
-- Maintains two flags: Carry (C) and Zero (Z)
-- Updates flags from ALU results when enabled
-- Saves flag state on interrupt entry
-- Restores flag state on interrupt return (RETI)
-- Provides flags to control unit for conditional branching
-
----
-
-### Interrupt Module
-
-Handles external interrupt requests and masking.
-
-**File**: `hdl/OpenBlaze8_Interrupt.vhd`
-
-#### Generics
-
-None
-
-#### Ports
-
-| Port Name | Direction | Width | Description |
-|-----------|-----------|-------|-------------|
-| `clock_i` | in | 1 | System clock |
-| `clock_enable_i` | in | 1 | Clock enable |
-| `reset_i` | in | 1 | Synchronous reset |
-| `cycle_phase_i` | in | 1 | Cycle phase input |
-| `interrupt_enable_i` | in | 1 | Enable interrupt (EINT) |
-| `interrupt_disable_i` | in | 1 | Disable interrupt (DINT) |
-| `it_en_o` | out | 1 | Interrupt pending output |
-| `interrupt_i` | in | 1 | External interrupt input |
-| `interrupt_ack_o` | out | 1 | Interrupt acknowledgment output |
-
-#### Functionality
-
-- Captures external interrupt signals
-- Maintains interrupt enable mask (EINT/DINT instructions)
-- Generates interrupt pending signal when interrupt is detected and enabled
-- Provides interrupt acknowledgment signal
-- Synchronizes interrupt with cycle phase
-
----
-
-### Load/Store Module
-
-Handles I/O read and write operations.
-
-**File**: `hdl/OpenBlaze8_LoadStore.vhd`
-
-#### Generics
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `size_data` | natural | 8 | Width of data operands |
-
-#### Ports
-
-| Port Name | Direction | Width | Description |
-|-----------|-----------|-------|-------------|
-| `clock_i` | in | 1 | System clock |
-| `clock_enable_i` | in | 1 | Clock enable |
-| `reset_i` | in | 1 | Synchronous reset |
-| `io_access_en_i` | in | 1 | I/O access enable |
-| `io_read_en_i` | in | 1 | I/O read strobe |
-| `io_write_en_i` | in | 1 | I/O write strobe |
-| `io_addr_i` | in | size_data | I/O port address |
-| `io_data_read_o` | out | size_data | I/O data read output |
-| `io_data_write_i` | in | size_data | I/O data to write |
-| `port_id_o` | out | size_data | Port ID to external interface |
-| `in_port_i` | in | size_data | Input port data from external interface |
-| `out_port_o` | out | size_data | Output port data to external interface |
-| `read_strobe_o` | out | 1 | Read strobe to external interface |
-| `write_strobe_o` | out | 1 | Write strobe to external interface |
-
-#### Functionality
-
-- Passes through I/O port IDs and data
-- Generates read and write strobes for external peripherals
-- Routes input data from external ports to result path
-- Routes output data to external ports
-
----
-
-### Operand Module
-
-Selects between immediate and register operands for ALU operations.
-
-**File**: `hdl/OpenBlaze8_Operand.vhd`
-
-#### Generics
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `size_data` | natural | 8 | Width of operands |
-
-#### Ports
-
-| Port Name | Direction | Width | Description |
-|-----------|-----------|-------|-------------|
-| `clock_i` | in | 1 | System clock |
-| `clock_enable_i` | in | 1 | Clock enable |
-| `reset_i` | in | 1 | Synchronous reset |
-| `decode_operand_mux_i` | in | 1 | Operand select (0=reg, 1=imm) |
-| `decode_imm_i` | in | size_data | Immediate value |
-| `reg_op1_i` | in | size_data | Register operand 1 |
-| `reg_op2_i` | in | size_data | Register operand 2 |
-| `operand_op1_o` | out | size_data | ALU operand 1 |
-| `operand_op2_o` | out | size_data | ALU operand 2 |
-
-#### Functionality
-
-- Always passes register operand 1 to ALU
-- Multiplexes register operand 2 or immediate value to ALU operand 2
-- Implements immediate mode encoding with proper bit widths
-
----
-
-### Program Counter Module
-
-Manages instruction address generation and control flow.
-
-**File**: `hdl/OpenBlaze8_Program_Counter.vhd`
-
-#### Generics
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `size_addr_inst` | natural | 10 | Width of instruction address |
-
-#### Ports
-
-| Port Name | Direction | Width | Description |
-|-----------|-----------|-------|-------------|
-| `clock_i` | in | 1 | System clock |
-| `clock_enable_i` | in | 1 | Clock enable |
-| `reset_i` | in | 1 | Synchronous reset |
-| `pc_write_en_i` | in | 1 | Program counter write enable |
-| `pc_next_mux_i` | in | 3 | PC source select |
-| `decode_address_i` | in | size_addr_inst | Jump/call target address |
-| `stack_push_data_o` | out | size_addr_inst | PC value for stack push |
-| `stack_pop_data_i` | in | size_addr_inst | Return address from stack |
-| `inst_address_o` | out | size_addr_inst | Current instruction address |
-
-#### PC Source Selection (pc_next_mux_i)
-
-| Value | Function |
-|-------|----------|
-| 001 | PC + 1 (normal sequence) |
-| 010 | Stack return (RETI) |
-| 011 | Stack return (RET) |
-| 100 | Jump/Call target (from decode_address_i) |
-| 110 | Interrupt service routine entry (all 1s) |
-
-#### Functionality
-
-- Maintains program counter register
-- Provides instruction address to ROM
-- Implements branch/jump/call/return address selection
-- Supports interrupt vector at maximum address
-- Increments PC for sequential execution
-
----
-
-### RegFile Module
-
-Register file with dual-read, single-write architecture.
-
-**File**: `hdl/OpenBlaze8_RegFile.vhd`
-
-#### Generics
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `size_data` | natural | 8 | Width of register data |
-| `nb_reg` | natural | 16 | Number of registers |
-| `SYNC_READ` | boolean | false | Synchronous (true) vs asynchronous (false) reads |
-
-#### Ports
-
-| Port Name | Direction | Width | Description |
-|-----------|-----------|-------|-------------|
-| `clock_i` | in | 1 | System clock |
-| `clock_enable_i` | in | 1 | Clock enable |
-| `reset_i` | in | 1 | Synchronous reset |
-| `regx_read_en_i` | in | 1 | Register X read enable |
-| `regx_write_en_i` | in | 1 | Register X write enable |
-| `regx_addr_i` | in | log2(nb_reg) | Register X address |
-| `regx_data_i` | in | size_data | Register X write data |
-| `regx_data_o` | out | size_data | Register X read data |
-| `regy_read_en_i` | in | 1 | Register Y read enable |
-| `regy_addr_i` | in | log2(nb_reg) | Register Y address |
-| `regy_data_o` | out | size_data | Register Y read data |
-
-#### Functionality
-
-- Implements dual-read single-write register file
-- Two independent read ports (X and Y)
-- Single write port targeting register X
-- Configurable synchronous or asynchronous reads
-- Built using RAM primitives from asylum library
-
----
-
-### Result Module
-
-Multiplexes result sources (ALU, RAM, or I/O) for register writeback.
-
-**File**: `hdl/OpenBlaze8_Result.vhd`
-
-#### Generics
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `size_data` | natural | 8 | Width of result data |
-
-#### Ports
-
-| Port Name | Direction | Width | Description |
-|-----------|-----------|-------|-------------|
-| `clock_i` | in | 1 | System clock |
-| `clock_enable_i` | in | 1 | Clock enable |
-| `reset_i` | in | 1 | Synchronous reset |
-| `result_mux_i` | in | 2 | Result source select |
-| `alu_res_i` | in | size_data | ALU result |
-| `ram_fetch_data_i` | in | size_data | RAM read data |
-| `io_input_data_i` | in | size_data | I/O input data |
-| `res_o` | out | size_data | Final result output |
-
-#### Result Multiplexing
-
-| result_mux_i[2] | result_mux_i[1] | Source |
-|-----------------|-----------------|--------|
-| 0 | 0 | I/O Input Data |
-| 0 | 1 | RAM Data |
-| 1 | X | ALU Result |
-
-#### Functionality
-
-- Selects result from ALU, RAM, or I/O
-- Drives the selected result to register file writeback
-- Enables different instruction types (arithmetic, memory, I/O) in same pipeline
-
----
-
-### Stack Module
-
-Call stack for function returns and interrupt handling.
-
-**File**: `hdl/OpenBlaze8_Stack.vhd`
-
-#### Generics
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `size_stack` | natural | 32 | Stack depth (number of entries) |
-| `size_addr_inst` | natural | 10 | Width of instruction addresses |
-
-#### Ports
-
-| Port Name | Direction | Width | Description |
-|-----------|-----------|-------|-------------|
-| `clock_i` | in | 1 | System clock |
-| `clock_enable_i` | in | 1 | Clock enable |
-| `reset_i` | in | 1 | Synchronous reset |
-| `stack_push_val_i` | in | 1 | Push request (valid) |
-| `stack_push_data_i` | in | size_addr_inst | Data to push |
-| `stack_pop_ack_i` | in | 1 | Pop acknowledge request |
-| `stack_pop_data_o` | out | size_addr_inst | Popped data |
-
-#### Functionality
-
-- Manages call stack for CALL/RET instructions
-- Saves return addresses on function calls
-- Restores return addresses on function returns
-- Uses LIFO (Last-In-First-Out) discipline
-- Based on asylum library stack primitive
-- Configurable depth for different application requirements
-- Overflow behavior: overwrites oldest entries (OVERWRITE=1)
-
----
-
-### RAM Module
-
-Internal data RAM for variable storage.
-
-**File**: `hdl/OpenBlaze8_RAM.vhd`
-
-#### Generics
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `size_data` | natural | 8 | Width of data words |
-| `size_ram` | natural | 64 | Size of RAM in bytes |
-
-#### Ports
-
-| Port Name | Direction | Width | Description |
-|-----------|-----------|-------|-------------|
-| `clock_i` | in | 1 | System clock |
-| `clock_enable_i` | in | 1 | Clock enable |
-| `reset_i` | in | 1 | Synchronous reset |
-| `ram_read_en_i` | in | 1 | Read enable |
-| `ram_write_en_i` | in | 1 | Write enable |
-| `ram_addr_i` | in | log2(size_ram) | Read/write address |
-| `ram_read_data_o` | out | size_data | Read data output |
-| `ram_write_data_i` | in | size_data | Write data input |
-
-#### Functionality
-
-- Single-port RAM with simultaneous read-write capability
-- Asynchronous read operations
-- Synchronous write operations
-- Supports FETCH and STORE instructions
-- Built using asylum library RAM primitives
-
----
+The program ROM is generated from a `.psm` or `.c` file by the `pbcc_gen` generator of `asylum:utils:generators` (default entity `OpenBlaze8_ROM`, ports `clk_i`, `cke_i`, `address_i`, `instruction_o`).
+
+## HDL Modules
+
+| File | Unit | Kind | Role |
+|------|------|------|------|
+| [hdl/OpenBlaze8_pkg.vhd](hdl/OpenBlaze8_pkg.vhd) | `OpenBlaze8_pkg` | package | Component declarations of all OpenBlaze8 entities and of `sbi_OpenBlaze8` |
+| [hdl/OpenBlaze8.vhd](hdl/OpenBlaze8.vhd) | `OpenBlaze8` | entity | Processor core (KCPSM3 compatible interface), toplevel of the `default` target |
+| [hdl/sbi_OpenBlaze8.vhd](hdl/sbi_OpenBlaze8.vhd) | `sbi_OpenBlaze8` | entity | Top-level: SBI wrapper around `OpenBlaze8` |
+| [hdl/OpenBlaze8_Clock.vhd](hdl/OpenBlaze8_Clock.vhd) | `OpenBlaze8_Clock` | entity | Cycle phase toggle, clock / reset pass-through |
+| [hdl/OpenBlaze8_Decode.vhd](hdl/OpenBlaze8_Decode.vhd) | `OpenBlaze8_Decode` | entity | Instruction field extraction, instruction replaced by `LOAD sX, sX` on interrupt |
+| [hdl/OpenBlaze8_Control.vhd](hdl/OpenBlaze8_Control.vhd) | `OpenBlaze8_Control` | entity | Opcode decoder: PC / stack / register / ALU / flags / IO / RAM / interrupt controls |
+| [hdl/OpenBlaze8_Program_Counter.vhd](hdl/OpenBlaze8_Program_Counter.vhd) | `OpenBlaze8_Program_Counter` | entity | Program counter and next-PC multiplexer |
+| [hdl/OpenBlaze8_Stack.vhd](hdl/OpenBlaze8_Stack.vhd) | `OpenBlaze8_Stack` | entity | CALL/RETURN stack (`stack`, `OVERWRITE = 1`) |
+| [hdl/OpenBlaze8_RegFile.vhd](hdl/OpenBlaze8_RegFile.vhd) | `OpenBlaze8_RegFile` | entity | Register file, two `ram_1r1w` written in parallel (ports X and Y) |
+| [hdl/OpenBlaze8_Operand.vhd](hdl/OpenBlaze8_Operand.vhd) | `OpenBlaze8_Operand` | entity | Second operand multiplexer (`sY` or constant) |
+| [hdl/OpenBlaze8_ALU.vhd](hdl/OpenBlaze8_ALU.vhd) | `OpenBlaze8_ALU` | entity | Arithmetic, logic, shift / rotate, load; next C / Z flags |
+| [hdl/OpenBlaze8_Flags.vhd](hdl/OpenBlaze8_Flags.vhd) | `OpenBlaze8_Flags` | entity | C / Z flags and their interrupt copies |
+| [hdl/OpenBlaze8_RAM.vhd](hdl/OpenBlaze8_RAM.vhd) | `OpenBlaze8_RAM` | entity | Scratch-pad RAM (`ram_1r1w`, asynchronous read) |
+| [hdl/OpenBlaze8_LoadStore.vhd](hdl/OpenBlaze8_LoadStore.vhd) | `OpenBlaze8_LoadStore` | entity | IO port interface (`port_id`, `out_port`, `in_port`, strobes) |
+| [hdl/OpenBlaze8_Result.vhd](hdl/OpenBlaze8_Result.vhd) | `OpenBlaze8_Result` | entity | Write-back multiplexer (ALU / RAM / IO) |
+| [hdl/OpenBlaze8_Interrupt.vhd](hdl/OpenBlaze8_Interrupt.vhd) | `OpenBlaze8_Interrupt` | entity | Interrupt mask, sampling and acknowledge |
+
+All sub-modules have `clock_i`, `clock_enable_i` and `reset_i` (active high) ports, omitted from the tables below. Vector ports of the core use `(N downto 1)` ranges.
+
+### OpenBlaze8
+
+Processor core with the KCPSM3 port list (plus clock enable). Generics are those of `sbi_OpenBlaze8` (same names and defaults, except `REGFILE_SYNC_READ := true`).
+
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `clock_i` | in | std_logic | Clock |
+| `clock_enable_i` | in | std_logic | Clock enable |
+| `reset_i` | in | std_logic | Reset, active high (synchronous for most registers, asynchronous for the cycle phase and the stack) |
+| `address_o` | out | std_logic_vector(ADDR_INST_WIDTH downto 1) | Instruction address |
+| `instruction_i` | in | std_logic_vector(18 downto 1) | Instruction |
+| `port_id_o` | out | std_logic_vector(DATA_WIDTH downto 1) | IO port address |
+| `in_port_i` | in | std_logic_vector(DATA_WIDTH downto 1) | IO input data |
+| `out_port_o` | out | std_logic_vector(DATA_WIDTH downto 1) | IO output data |
+| `read_strobe_o` | out | std_logic | INPUT strobe |
+| `write_strobe_o` | out | std_logic | OUTPUT strobe |
+| `interrupt_i` | in | std_logic | Interrupt request |
+| `interrupt_ack_o` | out | std_logic | Interrupt acknowledge |
+
+### OpenBlaze8_Clock
+
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `reset_o` | out | std_logic | Internal reset (= `reset_i`) |
+| `clock_o` | out | std_logic | Internal clock (= `clock_i`) |
+| `cycle_phase_o` | out | std_logic | 0 = first cycle, 1 = second cycle of the instruction (toggles when `clock_enable_i = 1`) |
+
+### OpenBlaze8_Decode
+
+Generic `multi_cycle : natural := 1` (unused).
+
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `instruction_i` | in | std_logic_vector(18 downto 1) | Instruction |
+| `decode_opcode1_o` | out | std_logic_vector(5 downto 1) | Instruction type, `instruction[17:13]` (forced to LOAD on interrupt) |
+| `decode_opcode2_o` | out | std_logic_vector(4 downto 1) | Shift / rotate operation, `instruction[3:0]` |
+| `decode_operand_mux_o` | out | std_logic | `instruction[12]`: 1 = register `sY`, 0 = constant |
+| `decode_branch_cond_o` | out | std_logic_vector(3 downto 1) | `instruction[12:10]`: conditional flag, Z/C select, NZ/NC select |
+| `decode_num_regx_o` | out | std_logic_vector(4 downto 1) | `sX`, `instruction[11:8]` |
+| `decode_num_regy_o` | out | std_logic_vector(4 downto 1) | `sY`, `instruction[7:4]` (= `sX` on interrupt) |
+| `decode_imm_o` | out | std_logic_vector(10 downto 1) | Immediate / address, `instruction[9:0]` |
+| `decode_inhib_i` | in | std_logic | Interrupt in progress: inhibit the current instruction |
+
+### OpenBlaze8_Control
+
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `cycle_phase_i` | in | std_logic | Cycle phase |
+| `decode_opcode1_i`, `decode_opcode2_i`, `decode_operand_mux_i`, `decode_branch_cond_i` | in | std_logic_vector / std_logic | Decoded fields |
+| `decode_inhib_o` | out | std_logic | Inhibit decode (= `it_en_i`) |
+| `pc_write_en_o` | out | std_logic | PC write (first cycle) |
+| `pc_next_mux_o` | out | std_logic_vector(3 downto 1) | Next PC source (see `OpenBlaze8_Program_Counter`) |
+| `stack_push_val_o` / `stack_pop_ack_o` | out | std_logic | Stack push (CALL taken, interrupt) / pop (RETURN taken, RETURNI) |
+| `regx_read_en_o`, `regx_write_en_o`, `regy_read_en_o` | out | std_logic | Register file enables (write in second cycle) |
+| `alu_op_arith_cy_o`, `alu_op_arith_o`, `alu_op_logic_o`, `alu_op_rotate_shift_right_o`, `alu_op_rotate_shift_o`, `alu_op_rotate_shift_cst_o`, `alu_op_type_o`, `alu_op_flag_c_o` | out | std_logic / std_logic_vector(2 downto 1) | ALU operation |
+| `result_mux_o` | out | std_logic_vector(2 downto 1) | Write-back source |
+| `io_access_en_o`, `io_read_en_o`, `io_write_en_o` | out | std_logic | IO controls (strobes in second cycle) |
+| `ram_read_en_o`, `ram_write_en_o` | out | std_logic | Scratch-pad controls |
+| `flag_c_i`, `flag_z_i` | in | std_logic | Current flags (branch condition) |
+| `flag_write_c_o`, `flag_write_z_o`, `flag_save_o`, `flag_restore_o` | out | std_logic | Flag write, save (interrupt), restore (RETURNI) |
+| `interrupt_enable_o`, `interrupt_disable_o` | out | std_logic | ENABLE / DISABLE INTERRUPT, RETURNI ENABLE / DISABLE, disable on interrupt entry |
+| `it_en_i` | in | std_logic | Interrupt in progress |
+
+### OpenBlaze8_Program_Counter
+
+Generic `size_addr_inst : natural := 10`.
+
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `pc_write_en_i` | in | std_logic | PC write enable |
+| `pc_next_mux_i` | in | std_logic_vector(3 downto 1) | `001` PC+1, `100` CALL / JUMP target, `011` RETURN (stack + 1), `010` RETURNI (stack), `110` interrupt vector (all ones) |
+| `decode_address_i` | in | std_logic_vector(size_addr_inst downto 1) | Branch target |
+| `stack_push_data_o` | out | std_logic_vector(size_addr_inst downto 1) | Current PC, pushed on CALL / interrupt |
+| `stack_pop_data_i` | in | std_logic_vector(size_addr_inst downto 1) | Stack top |
+| `inst_address_o` | out | std_logic_vector(size_addr_inst downto 1) | Instruction address |
+
+### OpenBlaze8_Stack
+
+Generics `size_stack : natural := 32`, `size_addr_inst : natural := 10`.
+
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `stack_push_val_i` | in | std_logic | Push |
+| `stack_push_data_i` | in | std_logic_vector(size_addr_inst downto 1) | Pushed address |
+| `stack_pop_ack_i` | in | std_logic | Pop |
+| `stack_pop_data_o` | out | std_logic_vector(size_addr_inst downto 1) | Stack top |
+
+### OpenBlaze8_RegFile
+
+Generics `size_data : natural := 8`, `nb_reg : natural := 16`, `SYNC_READ : boolean := false`.
+
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `regx_read_en_i`, `regx_write_en_i` | in | std_logic | Port X read / write enable |
+| `regx_addr_i` | in | std_logic_vector(log2(nb_reg) downto 1) | Port X address (`sX`) |
+| `regx_data_i` | in | std_logic_vector(size_data downto 1) | Write data |
+| `regx_data_o` | out | std_logic_vector(size_data downto 1) | `sX` |
+| `regy_read_en_i` | in | std_logic | Port Y read enable |
+| `regy_addr_i` | in | std_logic_vector(log2(nb_reg) downto 1) | Port Y address (`sY`) |
+| `regy_data_o` | out | std_logic_vector(size_data downto 1) | `sY` |
+
+### OpenBlaze8_ALU
+
+Generic `size_data : natural := 8`.
+
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `alu_op_arith_cy_i` | in | std_logic | 1: ADDCY / SUBCY |
+| `alu_op_arith_i` | in | std_logic | 0: add, 1: subtract |
+| `alu_op_logic_i` | in | std_logic_vector(2 downto 1) | `0x` AND, `10` OR, `11` XOR |
+| `alu_op_rotate_shift_right_i` | in | std_logic | 1: right |
+| `alu_op_rotate_shift_i` | in | std_logic_vector(2 downto 1) | Inserted bit: `00` carry, `01` MSB, `10` LSB, `11` constant |
+| `alu_op_rotate_shift_cst_i` | in | std_logic | Constant inserted bit |
+| `alu_op_type_i` | in | std_logic_vector(2 downto 1) | `00` load, `01` rotate / shift, `10` logic, `11` arithmetic |
+| `alu_op_flag_c_i` | in | std_logic_vector(2 downto 1) | Carry source: `00` 0, `01` arithmetic carry, `10` shifted-out bit, `11` odd parity (TEST) |
+| `alu_op1_i`, `alu_op2_i` | in | std_logic_vector(size_data downto 1) | Operands |
+| `flag_c_i`, `flag_z_i` | in | std_logic | Current flags |
+| `alu_res_o` | out | std_logic_vector(size_data downto 1) | Result |
+| `flag_c_o`, `flag_z_o` | out | std_logic | Next flags (Z = result is zero) |
+
+### OpenBlaze8_Flags
+
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `flag_c_o`, `flag_z_o` | out | std_logic | Current flags |
+| `flag_c_i`, `flag_z_i` | in | std_logic | Next flags |
+| `flag_write_c_i`, `flag_write_z_i` | in | std_logic | Write enables |
+| `flag_save_i` | in | std_logic | Copy flags (interrupt entry) |
+| `flag_restore_i` | in | std_logic | Restore copies (RETURNI) |
+
+### OpenBlaze8_RAM
+
+Generics `size_data : natural := 8`, `size_ram : natural := 64`.
+
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `ram_read_en_i`, `ram_write_en_i` | in | std_logic | FETCH / STORE |
+| `ram_addr_i` | in | std_logic_vector(log2(size_ram) downto 1) | Address (second operand) |
+| `ram_read_data_o` | out | std_logic_vector(size_data downto 1) | Read data |
+| `ram_write_data_i` | in | std_logic_vector(size_data downto 1) | Write data (`sX`) |
+
+### OpenBlaze8_LoadStore, OpenBlaze8_Operand, OpenBlaze8_Result
+
+Combinational multiplexers, generic `size_data : natural := 8`.
+
+| Entity | Ports | Function |
+|--------|-------|----------|
+| `OpenBlaze8_LoadStore` | `io_access_en_i`, `io_read_en_i`, `io_write_en_i`, `io_addr_i`, `io_data_write_i`, `io_data_read_o`, `port_id_o`, `in_port_i`, `out_port_o`, `read_strobe_o`, `write_strobe_o` | `port_id = io_addr` (second operand), `out_port = sX`, strobes = read / write enables, `io_data_read = in_port` |
+| `OpenBlaze8_Operand` | `decode_operand_mux_i`, `decode_imm_i`, `reg_op1_i`, `reg_op2_i`, `operand_op1_o`, `operand_op2_o` | `op1 = sX`; `op2 = sY` when `decode_operand_mux_i = 1`, else the constant |
+| `OpenBlaze8_Result` | `result_mux_i`, `alu_res_i`, `ram_fetch_data_i`, `io_input_data_i`, `res_o` | `1x`: ALU, `01`: RAM, `00`: IO |
+
+### OpenBlaze8_Interrupt
+
+| Name | Direction | Type | Description |
+|------|-----------|------|-------------|
+| `cycle_phase_i` | in | std_logic | Cycle phase |
+| `interrupt_enable_i` | in | std_logic | Unmask (ENABLE INTERRUPT, RETURNI ENABLE) |
+| `interrupt_disable_i` | in | std_logic | Mask (DISABLE INTERRUPT, RETURNI DISABLE, interrupt entry) |
+| `it_en_o` | out | std_logic | Interrupt in progress (2 cycles) |
+| `interrupt_i` | in | std_logic | Interrupt request (registered) |
+| `interrupt_ack_o` | out | std_logic | Acknowledge |
+
+## Register Map
+
+This IP has no software-visible registers.
+
+Programmer-visible state: `REGFILE_DEPTH` 8-bit registers `s0`..`sF`, the ZERO and CARRY flags (plus their interrupt copies), the interrupt enable flag (disabled at reset), the program counter, the CALL/RETURN stack (`STACK_DEPTH`) and the scratch-pad RAM (`RAM_DEPTH` bytes). IO ports are addressed on the SBI bus by `sbi_OpenBlaze8`. See [Design Notes](#design-notes).
 
 ## Verification
 
-The OpenBlaze8 design includes comprehensive verification components for validating core functionality.
+### Testbenches
 
-### Testbench
+| File | DUT | Description |
+|------|-----|-------------|
+| [sim/tb_OpenBlaze8.vhd](sim/tb_OpenBlaze8.vhd) | `OpenBlaze8` | Lock-step comparison with the Xilinx reference `kcpsm3` (`xilinx:processor:kcpsm`) running the same generated ROM (`OpenBlaze8_ROM`). On every falling edge it checks `address`, `interrupt_ack`, `read_strobe`, `write_strobe`, `port_id` and `out_port`. A 256-byte IO memory models the ports (SWITCH `0x00` reads back `not LED 0x20`), writing `n` to port `0xFF` raises an interrupt after `n` cycles, ports `0xC0`..`0xC3` form a 32-bit watch value printed in the log, and port `0xE0` ends the test (`0xFA` = Test OK, `0xED` = Test KO). Timeout 10000 cycles of 10 ns |
 
-**File**: `sim/tb_OpenBlaze8.vhd`
+Test programs:
 
-The testbench (`tb_OpenBlaze8.vhd`) provides a complete simulation environment for the OpenBlaze8 processor:
+- [sim/testbench-asm/](sim/testbench-asm/): 42 assembler tests `test_000_default.psm` .. `test_041_eint_reti.psm` (pBlazIDE syntax): jumps, COMPARE, AND / OR / XOR, ADD / SUB (register and immediate), RL / RR / SL0 / SL1 / SLA / SLX / SR, CALL / RETURN (conditional), FETCH / STORE, stack depth, 16-bit multiplication / division, TEST, INPUT / OUTPUT, ENABLE INTERRUPT / RETURNI.
+- [sim/testbench-c/](sim/testbench-c/): 3 C tests (`test_uadd16.c`, `test_udiv16.c`, `test_umul16.c`) using [testbench.h](sim/testbench-c/testbench.h) (`PORT_WR` / `PORT_RD`, `TEST_OK` / `TEST_KO`, `watch32b`), compiled with `--verbose --all-callee-saves`.
 
-#### Key Features
+### Targets
 
-- **Configuration Constants**:
-  - Stack Depth: 32 entries
-  - RAM Depth: 64 bytes
-  - Data Width: 8 bits
-  - Instruction Address Width: 10 bits
-  - Register File Depth: 16 registers
-  - Simulation Period: 10 ns
+| Target | Toplevel | Description |
+|--------|----------|-------------|
+| `default` | `OpenBlaze8` | HDL fileset only (not a simulation) |
+| `sim` | `tb_OpenBlaze8` | Base of the simulation targets (GHDL options `-Wall -fsynopsys -frelaxed`, `--ieee-asserts=disable`); no test program |
+| `sim_asm_test_<NNN>_<name>` (42 targets) | `tb_OpenBlaze8` | One target per `sim/testbench-asm/test_<NNN>_<name>.psm` (generator `gen_asm_test_<NNN>_<name>`, type `pblazeide`): `000_default`, `001_test_ok`, `002_jump`, `003_jump`, `004_comp`, `005_comp`, `006_and`, `007_or`, `008_xor`, `009_andi`, `010_ori`, `011_xori`, `012_add`, `013_addi`, `014_sub`, `015_subi`, `016_comp`, `017_compi`, `018_rl`, `019_rr`, `020_sl0`, `021_sl1`, `022_sla`, `023_slx`, `024_sr`, `025_call`, `026_call_ret`, `027_call_ret`, `028_call_ret_cond`, `029_fetch_store`, `030_fetch_store`, `031_fetch_store`, `032_stack_depth`, `033_mul`, `034_div`, `035_test`, `036_test`, `037_in_out`, `038_in_out`, `039_eint_reti`, `040_eint_reti`, `041_eint_reti` |
+| `sim_c_test_<name>` (3 targets) | `tb_OpenBlaze8` | One target per `sim/testbench-c/test_<name>.c` (generator type `c`): `uadd16`, `udiv16`, `umul16` |
 
-- **Port Simulation**:
-  - `TB_LED_PORT_ID` (0x20): LED output control
-  - `TB_SWITCH_PORT_ID` (0x00): Switch input reading
-  - `TB_WATCH_PORT_ID[0:3]` (0xC0-0xC3): Debug watch registers
-  - `TB_IT_PORT_ID` (0xFF): Interrupt test port
-  - `TB_EXPECTED_PORT_ID` (0xE0): Expected result verification
+### How to Run
 
-- **Test Signals**:
-  - Memory simulation for ROM access
-  - Interrupt generation and acknowledgment tracking
-  - Test completion and pass/fail status
+The default tool is GHDL (`mk/defs.mk`: `TOOL ?= ghdl`, `TARGET ?= sim_c_test_umul16`).
 
-#### Test Execution
+```bash
+make help                          # variables, rules and target list (mk/targets.txt)
+make sim_asm_test_012_add          # run one target (log in log/)
+make nonreg_sim                    # run every sim_* target
+make TARGETS_FILTER=^sim_c nonreg_sim   # run a filtered subset
+make clean                         # remove build/ and log/
+```
 
-The testbench runs for 10,000 clock cycles with 10 ns period (100 MHz equivalent).
+Equivalent FuseSoC command:
 
-### Assembly Tests
+```bash
+fusesoc --cores-root . run --build-root build --target sim_asm_test_012_add asylum:processor:OpenBlaze8:1.3.2
+```
 
-The `sim/testbench-asm/` directory contains 41 assembly test programs written in PicoBlaze assembly (`.psm` files). These tests verify:
+Prerequisites: the test programs are converted into `OpenBlaze8_ROM` by the `pbcc_gen` generator (`asylum:utils:generators`), which needs `PICOASM_HOME` (picoasm assembler, `bin/picoasm` and the `ROM_form.vhd` templates) and, for the C tests, `PBCC_HOME` (SDCC with the PicoBlaze back-end, `bin/sdcc`). Outside CI, GHDL writes a waveform `dut.fst`.
 
-#### Test Categories
+## Synthesis
 
-| Test File | Functionality |
-|-----------|---------------|
-| `test_000_default.psm` | Processor initialization and default state |
-| `test_001_test_ok.psm` | Basic test framework validation |
-| `test_002_jump.psm` | Unconditional jump instruction |
-| `test_003_jump.psm` | Jump with different addresses |
-| `test_004_comp.psm` | Compare instruction |
-| `test_005_comp.psm` | Compare with immediate |
-| `test_006_and.psm` | Bitwise AND operation |
-| `test_007_or.psm` | Bitwise OR operation |
-| `test_008_xor.psm` | Bitwise XOR operation |
-| `test_009_andi.psm` | AND with immediate |
-| `test_010_ori.psm` | OR with immediate |
-| `test_011_xori.psm` | XOR with immediate |
-| `test_012_add.psm` | Addition without carry |
-| `test_013_addi.psm` | Add immediate |
-| `test_014_sub.psm` | Subtraction without borrow |
-| `test_015_subi.psm` | Subtract immediate |
-| `test_016_comp.psm` | Compare variations |
-| `test_017_compi.psm` | Compare immediate |
-| `test_018_rl.psm` | Rotate left |
-| `test_019_rr.psm` | Rotate right |
-| `test_020_sl0.psm` | Shift left insert 0 |
-| `test_021_sl1.psm` | Shift left insert 1 |
-| `test_022_sla.psm` | Shift left arithmetic |
-| `test_023_slx.psm` | Shift left exchange |
-| `test_024_sr.psm` | Shift right |
-| `test_025_call.psm` | Function call instruction |
-| `test_026_call_ret.psm` | Call and return pair |
-| `test_027_call_ret.psm` | Nested call and return |
-| `test_028_call_ret_cond.psm` | Conditional call and return |
-| `test_029_fetch_store.psm` | Fetch from RAM |
-| `test_030_fetch_store.psm` | Store to RAM |
-| `test_031_fetch_store.psm` | RAM read/write combinations |
-| `test_032_stack_depth.psm` | Stack overflow/underflow |
-| `test_033_mul.psm` | Unsigned multiplication (16-bit) |
-| `test_034_div.psm` | Unsigned division (16-bit) |
-| `test_035_test.psm` | Test instruction (AND without result storage) |
-| `test_036_test.psm` | Test variations |
-| `test_037_in_out.psm` | Input from I/O port |
-| `test_038_in_out.psm` | Output to I/O port |
-| `test_039_eint_reti.psm` | Enable interrupt and return |
-| `test_040_eint_reti.psm` | Interrupt service routine |
-| `test_041_eint_reti.psm` | Complex interrupt scenarios |
+No dedicated synthesis target. The `files_hdl` sources are plain RTL (no vendor primitive, no simulation-only code); the register file and scratch pad are `ram_1r1w` instances (distributed RAM when `REGFILE_SYNC_READ = false` / asynchronous read) and the stack an `asylum:component:stack` instance. The core is synthesized as part of the PicoSoC emulation and lint targets (`asylum:soc:PicoSoC`, NanoXplore / Digilent boards).
 
-#### Test Framework
-
-Each assembly test:
-1. Performs specific functionality tests
-2. Uses I/O ports to communicate results
-3. Writes test status to port 0xE0 (expected result port)
-4. Signals pass/fail through output ports
-
-### C Language Tests
-
-The `sim/testbench-c/` directory contains C language test utilities:
-
-**Files**:
-- `test_uadd16.c` - 16-bit unsigned addition test
-- `test_udiv16.c` - 16-bit unsigned division test
-- `test_umul16.c` - 16-bit unsigned multiplication test
-- `testbench.h` - Common testbench definitions and utilities
-
-These tests may be used for reference implementations or extended verification beyond VHDL simulation.
-
-### Test Execution Flow
-
-1. **Setup Phase**: Testbench initializes processor state, memory, and I/O
-2. **Instruction Fetch**: Processor requests instructions from simulated ROM
-3. **Execution**: Testbench monitors execution and tracks results
-4. **Verification**: Tests write results to designated I/O ports
-5. **Status Check**: Testbench validates test completion and pass/fail signals
-
----
-
-## Build and Simulation
-
-### Project Structure
-
-The project uses **FuseSoC** for design and simulation management.
-
-**Files**:
-- `OpenBlaze8.core` - FuseSoC core file with design configuration
-- `Makefile` - Build automation for simulation and synthesis
-- `mk/defs.mk` - Build variable definitions
-- `mk/targets.txt` - Available build targets
-
-### FuseSoC Configuration
-
-The `OpenBlaze8.core` file defines:
-- Project metadata (name, version, author)
-- Design files and modules
-- Testbench configurations
-- Generator configurations for assembly test compilation
-- Simulation targets
-
-**Current Version**: 1.3.0 (includes SBI wrapper support)
-
-### Build Targets
-
-Common targets include:
-- **Simulation targets** (sim_*): Run VHDL simulations
-- **Emulation targets** (emu_*): FPGA emulation
-- **Lint targets** (lint_*): Static code analysis
-
-
-## Additional Notes
-
-### Design Dependencies
-
-The OpenBlaze8 design depends on the **asylum library** for:
-- `math_pkg` - Mathematical utilities and functions
-- `ram_pkg` - RAM primitive components
-- `stack_pkg` - Stack primitive components
-- `sbi_pkg` - System Bus Interface definitions
-
-### Customization
-
-All major parameters are configurable via VHDL generics:
-- Data width (8-bit default, configurable)
-- Memory sizes (stack, RAM, register file)
-- Instruction address width
-- Register file read mode (sync/async)
+## Design Notes
 
 ### Instruction Set
 
-The processor implements a PicoBlaze-compatible instruction set including:
-- Arithmetic: ADD, ADDC, SUB, SUBC
-- Logic: AND, OR, XOR
-- Shift/Rotate: RL, RR, SL0, SL1, SRA, SRX
-- Memory: FETCH, STORE
-- I/O: INPUT, OUTPUT
-- Control: CALL, RETURN, JUMP (conditional/unconditional)
-- Special: COMPARE, TEST, EINT, DINT, RETI
+Instructions are 18 bits. `opcode1 = instruction[17:13]`, `instruction[12]` selects the second operand (`1` = register `sY = instruction[7:4]`, `0` = constant `kk = instruction[7:0]`), `sX = instruction[11:8]`, `aaa = instruction[9:0]`. Encodings are those of KCPSM3.
 
+| opcode1 | Mnemonic | Operation | Flags |
+|---------|----------|-----------|-------|
+| `00000` | `LOAD sX, kk / sY` | sX = op2 | - |
+| `00010` | `INPUT sX, pp / (sY)` | sX = IN_PORT, PORT_ID = op2, READ_STROBE | - |
+| `00011` | `FETCH sX, ss / (sY)` | sX = RAM[op2] | - |
+| `00101` | `AND sX, kk / sY` | sX = sX and op2 | C = 0, Z |
+| `00110` | `OR sX, kk / sY` | sX = sX or op2 | C = 0, Z |
+| `00111` | `XOR sX, kk / sY` | sX = sX xor op2 | C = 0, Z |
+| `01001` | `TEST sX, kk / sY` | sX and op2, no write-back | C = odd parity, Z |
+| `01010` | `COMPARE sX, kk / sY` | sX - op2, no write-back | C = borrow, Z |
+| `01100` | `ADD sX, kk / sY` | sX = sX + op2 | C, Z |
+| `01101` | `ADDCY sX, kk / sY` | sX = sX + op2 + C | C, Z |
+| `01110` | `SUB sX, kk / sY` | sX = sX - op2 | C = borrow, Z |
+| `01111` | `SUBCY sX, kk / sY` | sX = sX - op2 - C | C = borrow, Z |
+| `10000` | shift / rotate `sX` | see below (`instruction[3:0]`) | C = bit out, Z |
+| `10101` | `RETURN [Z/NZ/C/NC]` | PC = pop + 1 | - |
+| `10110` | `OUTPUT sX, pp / (sY)` | OUT_PORT = sX, PORT_ID = op2, WRITE_STROBE | - |
+| `10111` | `STORE sX, ss / (sY)` | RAM[op2] = sX | - |
+| `11000` | `CALL [Z/NZ/C/NC,] aaa` | push PC, PC = aaa | - |
+| `11010` | `JUMP [Z/NZ/C/NC,] aaa` | PC = aaa | - |
+| `11100` | `RETURNI ENABLE / DISABLE` | PC = pop, flags restored, interrupt enable = `instruction[0]` | restored |
+| `11110` | `ENABLE / DISABLE INTERRUPT` | interrupt enable = `instruction[0]` | - |
+
+Conditions (`instruction[12:10]`): `0xx` always, `100` Z, `101` NZ, `110` C, `111` NC.
+
+| `instruction[3:0]` | Mnemonic | Inserted bit | `instruction[3:0]` | Mnemonic | Inserted bit |
+|--------------------|----------|--------------|--------------------|----------|--------------|
+| `0110` | `SL0` | 0 | `1110` | `SR0` | 0 |
+| `0111` | `SL1` | 1 | `1111` | `SR1` | 1 |
+| `0100` | `SLX` | LSB | `1010` | `SRX` | MSB |
+| `0000` | `SLA` | C | `1000` | `SRA` | C |
+| `0010` | `RL` | MSB | `1100` | `RR` | LSB |
+
+### Micro-architecture
+
+- Each instruction takes two enabled clock cycles (`cycle_phase` 0 then 1). The PC is updated in the first cycle; register, flag, RAM writes and IO strobes happen in the second cycle.
+- The register file is two `ram_1r1w` (port X, port Y) sharing the write port, which gives two read ports and one write port.
+- Interrupt: when enabled, `interrupt_i` is registered and taken in the second cycle; during the next two cycles (`it_en`) the current instruction is replaced by `LOAD sX, sX`, the PC is pushed, the flags are saved, interrupts are disabled and the PC jumps to the last address (`0x3FF` with `ADDR_INST_WIDTH = 10`); `interrupt_ack` is asserted for one cycle. RETURNI pops the address without increment, so the inhibited instruction is re-executed.
+- The stack is an `asylum:component:stack` with `OVERWRITE = 1`: a push on a full stack overwrites the oldest entry.
+- `sbi_OpenBlaze8` freezes the whole core (clock enable low) while an IO access is waiting for `sbi_tgt_i.ready`; `ics_o` follows the same enable so that a synchronous instruction ROM is frozen too.
+- Width limits as coded: the left shift uses bits `7 downto 1` (8-bit data), the immediate / address field is 10 bits (`ADDR_INST_WIDTH <= 10`), register fields are 4 bits (`REGFILE_DEPTH <= 16`) and the RAM address is taken from the 8-bit second operand.
+
+## Directory Structure
+
+```
+asylum-processor-OpenBlaze8/
+├── OpenBlaze8.core             # FuseSoC core (asylum:processor:OpenBlaze8)
+├── Makefile                    # Common Asylum Makefile (FuseSoC wrapper)
+├── mk/
+│   ├── defs.mk                 # FILE_CORE, default TARGET and TOOL
+│   └── targets.txt             # Target list (generated from the .core)
+├── doc/
+│   └── OpenBlaze8.drawio       # Block diagram
+├── hdl/
+│   ├── OpenBlaze8_pkg.vhd
+│   ├── OpenBlaze8.vhd
+│   ├── sbi_OpenBlaze8.vhd
+│   └── OpenBlaze8_<Module>.vhd # ALU, Clock, Control, Decode, Flags, Interrupt, LoadStore,
+│                               # Operand, Program_Counter, RAM, RegFile, Result, Stack
+└── sim/
+    ├── tb_OpenBlaze8.vhd       # Lock-step testbench (DUT vs kcpsm3)
+    ├── testbench-asm/          # 42 assembler tests test_000 .. test_041 (*.psm)
+    └── testbench-c/            # testbench.h + test_uadd16.c, test_udiv16.c, test_umul16.c
+```
+
+## Dependencies
+
+| Core | Used by (fileset) | Purpose |
+|------|-------------------|---------|
+| `asylum:utils:pkg` | `files_hdl` | Common packages (`sbi_pkg`, `math_pkg`) |
+| `asylum:component:ram` (`>=1.0.0`) | `files_hdl` | `ram_1r1w` for the register file and the scratch-pad RAM |
+| `asylum:component:stack` (`>=1.0.0`) | `files_hdl` | `stack` for the CALL/RETURN stack |
+| `xilinx:processor:kcpsm` (`>=1.30`) | `files_sim` | Reference model `kcpsm3` of the testbench |
+| `xilinx:primitive:unisim` (`>=11.1`) | `files_sim` | Xilinx primitives used by `kcpsm3` |
+| `asylum:utils:generators` | `pbcc_dep` | `pbcc_gen` generator (assembler / C to `OpenBlaze8_ROM`) |
