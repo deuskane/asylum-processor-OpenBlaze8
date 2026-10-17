@@ -35,7 +35,12 @@ entity OpenBlaze8 is
      DATA_WIDTH        : natural := 8;
      ADDR_INST_WIDTH   : natural := 10;
      REGFILE_DEPTH     : natural := 16;
-     REGFILE_SYNC_READ : boolean := true);
+     -- false : KCPSM3 timing, port_id/out_port valid during the 2 cycles
+     --         of INPUT/OUTPUT (register file read asynchronously)
+     -- true  : register file read synchronously, port_id/out_port of an
+     --         indirect access (sY) and out_port only valid during the
+     --         strobe cycle : in_port must be decoded combinationally
+     REGFILE_SYNC_READ : boolean := false);
   -- =====[ Interfaces ]==========================
   port (
     clock_i           : in  std_logic;

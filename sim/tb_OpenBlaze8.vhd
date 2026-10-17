@@ -71,6 +71,15 @@ architecture tb of tb_OpenBlaze8 is
   signal dut_interrupt_i       : std_logic;
   signal dut_interrupt_ack_o   : std_logic;
 
+  -- Second DUT : register file with synchronous read
+  signal dut_sync_address_o       : std_logic_vector(ADDR_INST_WIDTH -1 downto 0);
+  signal dut_sync_port_id_o       : std_logic_vector(DATA_WIDTH -1 downto 0);
+  signal dut_sync_in_port_i       : std_logic_vector(DATA_WIDTH -1 downto 0);
+  signal dut_sync_out_port_o      : std_logic_vector(DATA_WIDTH -1 downto 0);
+  signal dut_sync_read_strobe_o   : std_logic;
+  signal dut_sync_write_strobe_o  : std_logic;
+  signal dut_sync_interrupt_ack_o : std_logic;
+
   signal ref_clock_i           : std_logic := '0';
 --signal ref_clock_enable_i    : std_logic;
   signal ref_reset_i           : std_logic := '0';
@@ -87,6 +96,7 @@ architecture tb of tb_OpenBlaze8 is
   type mem_t is array (0 to 2**8-1) of std_logic_vector(8 -1 downto 0);
   signal mem                   : mem_t;
   signal mem_rdata             : std_logic_vector(8-1 downto 0);
+  signal dut_mem_rdata         : std_logic_vector(8-1 downto 0);
  
   signal it_r                  : std_logic := '0';
   signal it_cnt_r              : unsigned(8-1 downto 0);
@@ -122,6 +132,18 @@ end function;
 
   
   
+  -- IO model read : in all tb, switch = ~led
+  function io_read(mem     : mem_t;
+                   port_id : std_logic_vector) return std_logic_vector is
+  begin
+    if port_id = TB_SWITCH_PORT_ID
+    then
+      return not mem(to_integer(unsigned(TB_LED_PORT_ID)));
+    else
+      return     mem(to_integer(unsigned(port_id)));
+    end if;
+  end function io_read;
+  
 begin  -- architecture tb
 
   -----------------------------------------------------------------------------
@@ -135,6 +157,7 @@ begin  -- architecture tb
     ,DATA_WIDTH      => DATA_WIDTH     
     ,ADDR_INST_WIDTH => ADDR_INST_WIDTH
     ,REGFILE_DEPTH   => REGFILE_DEPTH  
+    ,REGFILE_SYNC_READ => false
     )
     port map
     (clock_i           => dut_clock_i        
@@ -149,6 +172,31 @@ begin  -- architecture tb
     ,write_strobe_o    => dut_write_strobe_o 
     ,interrupt_i       => dut_interrupt_i    
     ,interrupt_ack_o   => dut_interrupt_ack_o
+     );
+
+  -- Same program with a synchronous read of the register file
+  dut_sync : OpenBlaze8
+    generic map
+    (STACK_DEPTH     => STACK_DEPTH    
+    ,RAM_DEPTH       => RAM_DEPTH      
+    ,DATA_WIDTH      => DATA_WIDTH     
+    ,ADDR_INST_WIDTH => ADDR_INST_WIDTH
+    ,REGFILE_DEPTH   => REGFILE_DEPTH  
+    ,REGFILE_SYNC_READ => true
+    )
+    port map
+    (clock_i           => dut_clock_i        
+    ,clock_enable_i    => dut_clock_enable_i 
+    ,reset_i           => dut_reset_i        
+    ,address_o         => dut_sync_address_o      
+    ,instruction_i     => dut_instruction_i  
+    ,port_id_o         => dut_sync_port_id_o      
+    ,in_port_i         => dut_sync_in_port_i      
+    ,out_port_o        => dut_sync_out_port_o     
+    ,read_strobe_o     => dut_sync_read_strobe_o  
+    ,write_strobe_o    => dut_sync_write_strobe_o 
+    ,interrupt_i       => dut_interrupt_i    
+    ,interrupt_ack_o   => dut_sync_interrupt_ack_o
      );
 
   -----------------------------------------------------------------------------
@@ -223,13 +271,10 @@ begin  -- architecture tb
         mem(to_integer(unsigned(ref_port_id_o))) <= ref_out_port_o;
       end if;
 
-      -- In all tb, switch = ~led
-      if ref_port_id_o = TB_SWITCH_PORT_ID
-      then
-        mem_rdata <= not mem(to_integer(unsigned(TB_LED_PORT_ID)));
-      else
-        mem_rdata <=     mem(to_integer(unsigned(ref_port_id_o)));
-      end if;
+      -- Read data registered on port_id at each clock edge (pipelined
+      -- in_port mux, allowed by KCPSM3 : port_id valid during 2 cycles)
+      mem_rdata     <= io_read(mem, ref_port_id_o);
+      dut_mem_rdata <= io_read(mem, dut_port_id_o);
             
     end if;
   end process p_mem;
@@ -238,7 +283,13 @@ begin  -- architecture tb
                        (others => 'U');
   
   dut_instruction_i <= ref_instruction_i;
-  dut_in_port_i     <= ref_in_port_i    ;
+  dut_in_port_i     <= dut_mem_rdata when dut_read_strobe_o = '1' else
+                       (others => 'U');
+
+  -- REGFILE_SYNC_READ = true : port_id is only valid during the strobe
+  -- cycle, so in_port is decoded combinationally
+  dut_sync_in_port_i <= io_read(mem, dut_sync_port_id_o) when dut_sync_read_strobe_o = '1' else
+                        (others => 'U');
 
   -----------------------------------------------------------------------------
   -- Interruption
@@ -357,5 +408,66 @@ begin  -- architecture tb
       end if;
     end if;
   end process l_tb_verif;
+
+  -----------------------------------------------------------------------------
+  -- Testbench verification : KCPSM3 IO timing
+  -- port_id and out_port must already be valid during the first cycle of
+  -- INPUT / OUTPUT (the cycle before the strobe)
+  -----------------------------------------------------------------------------
+  l_tb_verif_io: process (ref_clock_i) is
+    variable dut_port_id_d  : std_logic_vector(DATA_WIDTH -1 downto 0);
+    variable ref_port_id_d  : std_logic_vector(DATA_WIDTH -1 downto 0);
+    variable dut_out_port_d : std_logic_vector(DATA_WIDTH -1 downto 0);
+    variable ref_out_port_d : std_logic_vector(DATA_WIDTH -1 downto 0);
+  begin  -- process l_tb_verif_io
+    if (ref_clock_i'event and ref_clock_i = '0')
+    then  -- falling clock edge
+
+      if ((dut_reset_i='0') and (ref_reset_i='0'))
+      then
+        if ((dut_write_strobe_o = '1') or (dut_read_strobe_o = '1'))
+        then
+          assert (dut_port_id_d  = ref_port_id_d ) report "[TESTBENCH] Test KO : Missmatch with reference for the port port_id in the first cycle"  severity failure;
+        end if;
+        if (dut_write_strobe_o = '1')
+        then
+          assert (dut_out_port_d = ref_out_port_d) report "[TESTBENCH] Test KO : Missmatch with reference for the port out_port in the first cycle" severity failure;
+        end if;
+      end if;
+
+      dut_port_id_d  := dut_port_id_o;
+      ref_port_id_d  := ref_port_id_o;
+      dut_out_port_d := dut_out_port_o;
+      ref_out_port_d := ref_out_port_o;
+    end if;
+  end process l_tb_verif_io;
+
+  -----------------------------------------------------------------------------
+  -- Testbench verification : DUT with REGFILE_SYNC_READ = true
+  -----------------------------------------------------------------------------
+  l_tb_verif_sync: process (ref_clock_i) is
+  begin  -- process l_tb_verif_sync
+    if (ref_clock_i'event and ref_clock_i = '0')
+    then  -- falling clock edge
+
+      if ((dut_reset_i='0') and (ref_reset_i='0'))
+      then
+        assert (dut_sync_address_o       = ref_address_o      ) report "[TESTBENCH] Test KO : Missmatch with reference for the port address (REGFILE_SYNC_READ)"       severity failure;
+        assert (dut_sync_interrupt_ack_o = ref_interrupt_ack_o) report "[TESTBENCH] Test KO : Missmatch with reference for the port interrupt_ack (REGFILE_SYNC_READ)" severity failure;
+        assert (dut_sync_read_strobe_o   = ref_read_strobe_o  ) report "[TESTBENCH] Test KO : Missmatch with reference for the port read_strobe (REGFILE_SYNC_READ)"   severity failure;
+        assert (dut_sync_write_strobe_o  = ref_write_strobe_o ) report "[TESTBENCH] Test KO : Missmatch with reference for the port write_strobe (REGFILE_SYNC_READ)"  severity failure;
+
+        if ((dut_sync_write_strobe_o = '1') or (dut_sync_read_strobe_o = '1'))
+        then
+          assert (dut_sync_port_id_o     = ref_port_id_o      ) report "[TESTBENCH] Test KO : Missmatch with reference for the port port_id (REGFILE_SYNC_READ)"       severity failure;
+        end if;
+
+        if (dut_sync_write_strobe_o = '1')
+        then
+          assert (dut_sync_out_port_o    = ref_out_port_o     ) report "[TESTBENCH] Test KO : Missmatch with reference for the port out_port (REGFILE_SYNC_READ)"      severity failure;
+        end if;
+      end if;
+    end if;
+  end process l_tb_verif_sync;
   
 end architecture tb;

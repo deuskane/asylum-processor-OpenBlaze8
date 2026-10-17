@@ -239,6 +239,11 @@ generate:
     parameters:
       file   : sim/testbench-asm/test_041_eint_reti.psm
       type   : pblazeide
+  gen_asm_test_042_in_out_indirect:
+    generator : pbcc_gen
+    parameters:
+      file   : sim/testbench-asm/test_042_in_out_indirect.psm
+      type   : pblazeide
   gen_c_test_uadd16:
     generator : pbcc_gen
     parameters:
@@ -673,6 +678,14 @@ targets:
       - files_sim
       - pbcc_dep
     generate : [gen_asm_test_041_eint_reti]
+
+  sim_asm_test_042_in_out_indirect:
+    << : *sim
+    description     : Simulation of the test sim/testbench-asm/test_042_in_out_indirect.psm
+    filesets_append :
+      - files_sim
+      - pbcc_dep
+    generate : [gen_asm_test_042_in_out_indirect]
 
   sim_c_test_uadd16:
     << : *sim
