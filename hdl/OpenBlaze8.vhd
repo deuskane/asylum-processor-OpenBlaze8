@@ -54,6 +54,30 @@ entity OpenBlaze8 is
 end OpenBlaze8;
 
 architecture rtl of OpenBlaze8 is
+  -- =====[ Generics check ]======================
+  -- The KCPSM3 instruction format fixes the data width (8-bit immediate),
+  -- the number of registers (4-bit register fields) and the maximum program
+  -- size (10-bit address field). Checked at elaboration, before the
+  -- declarations below that depend on it.
+  function check_generics return boolean is
+  begin
+    assert DATA_WIDTH = 8
+      report "OpenBlaze8 : DATA_WIDTH must be 8 (8-bit immediate and IO port)"
+      severity failure;
+    assert REGFILE_DEPTH = 16
+      report "OpenBlaze8 : REGFILE_DEPTH must be 16 (4-bit register fields)"
+      severity failure;
+    assert (ADDR_INST_WIDTH >= 1) and (ADDR_INST_WIDTH <= 10)
+      report "OpenBlaze8 : ADDR_INST_WIDTH must be in 1 to 10 (10-bit address field)"
+      severity failure;
+    assert log2(RAM_DEPTH) <= DATA_WIDTH
+      report "OpenBlaze8 : RAM_DEPTH must be at most 2**DATA_WIDTH (scratch-pad address from the second operand)"
+      severity failure;
+    return true;
+  end function check_generics;
+
+  constant GENERICS_OK             : boolean := check_generics;
+
   -- =====[ Types ]===============================
 
   -- =====[ Registers ]===========================

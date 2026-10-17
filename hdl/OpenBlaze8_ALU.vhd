@@ -154,7 +154,7 @@ begin  -- rtl
                              alu_op1_i(size_data);
   
   res_rotate_shift        <= res_rotate_shift_bit_in & alu_op1_i(size_data downto 2) when alu_op_rotate_shift_right_i = '1' else
-                             alu_op1_i(7 downto 1) & res_rotate_shift_bit_in;
+                             alu_op1_i(size_data-1 downto 1) & res_rotate_shift_bit_in;
 
   res <= res_arith(size_data downto 1) when alu_op_type_i = "11" else  -- arith
          res_logic                     when alu_op_type_i = "10" else  -- logic

@@ -92,9 +92,9 @@ Top-level entity: **`sbi_OpenBlaze8`** ([hdl/sbi_OpenBlaze8.vhd](hdl/sbi_OpenBla
 |------|------|---------|-------------|
 | `STACK_DEPTH` | natural | `32` | Number of entries of the CALL/RETURN stack |
 | `RAM_DEPTH` | natural | `64` | Size of the scratch-pad RAM in bytes (FETCH / STORE) |
-| `DATA_WIDTH` | natural | `8` | Data path width (the ALU shift logic and the instruction format assume 8) |
-| `ADDR_INST_WIDTH` | natural | `10` | Program address width (at most 10, the immediate field width) |
-| `REGFILE_DEPTH` | natural | `16` | Number of registers (at most 16, 4-bit register fields) |
+| `DATA_WIDTH` | natural | `8` | Data path width, must be 8 (instruction format, checked at elaboration) |
+| `ADDR_INST_WIDTH` | natural | `10` | Program address width (1 to 10, the immediate field width, checked at elaboration) |
+| `REGFILE_DEPTH` | natural | `16` | Number of registers, must be 16 (4-bit register fields, checked at elaboration) |
 | `REGFILE_SYNC_READ` | boolean | `false` | Register file read mode: `true` synchronous, `false` asynchronous (note: the default of the bare `OpenBlaze8` is `true`) |
 
 ### Ports
@@ -444,7 +444,7 @@ Conditions (`instruction[12:10]`): `0xx` always, `100` Z, `101` NZ, `110` C, `11
 - Interrupt: when enabled, `interrupt_i` is registered and taken in the second cycle; during the next two cycles (`it_en`) the current instruction is replaced by `LOAD sX, sX`, the PC is pushed, the flags are saved, interrupts are disabled and the PC jumps to the last address (`0x3FF` with `ADDR_INST_WIDTH = 10`); `interrupt_ack` is asserted for one cycle. RETURNI pops the address without increment, so the inhibited instruction is re-executed.
 - The stack is an `asylum:component:stack` with `OVERWRITE = 1`: a push on a full stack overwrites the oldest entry.
 - `sbi_OpenBlaze8` freezes the whole core (clock enable low) while an IO access is waiting for `sbi_tgt_i.ready`; `ics_o` follows the same enable so that a synchronous instruction ROM is frozen too.
-- Width limits as coded: the left shift uses bits `7 downto 1` (8-bit data), the immediate / address field is 10 bits (`ADDR_INST_WIDTH <= 10`), register fields are 4 bits (`REGFILE_DEPTH <= 16`) and the RAM address is taken from the 8-bit second operand.
+- Width limits, checked by elaboration assertions in `OpenBlaze8`: the immediate is 8 bits (`DATA_WIDTH = 8`), the address field is 10 bits (`ADDR_INST_WIDTH <= 10`), register fields are 4 bits (`REGFILE_DEPTH = 16`) and the RAM address is taken from the 8-bit second operand (`RAM_DEPTH <= 256`).
 
 ## Directory Structure
 
