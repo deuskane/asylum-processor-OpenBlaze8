@@ -322,12 +322,8 @@ begin  -- architecture tb
         
           if (dut_write_strobe_o = '1')
           then
-            if (dut_out_port_o      /= ref_out_port_o     )
-            then
-              report "[TESTBENCH] Test KO : Missmatch with reference for the port out_port";
-              test_done <= '1';
-            end if;
-          end if;        
+          assert (dut_out_port_o      = ref_out_port_o     ) report "[TESTBENCH] Test KO : Missmatch with reference for the port out_port"      severity failure;
+          end if;
         end if;
 
         var_watch32b := watch32b;
