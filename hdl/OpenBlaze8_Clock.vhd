@@ -30,8 +30,8 @@ entity OpenBlaze8_Clock is
   port (
     clock_i              : in  std_logic;
     clock_enable_i       : in  std_logic;
-    reset_i              : in  std_logic; -- synchronous clock
-    reset_o              : out std_logic; -- synchronous clock
+    reset_i              : in  std_logic; -- synchronous reset
+    reset_o              : out std_logic; -- synchronous reset
 
     clock_o              : out std_logic;
     cycle_phase_o        : out std_logic  -- 0 = first cycle, 1 = second cycle
@@ -70,14 +70,14 @@ begin  -- rtl
   clock_o        <= clock_i;
 
   -- =====[ Transition ]==========================
-  process (clock_i,reset_internal)
+  process (clock_i)
   begin  -- process transition
-    if reset_internal = '1' then
-      -- asynchronous reset
-      cycle_phase_r <= '0';
-    elsif rising_edge(clock_i)
+    if rising_edge(clock_i)
     then
-      if clock_enable_i = '1'
+      if reset_internal = '1' then
+        -- synchronous reset, as all the other registers of the core
+        cycle_phase_r <= '0';
+      elsif clock_enable_i = '1'
       then
         cycle_phase_r <= not cycle_phase_r;
       end if;

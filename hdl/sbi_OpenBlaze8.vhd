@@ -45,7 +45,9 @@ entity sbi_OpenBlaze8 is
   port   (
     clk_i            : in    std_logic;
     cke_i            : in    std_logic;
-    arstn_i          : in    std_logic; -- asynchronous reset
+    arstn_i          : in    std_logic; -- reset active low, applied synchronously
+                                        -- (assert and release it synchronously
+                                        -- to clk_i : synchronize it at SoC level)
 
     -- Instructions
     ics_o            : out std_logic;
