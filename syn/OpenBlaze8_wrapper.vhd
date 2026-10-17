@@ -11,7 +11,8 @@
 -- with flat and constrained SBI ports (sbi_OpenBlaze8 has unconstrained SBI
 -- ports and cannot be a synthesis top). The SBI address / data width is
 -- DATA_WIDTH (PORT_ID / OUT_PORT / IN_PORT). The generics are forwarded to
--- both instances, defaults of OpenBlaze8 (REGFILE_SYNC_READ = true).
+-- both instances. REGFILE_SYNC_READ defaults to true here (synchronous
+-- register file; OpenBlaze8 and sbi_OpenBlaze8 default to false).
 -------------------------------------------------------------------------------
 -- Copyright (c) 2026
 -------------------------------------------------------------------------------

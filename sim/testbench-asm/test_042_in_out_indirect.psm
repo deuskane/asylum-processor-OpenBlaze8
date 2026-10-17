@@ -1,0 +1,97 @@
+; ;------------------------------------
+; ; Test 042
+; ; Indirect Out/In : OUT sX, (sY) and IN sX, (sY)
+; ; The testbench IO model registers its read data on port_id at each
+; ; clock edge (pipelined in_port mux, allowed by KCPSM3) : port_id must
+; ; be valid during the 2 cycles of the IN instruction.
+; ; Before each IN, another register is read through the second operand,
+; ; so that a stale port_id selects another port.
+; ; Warning !!!
+; ; In testbench HDL, switch = ~led
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+                    VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $E0
+table_id            EQU       $40
+table_end           EQU       $50
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $00
+main: 
+                    ; Write a different value in each port of the table
+                    LOAD      s3, table_id
+                    LOAD      s0, $5A
+write_loop: 
+                    OUT       s0, s3
+                    ADD       s0, $13
+                    ADD       s3, $01
+                    COMP      s3, table_end
+                    JUMP      NZ, write_loop
+
+                    ; Read back the table
+                    LOAD      s3, table_id
+                    LOAD      s0, $5A
+read_loop: 
+                    LOAD      s6, s3
+                    XOR       s6, $01
+                    LOAD      s7, s6
+                    IN        s1, s3
+                    COMP      s1, s0
+                    JUMP      NZ, test_ko
+                    ADD       s0, $13
+                    ADD       s3, $01
+                    COMP      s3, table_end
+                    JUMP      NZ, read_loop
+
+                    ; Switch port read indirectly (switch = ~led)
+                    LOAD      s0, $3C
+                    LOAD      s3, led_id
+                    OUT       s0, s3
+                    LOAD      s3, switch_id
+                    IN        s1, s3
+                    COMP      s1, $C3
+                    JUMP      Z, test_ok
+
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko: 
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+                    ORG       $3FC
+test_ok: 
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    RETI      ENABLE
