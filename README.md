@@ -240,7 +240,7 @@ Generic `multi_cycle : natural := 1` (unused).
 | `regx_read_en_o`, `regx_write_en_o`, `regy_read_en_o` | out | std_logic | Register file enables (write in second cycle) |
 | `alu_op_arith_cy_o`, `alu_op_arith_o`, `alu_op_logic_o`, `alu_op_rotate_shift_right_o`, `alu_op_rotate_shift_o`, `alu_op_rotate_shift_cst_o`, `alu_op_type_o`, `alu_op_flag_c_o` | out | std_logic / std_logic_vector(2 downto 1) | ALU operation |
 | `result_mux_o` | out | std_logic_vector(2 downto 1) | Write-back source |
-| `io_access_en_o`, `io_read_en_o`, `io_write_en_o` | out | std_logic | IO controls (strobes in second cycle) |
+| `io_access_en_o`, `io_read_en_o`, `io_write_en_o` | out | std_logic | IO controls (strobes registered at the end of the first cycle, asserted during the second cycle) |
 | `ram_read_en_o`, `ram_write_en_o` | out | std_logic | Scratch-pad controls |
 | `flag_c_i`, `flag_z_i` | in | std_logic | Current flags (branch condition) |
 | `flag_write_c_o`, `flag_write_z_o`, `flag_save_o`, `flag_restore_o` | out | std_logic | Flag write, save (interrupt), restore (RETURNI) |
