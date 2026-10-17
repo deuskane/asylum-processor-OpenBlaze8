@@ -105,7 +105,7 @@ Top-level entity: **`sbi_OpenBlaze8`** ([hdl/sbi_OpenBlaze8.vhd](hdl/sbi_OpenBla
 |------|-----------|------|-------------|
 | `clk_i` | in | std_logic | Clock |
 | `cke_i` | in | std_logic | Clock enable |
-| `arstn_i` | in | std_logic | Reset, active low (inverted and used as the core `reset_i`) |
+| `arstn_i` | in | std_logic | Reset, active low, applied synchronously despite its name (inverted and used as the core `reset_i`): it must be synchronized to `clk_i` at SoC level |
 
 #### Instruction
 
@@ -192,7 +192,7 @@ Processor core with the KCPSM3 port list (plus clock enable). Generics are those
 |------|-----------|------|-------------|
 | `clock_i` | in | std_logic | Clock |
 | `clock_enable_i` | in | std_logic | Clock enable |
-| `reset_i` | in | std_logic | Reset, active high (synchronous for most registers, asynchronous for the cycle phase and the stack) |
+| `reset_i` | in | std_logic | Reset, active high, synchronous (all registers, cycle phase included) |
 | `address_o` | out | std_logic_vector(ADDR_INST_WIDTH downto 1) | Instruction address |
 | `instruction_i` | in | std_logic_vector(18 downto 1) | Instruction |
 | `port_id_o` | out | std_logic_vector(DATA_WIDTH downto 1) | IO port address |
