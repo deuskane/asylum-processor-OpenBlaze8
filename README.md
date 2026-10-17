@@ -168,7 +168,7 @@ The program ROM is generated from a `.psm` or `.c` file by the `pbcc_gen` genera
 | [hdl/OpenBlaze8_pkg.vhd](hdl/OpenBlaze8_pkg.vhd) | `OpenBlaze8_pkg` | package | Component declarations of all OpenBlaze8 entities and of `sbi_OpenBlaze8` |
 | [hdl/OpenBlaze8.vhd](hdl/OpenBlaze8.vhd) | `OpenBlaze8` | entity | Processor core (KCPSM3 compatible interface), toplevel of the `default` target |
 | [hdl/sbi_OpenBlaze8.vhd](hdl/sbi_OpenBlaze8.vhd) | `sbi_OpenBlaze8` | entity | Top-level: SBI wrapper around `OpenBlaze8` |
-| [hdl/OpenBlaze8_Clock.vhd](hdl/OpenBlaze8_Clock.vhd) | `OpenBlaze8_Clock` | entity | Cycle phase toggle, clock / reset pass-through |
+| [hdl/OpenBlaze8_Clock.vhd](hdl/OpenBlaze8_Clock.vhd) | `OpenBlaze8_Clock` | entity | Cycle phase toggle, clock pass-through, internal reset (released 2 cycles after `reset_i`) |
 | [hdl/OpenBlaze8_Decode.vhd](hdl/OpenBlaze8_Decode.vhd) | `OpenBlaze8_Decode` | entity | Instruction field extraction, instruction replaced by `LOAD sX, sX` on interrupt |
 | [hdl/OpenBlaze8_Control.vhd](hdl/OpenBlaze8_Control.vhd) | `OpenBlaze8_Control` | entity | Opcode decoder: PC / stack / register / ALU / flags / IO / RAM / interrupt controls |
 | [hdl/OpenBlaze8_Program_Counter.vhd](hdl/OpenBlaze8_Program_Counter.vhd) | `OpenBlaze8_Program_Counter` | entity | Program counter and next-PC multiplexer |
@@ -207,7 +207,7 @@ Processor core with the KCPSM3 port list (plus clock enable). Generics are those
 
 | Name | Direction | Type | Description |
 |------|-----------|------|-------------|
-| `reset_o` | out | std_logic | Internal reset (= `reset_i`) |
+| `reset_o` | out | std_logic | Internal reset (`reset_i` delayed by 2 cycles on release, as in KCPSM3) |
 | `clock_o` | out | std_logic | Internal clock (= `clock_i`) |
 | `cycle_phase_o` | out | std_logic | 0 = first cycle, 1 = second cycle of the instruction (toggles when `clock_enable_i = 1`) |
 
