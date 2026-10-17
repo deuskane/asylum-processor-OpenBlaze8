@@ -370,7 +370,7 @@ Test programs:
 | Target | Toplevel | Description |
 |--------|----------|-------------|
 | `default` | `OpenBlaze8` | HDL fileset only (not a simulation) |
-| `sim` | `tb_OpenBlaze8` | Base of the simulation targets (GHDL options `-Wall -fsynopsys -frelaxed`, `--ieee-asserts=disable`); no test program |
+| `sim` | `tb_OpenBlaze8` | Base of the simulation targets (GHDL options `-Wall -fsynopsys -frelaxed`, `--ieee-asserts=disable`) with the testbench files; runs `test_000_default.psm` by default |
 | `sim_asm_test_<NNN>_<name>` (42 targets) | `tb_OpenBlaze8` | One target per `sim/testbench-asm/test_<NNN>_<name>.psm` (generator `gen_asm_test_<NNN>_<name>`, type `pblazeide`): `000_default`, `001_test_ok`, `002_jump`, `003_jump`, `004_comp`, `005_comp`, `006_and`, `007_or`, `008_xor`, `009_andi`, `010_ori`, `011_xori`, `012_add`, `013_addi`, `014_sub`, `015_subi`, `016_comp`, `017_compi`, `018_rl`, `019_rr`, `020_sl0`, `021_sl1`, `022_sla`, `023_slx`, `024_sr`, `025_call`, `026_call_ret`, `027_call_ret`, `028_call_ret_cond`, `029_fetch_store`, `030_fetch_store`, `031_fetch_store`, `032_stack_depth`, `033_mul`, `034_div`, `035_test`, `036_test`, `037_in_out`, `038_in_out`, `039_eint_reti`, `040_eint_reti`, `041_eint_reti` |
 | `sim_c_test_<name>` (3 targets) | `tb_OpenBlaze8` | One target per `sim/testbench-c/test_<name>.c` (generator type `c`): `uadd16`, `udiv16`, `umul16` |
 

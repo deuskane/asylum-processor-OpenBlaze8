@@ -331,6 +331,10 @@ targets:
     description     : Simulation env
     toplevel        : tb_OpenBlaze8
     default_tool    : ghdl
+    filesets_append :
+      - files_sim
+      - pbcc_dep
+    generate : [gen_asm_test_000_default]
     tools :
       ghdl :
         analyze_options : ["-Wall","-fsynopsys","-frelaxed"]
