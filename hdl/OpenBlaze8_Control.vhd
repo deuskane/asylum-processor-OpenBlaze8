@@ -164,6 +164,9 @@ architecture rtl of OpenBlaze8_Control is
   signal inst_rw_x     : std_logic;     -- Instruction Read/Write Reg X
 
   signal flag_write : std_logic;
+
+  signal io_read_en_r  : std_logic;
+  signal io_write_en_r : std_logic;
   
   signal cycle_0 : std_logic;
   signal cycle_1 : std_logic;
@@ -334,8 +337,25 @@ begin  -- rtl
   -- Input / Output
   -----------------------------------------------------------------------------
   io_access_en_o<= inst_input or inst_output;
-  io_read_en_o  <= inst_input  and cycle_1;
-  io_write_en_o <= inst_output and cycle_1;
+  io_read_en_o  <= io_read_en_r;
+  io_write_en_o <= io_write_en_r;
+
+  -- Strobes are registered (as in KCPSM3) : decoded in the first cycle,
+  -- driven by a flip-flop during the second cycle (no glitch, no
+  -- combinational path from the instruction to the strobes)
+  io_strobe: process (clock_i)
+  begin  -- process io_strobe
+    if clock_i'event and clock_i = '1' then
+      if reset_i = '1' then
+        -- synchronous reset
+        io_read_en_r  <= '0';
+        io_write_en_r <= '0';
+      elsif clock_enable_i = '1' then
+        io_read_en_r  <= inst_input  and cycle_0;
+        io_write_en_r <= inst_output and cycle_0;
+      end if;
+    end if;
+  end process io_strobe;
  
   -----------------------------------------------------------------------------
   -- RAM
