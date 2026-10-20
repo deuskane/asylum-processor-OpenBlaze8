@@ -1,4 +1,6 @@
 default                        : Default Target
+lint_ghdl                      : Lint with GHDL (-Wall analysis and elaboration of OpenBlaze8_synth_top)
+lint_ghdl_synth                : Synthesis check, ghdl --synth -Wall of OpenBlaze8_synth_top (4 configurations)
 sim                            : Simulation env
 sim_asm_test_000_default       : Simulation of the test sim/testbench-asm/test_000_default.psm
 sim_asm_test_001_test_ok       : Simulation of the test sim/testbench-asm/test_001_test_ok.psm
