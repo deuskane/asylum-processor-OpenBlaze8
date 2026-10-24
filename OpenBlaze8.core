@@ -310,13 +310,14 @@ filesets:
 
 
   #---------------------------------------
-  # Lint Files (post_run hook of lint_ghdl_synth)
+  syn:
   #---------------------------------------
-  files_lint:
-    files:
-      - syn/ghdl/OpenBlaze8_synth_top.vhd
-      - syn/ghdl/ghdl_synth.sh : {file_type : user, copyto : ghdl_synth.sh}
-    file_type : vhdlSource-2008
+    files        :
+      - syn/OpenBlaze8_wrapper.vhd
+    file_type    : vhdlSource-2008
+    logical_name : asylum
+    depend       :
+      - ">=asylum:utils:generators:2.8.0"
 
   # Next line is a pragma, don't modify
   #<FILESETS_BEGIN>
@@ -338,31 +339,58 @@ targets:
   #---------------------------------------
   # Lint : -Wall analysis and elaboration (empty simulation)
   #---------------------------------------
-  lint_ghdl :
+  lint_ghdl : &lint_ghdl
     << : *default
-    description     : Lint with GHDL (-Wall analysis and elaboration of OpenBlaze8_synth_top)
-    toplevel        : OpenBlaze8_synth_top
-    filesets_append : [files_lint]
+    description     : Lint with GHDL (-Wall analysis and elaboration of OpenBlaze8_wrapper)
+    toplevel        : asylum.OpenBlaze8_wrapper
+    filesets_append : [syn]
     default_tool    : ghdl
     tools :
       ghdl :
         analyze_options : ["-Wall"]
 
   #---------------------------------------
-  # Synthesis check : lint_ghdl, then ghdl --synth -Wall of OpenBlaze8_synth_top
-  # for each configuration of syn/ghdl/ghdl_synth.sh (post_run hook)
+  # Synthesis check : -Wall analysis, ghdl --synth -Wall and elaboration
+  # (no simulation) of OpenBlaze8_wrapper with the generics of the target.
+  # The pre_run hook (ghdl_synth.sh of asylum:utils:generators) adds
+  # ghdl_synth.mk to the edalize Makefile.
+  # FuseSoC merges tools in depth : analyze_options comes from lint_ghdl.
   #---------------------------------------
-  lint_ghdl_synth :
-    << : *default
-    description     : Synthesis check, ghdl --synth -Wall of OpenBlaze8_synth_top (4 configurations)
-    toplevel        : OpenBlaze8_synth_top
-    filesets_append : [files_lint]
-    default_tool    : ghdl
+  lint_ghdl_synth_default : &lint_ghdl_synth
+    << : *lint_ghdl
+    description     : Synthesis check of OpenBlaze8_wrapper, default generics
     tools :
       ghdl :
-        analyze_options : ["-Wall"]
+        run_options     : ["--no-run"]
     hooks :
-      post_run : [ghdl_synth]
+      pre_run : [ghdl_synth]
+
+  #---------------------------------------
+  lint_ghdl_synth_regfile_async :
+  #---------------------------------------
+    << : *lint_ghdl_synth
+    description     : Synthesis check of OpenBlaze8_wrapper, asynchronous register file
+    parameters      :
+      - REGFILE_SYNC_READ=false
+
+  #---------------------------------------
+  lint_ghdl_synth_picosoc :
+  #---------------------------------------
+    << : *lint_ghdl_synth
+    description     : Synthesis check of OpenBlaze8_wrapper, PicoSoC (RAM_DEPTH 256)
+    parameters      :
+      - RAM_DEPTH=256
+
+  #---------------------------------------
+  lint_ghdl_synth_small :
+  #---------------------------------------
+    << : *lint_ghdl_synth
+    description     : Synthesis check of OpenBlaze8_wrapper, small configuration
+    parameters      :
+      - STACK_DEPTH=8
+      - RAM_DEPTH=16
+      - ADDR_INST_WIDTH=8
+      - REGFILE_SYNC_READ=false
 
   sim : &sim
     << : *default
@@ -742,7 +770,38 @@ targets:
 scripts:
 
   #---------------------------------------
-  # Hook of lint_ghdl_synth (cwd = work_root)
+  # pre_run hook of lint_ghdl_synth_* (cwd = work_root)
   #---------------------------------------
   ghdl_synth :
     cmd : [bash, ghdl_synth.sh]
+
+#=========================================
+parameters :
+#=========================================
+
+  #---------------------------------------
+  # Generics of OpenBlaze8_wrapper (lint_ghdl_synth_*)
+  #---------------------------------------
+  STACK_DEPTH :
+    description : Depth of the call stack
+    datatype    : int
+    default     : 32
+    paramtype   : generic
+
+  RAM_DEPTH :
+    description : Depth of the scratchpad RAM
+    datatype    : int
+    default     : 64
+    paramtype   : generic
+
+  ADDR_INST_WIDTH :
+    description : Width of the instruction address
+    datatype    : int
+    default     : 10
+    paramtype   : generic
+
+  REGFILE_SYNC_READ :
+    description : true, register file with synchronous read
+    datatype    : bool
+    default     : true
+    paramtype   : generic

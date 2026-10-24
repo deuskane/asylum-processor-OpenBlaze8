@@ -1,12 +1,12 @@
 -------------------------------------------------------------------------------
--- Title      : OpenBlaze8_synth_top
+-- Title      : OpenBlaze8_wrapper
 -- Project    : Asylum
 -------------------------------------------------------------------------------
--- File       : OpenBlaze8_synth_top.vhd
+-- File       : OpenBlaze8_wrapper.vhd
 -- Author     : Mathieu Rosiere
 -------------------------------------------------------------------------------
 -- Description:
--- Synthesis check top (lint_ghdl, lint_ghdl_synth) : one instance of
+-- Wrapper (lint_ghdl, lint_ghdl_synth_*) : one instance of
 -- OpenBlaze8 (core_* ports) and one instance of sbi_OpenBlaze8 (sbi_* ports)
 -- with flat and constrained SBI ports (sbi_OpenBlaze8 has unconstrained SBI
 -- ports and cannot be a synthesis top). The SBI address / data width is
@@ -18,6 +18,7 @@
 -- Revisions  :
 -- Date        Version  Author   Description
 -- 2026-10-20  1.0      mrosiere Created
+-- 2026-10-24  1.1      mrosiere Was OpenBlaze8_synth_top, library asylum
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -25,7 +26,7 @@ use     ieee.std_logic_1164.all;
 library asylum;
 use     asylum.sbi_pkg.all;
 
-entity OpenBlaze8_synth_top is
+entity OpenBlaze8_wrapper is
   generic (
     STACK_DEPTH            : natural := 32;
     RAM_DEPTH              : natural := 64;
@@ -66,9 +67,9 @@ entity OpenBlaze8_synth_top is
     sbi_interrupt_i        : in  std_logic;
     sbi_interrupt_ack_o    : out std_logic
   );
-end entity OpenBlaze8_synth_top;
+end entity OpenBlaze8_wrapper;
 
-architecture rtl of OpenBlaze8_synth_top is
+architecture rtl of OpenBlaze8_wrapper is
 
   signal sbi_ini           : sbi_ini_t(addr (DATA_WIDTH-1 downto 0),
                                        wdata(DATA_WIDTH-1 downto 0));

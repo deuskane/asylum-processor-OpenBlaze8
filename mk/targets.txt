@@ -1,6 +1,9 @@
 default                        : Default Target
-lint_ghdl                      : Lint with GHDL (-Wall analysis and elaboration of OpenBlaze8_synth_top)
-lint_ghdl_synth                : Synthesis check, ghdl --synth -Wall of OpenBlaze8_synth_top (4 configurations)
+lint_ghdl                      : Lint with GHDL (-Wall analysis and elaboration of OpenBlaze8_wrapper)
+lint_ghdl_synth_default        : Synthesis check of OpenBlaze8_wrapper, default generics
+lint_ghdl_synth_picosoc        : Synthesis check of OpenBlaze8_wrapper, PicoSoC (RAM_DEPTH 256)
+lint_ghdl_synth_regfile_async  : Synthesis check of OpenBlaze8_wrapper, asynchronous register file
+lint_ghdl_synth_small          : Synthesis check of OpenBlaze8_wrapper, small configuration
 sim                            : Simulation env
 sim_asm_test_000_default       : Simulation of the test sim/testbench-asm/test_000_default.psm
 sim_asm_test_001_test_ok       : Simulation of the test sim/testbench-asm/test_001_test_ok.psm
