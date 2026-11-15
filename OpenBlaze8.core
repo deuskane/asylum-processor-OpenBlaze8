@@ -316,8 +316,9 @@ filesets:
       - syn/OpenBlaze8_wrapper.vhd
     file_type    : vhdlSource-2008
     logical_name : asylum
+    # ghdl_synth.sh / ghdl_synth.mk (pre_run hook of lint_ghdl_synth_*)
     depend       :
-      - ">=asylum:utils:generators:2.8.0"
+      - asylum:utils:ghdl_synth
 
   # Next line is a pragma, don't modify
   #<FILESETS_BEGIN>
@@ -352,7 +353,7 @@ targets:
   #---------------------------------------
   # Synthesis check : -Wall analysis, ghdl --synth -Wall and elaboration
   # (no simulation) of OpenBlaze8_wrapper with the generics of the target.
-  # The pre_run hook (ghdl_synth.sh of asylum:utils:generators) adds
+  # The pre_run hook (ghdl_synth.sh of asylum:utils:ghdl_synth) adds
   # ghdl_synth.mk to the edalize Makefile.
   # FuseSoC merges tools in depth : analyze_options comes from lint_ghdl.
   #---------------------------------------
