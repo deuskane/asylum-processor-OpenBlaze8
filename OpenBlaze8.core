@@ -300,7 +300,7 @@ filesets:
     depend       :
       - asylum:utils:pkg
       - ">=asylum:component:ram:1.0.0"
-      - ">=asylum:component:stack:1.0.0"
+      - ">=asylum:component:stack:1.2.0"
       
   #---------------------------------------
   # Testbench Files

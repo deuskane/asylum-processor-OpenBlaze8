@@ -172,7 +172,7 @@ The program ROM is generated from a `.psm` or `.c` file by the `pbcc_gen` genera
 | [hdl/OpenBlaze8_Decode.vhd](hdl/OpenBlaze8_Decode.vhd) | `OpenBlaze8_Decode` | entity | Instruction field extraction, instruction replaced by `LOAD sX, sX` on interrupt |
 | [hdl/OpenBlaze8_Control.vhd](hdl/OpenBlaze8_Control.vhd) | `OpenBlaze8_Control` | entity | Opcode decoder: PC / stack / register / ALU / flags / IO / RAM / interrupt controls |
 | [hdl/OpenBlaze8_Program_Counter.vhd](hdl/OpenBlaze8_Program_Counter.vhd) | `OpenBlaze8_Program_Counter` | entity | Program counter and next-PC multiplexer |
-| [hdl/OpenBlaze8_Stack.vhd](hdl/OpenBlaze8_Stack.vhd) | `OpenBlaze8_Stack` | entity | CALL/RETURN stack (`stack`, `OVERWRITE = 1`) |
+| [hdl/OpenBlaze8_Stack.vhd](hdl/OpenBlaze8_Stack.vhd) | `OpenBlaze8_Stack` | entity | CALL/RETURN stack (`stack`, `OVERWRITE = 1`, `CYCLIC_PTR = true`, synchronous reset `srst_i`) |
 | [hdl/OpenBlaze8_RegFile.vhd](hdl/OpenBlaze8_RegFile.vhd) | `OpenBlaze8_RegFile` | entity | Register file, two `ram_1r1w` written in parallel (ports X and Y) |
 | [hdl/OpenBlaze8_Operand.vhd](hdl/OpenBlaze8_Operand.vhd) | `OpenBlaze8_Operand` | entity | Second operand multiplexer (`sY` or constant) |
 | [hdl/OpenBlaze8_ALU.vhd](hdl/OpenBlaze8_ALU.vhd) | `OpenBlaze8_ALU` | entity | Arithmetic, logic, shift / rotate, load; next C / Z flags |
@@ -456,7 +456,7 @@ Conditions (`instruction[12:10]`): `0xx` always, `100` Z, `101` NZ, `110` C, `11
 - Each instruction takes two enabled clock cycles (`cycle_phase` 0 then 1). The PC is updated in the first cycle; register, flag, RAM writes and IO strobes happen in the second cycle.
 - The register file is two `ram_1r1w` (port X, port Y) sharing the write port, which gives two read ports and one write port.
 - Interrupt: when enabled, `interrupt_i` is registered and taken in the second cycle; during the next two cycles (`it_en`) the current instruction is replaced by `LOAD sX, sX`, the PC is pushed, the flags are saved, interrupts are disabled and the PC jumps to the last address (`0x3FF` with `ADDR_INST_WIDTH = 10`); `interrupt_ack` is asserted for one cycle. RETURNI pops the address without increment, so the inhibited instruction is re-executed.
-- The stack is an `asylum:component:stack` with `OVERWRITE = 1`: a push on a full stack overwrites the oldest entry.
+- The stack is an `asylum:component:stack` (>= 1.2.0) with `OVERWRITE = 1`: a push on a full stack overwrites the oldest entry; `CYCLIC_PTR = true`: a RETURN on an empty stack moves the pointer as in KCPSM3 (the next RETURN reads the word below); reset by its synchronous reset `srst_i` (`arstn_i` tied to `'1'`), as the `FDRE` stack pointer of KCPSM3. KCPSM3 also writes the current PC into the stack entry at its pointer on every instruction (32 entries, 31 levels): after more than 31 nested CALL, or a RETURN on an empty stack, it returns to an address that depends on these writes, which OpenBlaze8 does not reproduce (its stack keeps only the pushed addresses, `STACK_DEPTH` levels). Programs that stay within 31 levels and never return on an empty stack behave the same.
 - `sbi_OpenBlaze8` freezes the whole core (clock enable low) while an IO access is waiting for `sbi_tgt_i.ready`; `ics_o` follows the same enable so that a synchronous instruction ROM is frozen too.
 - Width limits, checked by elaboration assertions in `OpenBlaze8`: the immediate is 8 bits (`DATA_WIDTH = 8`), the address field is 10 bits (`ADDR_INST_WIDTH <= 10`), register fields are 4 bits (`REGFILE_DEPTH = 16`) and the RAM address is taken from the 8-bit second operand (`RAM_DEPTH <= 256`).
 
@@ -491,7 +491,7 @@ asylum-processor-OpenBlaze8/
 |------|-------------------|---------|
 | `asylum:utils:pkg` | `files_hdl` | Common packages (`sbi_pkg`, `math_pkg`) |
 | `asylum:component:ram` (`>=1.0.0`) | `files_hdl` | `ram_1r1w` for the register file and the scratch-pad RAM |
-| `asylum:component:stack` (`>=1.0.0`) | `files_hdl` | `stack` for the CALL/RETURN stack |
+| `asylum:component:stack` (`>=1.2.0`) | `files_hdl` | `stack` for the CALL/RETURN stack |
 | `xilinx:processor:kcpsm` (`>=1.30`) | `files_sim` | Reference model `kcpsm3` of the testbench |
 | `xilinx:primitive:unisim` (`>=11.1`) | `files_sim` | Xilinx primitives used by `kcpsm3` |
 | `asylum:utils:generators` | `pbcc_dep` | `pbcc_gen` generator (assembler / C to `OpenBlaze8_ROM`) |
