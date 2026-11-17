@@ -203,7 +203,6 @@ begin  -- architecture tb
 
     wait for 5*TB_PERIOD;
     ref_reset_i <= '0';
-    wait for 2*TB_PERIOD;
     dut_reset_i <= '0';
 
     -- end of process

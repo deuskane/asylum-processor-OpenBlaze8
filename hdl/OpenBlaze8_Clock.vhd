@@ -61,8 +61,8 @@ begin  -- rtl
     end if;
   end process reset;
 
---reset_internal <= reset_r(0);
-  reset_internal <= reset_i;
+  -- Internal reset is released 2 cycles after reset_i, as in KCPSM3
+  reset_internal <= reset_r(0);
   
   -----------------------------------------------------------------------------
   -- Clock divider
