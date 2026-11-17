@@ -17,6 +17,7 @@
 -- Revisions  :
 -- Date        Version  Author  Description
 -- 2014-05-21  1.0      mrosiere	Created
+-- 2026-11-16  1.1      mrosiere	Synchronous stack reset, cyclic pointer (KCPSM3)
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -48,13 +49,11 @@ end OpenBlaze8_Stack;
 
 architecture rtl of OpenBlaze8_Stack is
 
-  signal resetn             : std_logic;
   signal stack_push_ack     : std_logic;
   signal stack_pop_val      : std_logic;
   
 begin  -- rtl
 
-  resetn <= not reset_i;
   -----------------------------------------------------------------------------
   -- Stack output
   -----------------------------------------------------------------------------
@@ -64,12 +63,14 @@ begin  -- rtl
      WIDTH     => size_addr_inst
     ,DEPTH     => size_stack
     ,OVERWRITE => 1
+    ,CYCLIC_PTR=> true   -- KCPSM3 : a RETURN on an empty stack moves the pointer
      )
   -- =====[ Interfaces ]==========================
   port map(
     clk_i       => clock_i         
    ,cke_i       => clock_enable_i  
-   ,arstn_i     => resetn          
+   ,arstn_i     => '1'             -- KCPSM3 : every flip-flop has a synchronous reset
+   ,srst_i      => reset_i         
    ,push_val_i  => stack_push_val_i
    ,push_ack_o  => stack_push_ack  
    ,push_data_i => stack_push_data_i

@@ -21,9 +21,16 @@ CAPI=2:
 # 2025-11-22  1.3.0    mrosiere Add sbi wrapper
 # 2026-05-24  1.3.1    mrosiere Fix internal cke condition
 # 2026-06-15  1.3.2    mrosiere Delete MULTI_CYCLE parameter
+# 2026-11-17  2.0.0    mrosiere KCPSM3 timing : internal reset released 2
+#                               cycles after reset_i, synchronous reset of
+#                               the cycle phase and of the stack (stack >=
+#                               1.2.0, cyclic pointer), registered
+#                               read_strobe / write_strobe,
+#                               REGFILE_SYNC_READ = false by default,
+#                               generic checks, lint_ghdl targets
 #-----------------------------------------------------------------------------
 
-name        : asylum:processor:OpenBlaze8:1.3.2
+name        : asylum:processor:OpenBlaze8:2.0.0
 description : OpenBlaze8
 
 generate:
@@ -300,7 +307,7 @@ filesets:
     depend       :
       - asylum:utils:pkg
       - ">=asylum:component:ram:1.0.0"
-      - ">=asylum:component:stack:1.0.0"
+      - ">=asylum:component:stack:1.2.0"
       
   #---------------------------------------
   # Testbench Files
