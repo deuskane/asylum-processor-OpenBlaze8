@@ -70,7 +70,7 @@ The `sbi_OpenBlaze8` wrapper maps the PicoBlaze IO port interface onto the Asylu
 - ZERO and CARRY flags, saved on interrupt entry and restored by RETURNI
 - One interrupt input, vector at the last program address (all ones), `interrupt_ack` output
 - 256 IO ports, mapped on the SBI bus by `sbi_OpenBlaze8` (8-bit address, 8-bit data, wait states through `sbi_tgt_i.ready`)
-- Verified in lock-step against the original Xilinx `kcpsm3` netlist with 42 assembler and 3 C test programs
+- Verified in lock-step against the original Xilinx `kcpsm3` netlist with 43 assembler and 3 C test programs
 
 ## Block Diagram
 
@@ -95,7 +95,7 @@ Top-level entity: **`sbi_OpenBlaze8`** ([hdl/sbi_OpenBlaze8.vhd](hdl/sbi_OpenBla
 | `DATA_WIDTH` | natural | `8` | Data path width, must be 8 (instruction format, checked at elaboration) |
 | `ADDR_INST_WIDTH` | natural | `10` | Program address width (1 to 10, the immediate field width, checked at elaboration) |
 | `REGFILE_DEPTH` | natural | `16` | Number of registers, must be 16 (4-bit register fields, checked at elaboration) |
-| `REGFILE_SYNC_READ` | boolean | `false` | Register file read mode: `true` synchronous, `false` asynchronous (note: the default of the bare `OpenBlaze8` is `true`) |
+| `REGFILE_SYNC_READ` | boolean | `false` | Register file read mode: `false` asynchronous (KCPSM3 timing: `port_id` / `out_port` valid during both cycles of INPUT / OUTPUT), `true` synchronous (`port_id` of an indirect access `(sY)` and `out_port` only valid during the strobe cycle: `in_port` must be decoded combinationally from `port_id`; the SBI bus is not affected, `cs` is only active in that cycle) |
 
 ### Ports
 
@@ -186,7 +186,7 @@ All sub-modules have `clock_i`, `clock_enable_i` and `reset_i` (active high) por
 
 ### OpenBlaze8
 
-Processor core with the KCPSM3 port list (plus clock enable). Generics are those of `sbi_OpenBlaze8` (same names and defaults, except `REGFILE_SYNC_READ := true`).
+Processor core with the KCPSM3 port list (plus clock enable). Generics are those of `sbi_OpenBlaze8` (same names and defaults).
 
 | Name | Direction | Type | Description |
 |------|-----------|------|-------------|
@@ -240,7 +240,7 @@ Generic `multi_cycle : natural := 1` (unused).
 | `regx_read_en_o`, `regx_write_en_o`, `regy_read_en_o` | out | std_logic | Register file enables (write in second cycle) |
 | `alu_op_arith_cy_o`, `alu_op_arith_o`, `alu_op_logic_o`, `alu_op_rotate_shift_right_o`, `alu_op_rotate_shift_o`, `alu_op_rotate_shift_cst_o`, `alu_op_type_o`, `alu_op_flag_c_o` | out | std_logic / std_logic_vector(2 downto 1) | ALU operation |
 | `result_mux_o` | out | std_logic_vector(2 downto 1) | Write-back source |
-| `io_access_en_o`, `io_read_en_o`, `io_write_en_o` | out | std_logic | IO controls (strobes in second cycle) |
+| `io_access_en_o`, `io_read_en_o`, `io_write_en_o` | out | std_logic | IO controls (strobes registered at the end of the first cycle, asserted during the second cycle) |
 | `ram_read_en_o`, `ram_write_en_o` | out | std_logic | Scratch-pad controls |
 | `flag_c_i`, `flag_z_i` | in | std_logic | Current flags (branch condition) |
 | `flag_write_c_o`, `flag_write_z_o`, `flag_save_o`, `flag_restore_o` | out | std_logic | Flag write, save (interrupt), restore (RETURNI) |
@@ -358,11 +358,11 @@ Programmer-visible state: `REGFILE_DEPTH` 8-bit registers `s0`..`sF`, the ZERO a
 
 | File | DUT | Description |
 |------|-----|-------------|
-| [sim/tb_OpenBlaze8.vhd](sim/tb_OpenBlaze8.vhd) | `OpenBlaze8` | Lock-step comparison with the Xilinx reference `kcpsm3` (`xilinx:processor:kcpsm`) running the same generated ROM (`OpenBlaze8_ROM`). On every falling edge it checks `address`, `interrupt_ack`, `read_strobe`, `write_strobe`, `port_id` and `out_port`. A 256-byte IO memory models the ports (SWITCH `0x00` reads back `not LED 0x20`), writing `n` to port `0xFF` raises an interrupt after `n` cycles, ports `0xC0`..`0xC3` form a 32-bit watch value printed in the log, and port `0xE0` ends the test (`0xFA` = Test OK, `0xED` = Test KO). Timeout 10000 cycles of 10 ns |
+| [sim/tb_OpenBlaze8.vhd](sim/tb_OpenBlaze8.vhd) | `OpenBlaze8` | Lock-step comparison with the Xilinx reference `kcpsm3` (`xilinx:processor:kcpsm`) running the same generated ROM (`OpenBlaze8_ROM`), with two DUTs: `REGFILE_SYNC_READ = false` and `true`. Each agent reads the IO memory with its own `port_id`: registered at each clock edge (pipelined, KCPSM3 timing) for the reference and the asynchronous DUT, combinational for the synchronous DUT; for the asynchronous DUT `port_id` / `out_port` are also checked in the cycle before the strobe. On every falling edge it checks `address`, `interrupt_ack`, `read_strobe`, `write_strobe`, `port_id` and `out_port`. A 256-byte IO memory models the ports (SWITCH `0x00` reads back `not LED 0x20`), writing `n` to port `0xFF` raises an interrupt after `n` cycles, ports `0xC0`..`0xC3` form a 32-bit watch value printed in the log, and port `0xE0` ends the test (`0xFA` = Test OK, `0xED` = Test KO). Timeout 10000 cycles of 10 ns |
 
 Test programs:
 
-- [sim/testbench-asm/](sim/testbench-asm/): 42 assembler tests `test_000_default.psm` .. `test_041_eint_reti.psm` (pBlazIDE syntax): jumps, COMPARE, AND / OR / XOR, ADD / SUB (register and immediate), RL / RR / SL0 / SL1 / SLA / SLX / SR, CALL / RETURN (conditional), FETCH / STORE, stack depth, 16-bit multiplication / division, TEST, INPUT / OUTPUT, ENABLE INTERRUPT / RETURNI.
+- [sim/testbench-asm/](sim/testbench-asm/): 43 assembler tests `test_000_default.psm` .. `test_042_in_out_indirect.psm` (pBlazIDE syntax): jumps, COMPARE, AND / OR / XOR, ADD / SUB (register and immediate), RL / RR / SL0 / SL1 / SLA / SLX / SR, CALL / RETURN (conditional), FETCH / STORE, stack depth, 16-bit multiplication / division, TEST, INPUT / OUTPUT (direct and indirect `(sY)`), ENABLE INTERRUPT / RETURNI.
 - [sim/testbench-c/](sim/testbench-c/): 3 C tests (`test_uadd16.c`, `test_udiv16.c`, `test_umul16.c`) using [testbench.h](sim/testbench-c/testbench.h) (`PORT_WR` / `PORT_RD`, `TEST_OK` / `TEST_KO`, `watch32b`), compiled with `--verbose --all-callee-saves`.
 
 ### Targets
@@ -376,7 +376,7 @@ Test programs:
 | `lint_ghdl_synth_picosoc` | `asylum.OpenBlaze8_wrapper` | Synthesis check, PicoSoC (RAM_DEPTH 256): `RAM_DEPTH=256` |
 | `lint_ghdl_synth_small` | `asylum.OpenBlaze8_wrapper` | Synthesis check, small configuration: `STACK_DEPTH=8`, `RAM_DEPTH=16`, `ADDR_INST_WIDTH=8`, `REGFILE_SYNC_READ=false` |
 | `sim` | `tb_OpenBlaze8` | Base of the simulation targets (GHDL options `-Wall -fsynopsys -frelaxed`, `--ieee-asserts=disable`) with the testbench files; runs `test_000_default.psm` by default |
-| `sim_asm_test_<NNN>_<name>` (42 targets) | `tb_OpenBlaze8` | One target per `sim/testbench-asm/test_<NNN>_<name>.psm` (generator `gen_asm_test_<NNN>_<name>`, type `pblazeide`): `000_default`, `001_test_ok`, `002_jump`, `003_jump`, `004_comp`, `005_comp`, `006_and`, `007_or`, `008_xor`, `009_andi`, `010_ori`, `011_xori`, `012_add`, `013_addi`, `014_sub`, `015_subi`, `016_comp`, `017_compi`, `018_rl`, `019_rr`, `020_sl0`, `021_sl1`, `022_sla`, `023_slx`, `024_sr`, `025_call`, `026_call_ret`, `027_call_ret`, `028_call_ret_cond`, `029_fetch_store`, `030_fetch_store`, `031_fetch_store`, `032_stack_depth`, `033_mul`, `034_div`, `035_test`, `036_test`, `037_in_out`, `038_in_out`, `039_eint_reti`, `040_eint_reti`, `041_eint_reti` |
+| `sim_asm_test_<NNN>_<name>` (43 targets) | `tb_OpenBlaze8` | One target per `sim/testbench-asm/test_<NNN>_<name>.psm` (generator `gen_asm_test_<NNN>_<name>`, type `pblazeide`): `000_default`, `001_test_ok`, `002_jump`, `003_jump`, `004_comp`, `005_comp`, `006_and`, `007_or`, `008_xor`, `009_andi`, `010_ori`, `011_xori`, `012_add`, `013_addi`, `014_sub`, `015_subi`, `016_comp`, `017_compi`, `018_rl`, `019_rr`, `020_sl0`, `021_sl1`, `022_sla`, `023_slx`, `024_sr`, `025_call`, `026_call_ret`, `027_call_ret`, `028_call_ret_cond`, `029_fetch_store`, `030_fetch_store`, `031_fetch_store`, `032_stack_depth`, `033_mul`, `034_div`, `035_test`, `036_test`, `037_in_out`, `038_in_out`, `039_eint_reti`, `040_eint_reti`, `041_eint_reti`, `042_in_out_indirect` |
 | `sim_c_test_<name>` (3 targets) | `tb_OpenBlaze8` | One target per `sim/testbench-c/test_<name>.c` (generator type `c`): `uadd16`, `udiv16`, `umul16` |
 
 A `lint_ghdl_synth_*` target is `lint_ghdl` with the generics of its configuration (FuseSoC `parameters`) and a `pre_run` hook, `ghdl_synth.sh` of `asylum:utils:ghdl_synth`, which adds `include ghdl_synth.mk` to the Makefile generated by edalize. The run step (`make run EXTRA_OPTIONS=<generics>`) then runs, in the build directory:
@@ -481,7 +481,7 @@ asylum-processor-OpenBlaze8/
 │   └── OpenBlaze8_wrapper.vhd   # Lint / synthesis check wrapper (flat SBI ports)
 └── sim/
     ├── tb_OpenBlaze8.vhd       # Lock-step testbench (DUT vs kcpsm3)
-    ├── testbench-asm/          # 42 assembler tests test_000 .. test_041 (*.psm)
+    ├── testbench-asm/          # 43 assembler tests test_000 .. test_042 (*.psm)
     └── testbench-c/            # testbench.h + test_uadd16.c, test_udiv16.c, test_umul16.c
 ```
 
