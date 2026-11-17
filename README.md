@@ -40,7 +40,7 @@
 
 **8-bit soft processor, cycle-accurate clone of the Xilinx PicoBlaze-3 (KCPSM3), written in portable RTL with an SBI bus wrapper.**
 
-VLNV: `asylum:processor:OpenBlaze8:1.3.2`
+VLNV: `asylum:processor:OpenBlaze8:2.0.0`
 
 ## Table of Contents
 
@@ -403,7 +403,7 @@ make clean                         # remove build/ and log/
 Equivalent FuseSoC command:
 
 ```bash
-fusesoc --cores-root . run --build-root build --target sim_asm_test_012_add asylum:processor:OpenBlaze8:1.3.2
+fusesoc --cores-root . run --build-root build --target sim_asm_test_012_add asylum:processor:OpenBlaze8:2.0.0
 ```
 
 Prerequisites: the test programs are converted into `OpenBlaze8_ROM` by the `pbcc_gen` generator (`asylum:utils:generators`), which needs `PICOASM_HOME` (picoasm assembler, `bin/picoasm` and the `ROM_form.vhd` templates) and, for the C tests, `PBCC_HOME` (SDCC with the PicoBlaze back-end, `bin/sdcc`). Outside CI, GHDL writes a waveform `dut.fst`.
