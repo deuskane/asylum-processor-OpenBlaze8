@@ -267,4 +267,58 @@ jobs:
     with:
       name: sim_sbi_regfile_sync
 
+  lint_ghdl:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: lint_ghdl
+
+  lint_ghdl_synth_core_default:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: lint_ghdl_synth_core_default
+
+  lint_ghdl_synth_core_small:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: lint_ghdl_synth_core_small
+
+  lint_ghdl_synth_sbi_default:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: lint_ghdl_synth_sbi_default
+
+  lint_ghdl_synth_sbi_ram256:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: lint_ghdl_synth_sbi_ram256
+
+  syn_core_default:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: syn_core_default
+
+  syn_core_small:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: syn_core_small
+
+  syn_sbi_default:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: syn_sbi_default
+
+  syn_sbi_ram256:
+    uses: deuskane/asylum-ci/.github/workflows/vhdl-ci.yml@main
+    with:
+      name: syn_sbi_ram256
+
+  badges:
+    needs: [sim_core, sim_core_regfile_sync, sim_core_test_000_default, sim_core_test_001_test_ok, sim_core_test_002_jump, sim_core_test_003_jump, sim_core_test_004_comp, sim_core_test_005_comp, sim_core_test_006_and, sim_core_test_007_or, sim_core_test_008_xor, sim_core_test_009_andi, sim_core_test_010_ori, sim_core_test_011_xori, sim_core_test_012_add, sim_core_test_013_addi, sim_core_test_014_sub, sim_core_test_015_subi, sim_core_test_016_comp, sim_core_test_017_compi, sim_core_test_018_rl, sim_core_test_019_rr, sim_core_test_020_sl0, sim_core_test_021_sl1, sim_core_test_022_sla, sim_core_test_023_slx, sim_core_test_024_sr, sim_core_test_025_call, sim_core_test_026_call_ret, sim_core_test_027_call_ret, sim_core_test_028_call_ret_cond, sim_core_test_029_fetch_store, sim_core_test_030_fetch_store, sim_core_test_031_fetch_store, sim_core_test_032_stack_depth, sim_core_test_033_mul, sim_core_test_034_div, sim_core_test_035_test, sim_core_test_036_test, sim_core_test_037_in_out, sim_core_test_038_in_out, sim_core_test_039_eint_reti, sim_core_test_040_eint_reti, sim_core_test_041_eint_reti, sim_core_test_042_in_out_indirect, sim_core_test_043_carry, sim_core_test_044_reti_flags, sim_core_test_045_int_reset, sim_core_test_uadd16, sim_core_test_udiv16, sim_core_test_umul16, sim_sbi_regfile_sync, lint_ghdl, lint_ghdl_synth_core_default, lint_ghdl_synth_core_small, lint_ghdl_synth_sbi_default, lint_ghdl_synth_sbi_ram256, syn_core_default, syn_core_small, syn_sbi_default, syn_sbi_ram256]
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    uses: deuskane/asylum-ci/.github/workflows/badges.yml@main
+    with:
+      results: ${{ toJSON(needs) }}
+
 #<GENERATE_END>
