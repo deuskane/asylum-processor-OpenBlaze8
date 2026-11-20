@@ -1,0 +1,406 @@
+<mxfile host="Electron">
+  <diagram name="Overview" id="ob8-ov">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="ob8-ov-1" value="generics: STACK_DEPTH, RAM_DEPTH, DATA_WIDTH (8), ADDR_INST_WIDTH (&amp;lt;= 10), REGFILE_DEPTH (16), REGFILE_SYNC_READ" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=10;fontColor=#666666;fontStyle=2;align=center;" vertex="1" parent="1">
+          <mxGeometry x="160" y="120" width="840" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-2" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="160" width="860" height="560" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-3" value="sbi_OpenBlaze8" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="160" y="160" width="120" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-4" value="cke = cke_i and (not cs or ready)&lt;br&gt;ics_o = cke" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="190" y="190" width="250" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-5" value="cs = re or we" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="760" y="190" width="170" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-6" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="250" width="820" height="450" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-7" value="OpenBlaze8" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="180" y="250" width="100" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-8" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="200" y="290" width="120" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-9" value="Clock" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="200" y="290" width="51" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-10" value="cycle phase&lt;br&gt;reset (2 cycles)" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="204" y="312" width="112" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-11" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="350" y="290" width="120" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-12" value="Decode" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="350" y="290" width="58" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-13" value="opcode, sX, sY,&lt;br&gt;kk / aaa" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="354" y="312" width="112" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-14" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="500" y="280" width="210" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-15" value="Control" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="500" y="280" width="65" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-16" value="" style="points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;fillColor=#FF6A00;strokeColor=none;shape=mxgraph.alibaba_cloud.multi-cloud_finops;" vertex="1" parent="1">
+          <mxGeometry x="515" y="310" width="45" height="32.14" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-17" value="enables of every&lt;br&gt;block, branch&lt;br&gt;condition" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="565" y="300" width="140" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-18" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="740" y="290" width="120" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-19" value="Interrupt" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="740" y="290" width="79" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-20" value="mask, sample,&lt;br&gt;ack" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="744" y="312" width="112" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-21" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="200" y="420" width="120" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-22" value="Program_Counter" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="200" y="420" width="120" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-23" value="PC, next PC" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="204" y="442" width="112" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-24" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="200" y="540" width="120" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-25" value="Stack" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="200" y="540" width="51" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-26" value="return&lt;br&gt;addresses" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="204" y="562" width="112" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-27" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="350" y="420" width="120" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-28" value="RegFile" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="350" y="420" width="65" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-29" value="s0 .. sF&lt;br&gt;(2 ram_1r1w)" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="354" y="442" width="112" height="66" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-30" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="500" y="420" width="90" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-31" value="Operand" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="500" y="420" width="65" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-32" value="sY or kk" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="504" y="442" width="82" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-33" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="620" y="410" width="110" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-34" value="ALU" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="620" y="410" width="37" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-35" value="arith, logic,&lt;br&gt;shift, load" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="624" y="432" width="102" height="66" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-36" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="760" y="410" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-37" value="Flags" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="760" y="410" width="51" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-38" value="C, Z&lt;br&gt;(+ copies)" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="764" y="432" width="92" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-39" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="760" y="500" width="100" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-40" value="Result" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="760" y="500" width="58" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-41" value="ALU / RAM / IO" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="764" y="522" width="92" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-42" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="500" y="560" width="120" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-43" value="RAM" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="500" y="560" width="37" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-44" value="scratch-pad&lt;br&gt;RAM_DEPTH bytes" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="504" y="582" width="112" height="46" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-45" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="650" y="620" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-46" value="LoadStore" style="rounded=0;whiteSpace=wrap;html=1;fontStyle=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="650" y="620" width="79" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-47" value="port_id, out_port,&lt;br&gt;strobes" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="654" y="642" width="112" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-48" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="470" y="325" as="sourcePoint"/>
+            <mxPoint x="500" y="325" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-49" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="360" as="sourcePoint"/>
+            <mxPoint x="410" y="420" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-50" value="sX, sY" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=10;align=center;" vertex="1" parent="1">
+          <mxGeometry x="415" y="380" width="40" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-51" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="450" y="360" as="sourcePoint"/>
+            <mxPoint x="520" y="420" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="450" y="390"/>
+              <mxPoint x="520" y="390"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-52" value="kk" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=10;align=center;" vertex="1" parent="1">
+          <mxGeometry x="460" y="372" width="30" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-53" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="470" y="450" as="sourcePoint"/>
+            <mxPoint x="500" y="450" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-54" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="450" as="sourcePoint"/>
+            <mxPoint x="620" y="450" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-55" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="470" y="490" as="sourcePoint"/>
+            <mxPoint x="620" y="490" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="490" y="490"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-56" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="730" y="440" as="sourcePoint"/>
+            <mxPoint x="760" y="440" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-57" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="730" y="480" as="sourcePoint"/>
+            <mxPoint x="760" y="520" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="745" y="480"/>
+              <mxPoint x="745" y="520"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-58" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="860" y="530" as="sourcePoint"/>
+            <mxPoint x="440" y="510" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="900" y="530"/>
+              <mxPoint x="900" y="690"/>
+              <mxPoint x="440" y="690"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-59" value="write back" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=10;align=center;" vertex="1" parent="1">
+          <mxGeometry x="905" y="600" width="80" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-60" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="545" y="490" as="sourcePoint"/>
+            <mxPoint x="545" y="560" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-61" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="580" as="sourcePoint"/>
+            <mxPoint x="780" y="560" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="780" y="580"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-62" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="740" y="620" as="sourcePoint"/>
+            <mxPoint x="830" y="560" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="740" y="600"/>
+              <mxPoint x="830" y="600"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-63" value="in_port" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=10;align=center;" vertex="1" parent="1">
+          <mxGeometry x="745" y="600" width="50" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-64" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="410" as="sourcePoint"/>
+            <mxPoint x="650" y="370" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="810" y="390"/>
+              <mxPoint x="650" y="390"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-65" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="740" y="325" as="sourcePoint"/>
+            <mxPoint x="710" y="325" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-66" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=classic;startFill=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="260" y="490" as="sourcePoint"/>
+            <mxPoint x="260" y="540" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-67" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jumpStyle=arc;jumpSize=8;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="360" as="sourcePoint"/>
+            <mxPoint x="320" y="455" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="480" y="400"/>
+              <mxPoint x="340" y="400"/>
+              <mxPoint x="340" y="455"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-68" value="next PC" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=10;align=center;" vertex="1" parent="1">
+          <mxGeometry x="325" y="380" width="110" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-69" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="100" y="200" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-70" value="clk_i, cke_i, arstn_i" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;align=left;" vertex="1" parent="1">
+          <mxGeometry x="10" y="180" width="160" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-71" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="100" y="315" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-72" value="interrupt_i" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;align=left;" vertex="1" parent="1">
+          <mxGeometry x="10" y="295" width="160" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-73" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="120" y="210" as="sourcePoint"/>
+            <mxPoint x="190" y="210" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-74" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="120" y="325" as="sourcePoint"/>
+            <mxPoint x="740" y="325" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="140" y="325"/>
+              <mxPoint x="140" y="270"/>
+              <mxPoint x="800" y="270"/>
+              <mxPoint x="800" y="290"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-75" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="100" y="465" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-76" value="iaddr_o, ics_o" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;align=left;" vertex="1" parent="1">
+          <mxGeometry x="10" y="440" width="120" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-77" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="475" as="sourcePoint"/>
+            <mxPoint x="120" y="475" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-78" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="100" y="375" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-79" value="idata_i" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;align=left;" vertex="1" parent="1">
+          <mxGeometry x="10" y="350" width="120" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-80" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="120" y="385" as="sourcePoint"/>
+            <mxPoint x="350" y="340" as="targetPoint"/>
+            <Array as="points">
+              <mxPoint x="340" y="385"/>
+              <mxPoint x="340" y="340"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-81" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="315" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-82" value="interrupt_ack_o" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="310" width="130" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-83" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="860" y="325" as="sourcePoint"/>
+            <mxPoint x="1060" y="325" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-84" value="M" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="640" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-85" value="S" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="640" width="20" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-86" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=classic;startFill=1;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1020" y="650" as="sourcePoint"/>
+            <mxPoint x="1100" y="650" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-87" value="SBI" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;align=center;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="620" width="60" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-88" value="addr = port_id, wdata = out_port,&lt;br&gt;rdata = in_port, re / we = strobes" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=10;fontColor=#666666;fontStyle=2;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="670" width="180" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-89" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="770" y="650" as="sourcePoint"/>
+            <mxPoint x="1000" y="650" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-90" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="845" y="250" as="sourcePoint"/>
+            <mxPoint x="845" y="230" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-91" value="strobes" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=10;align=center;" vertex="1" parent="1">
+          <mxGeometry x="850" y="232" width="60" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="ob8-ov-92" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="760" y="210" as="sourcePoint"/>
+            <mxPoint x="440" y="210" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ob8-ov-93" value="clock_i, clock_enable_i, reset_i of every block not drawn" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;verticalAlign=middle;rounded=0;fontSize=10;fontColor=#666666;fontStyle=2;align=left;" vertex="1" parent="1">
+          <mxGeometry x="870" y="730" width="300" height="20" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,13 @@
+{ "signal": [
+  { "name": "clock_i",         "wave": "p......." },
+  { "name": "interrupt_i",     "wave": "01...0.." },
+  { "name": "address_o",       "wave": "=.=.=.=.", "data": ["n", "n+1", "0x3FF", "isr"] },
+  { "name": "instruction_i",   "wave": "x4.5.3.6", "data": ["instruction n", "n+1 replaced (no effect)", "JUMP isr", "isr"] },
+  { "name": "interrupt_ack_o", "wave": "0...10.." },
+  {},
+  { "name": "stack",           "wave": "=...4...", "data": ["", "push n+1"] },
+  { "name": "flags, enable",   "wave": "=...4...", "data": ["", "C, Z saved, interrupts disabled"] }
+  ],
+  "head": { "text": "Interrupt : n+1 replaced, PC = 0x3FF, RETURNI returns to n+1", "tick": 0 },
+  "config": { "hscale": 2 }
+}
