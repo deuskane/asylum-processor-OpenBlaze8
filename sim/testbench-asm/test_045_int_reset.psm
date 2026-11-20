@@ -1,0 +1,93 @@
+; ;------------------------------------
+; ; Test 045
+; ; Interrupts disabled at reset, DINT, then EINT
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $e0
+it_id               EQU       $ff
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $000
+main:
+                    LOAD      s5, $00             ; interrupts taken
+                    LOAD      s1, $04
+                    OUT       s1, it_id           ; interrupt 4 cycles later
+                    LOAD      s2, $10
+wait_reset:
+                    SUB       s2, $01
+                    JUMP      NZ, wait_reset
+                    COMP      s5, $00             ; disabled after reset
+                    JUMP      NZ, test_ko
+
+                    EINT                          ; pending interrupt taken
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    COMP      s5, $01
+                    JUMP      NZ, test_ko
+
+                    DINT
+                    OUT       s1, it_id
+                    LOAD      s2, $10
+wait_dint:
+                    SUB       s2, $01
+                    JUMP      NZ, wait_dint
+                    COMP      s5, $01             ; disabled by DINT
+                    JUMP      NZ, test_ko
+                    EINT
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    COMP      s5, $02
+                    JUMP      NZ, test_ko
+
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt Handler : count
+; ;------------------------------------
+it_handler:
+                    ADD       s5, $01
+                    RETI      ENABLE
+
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko:
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+test_ok:
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    JUMP      it_handler
