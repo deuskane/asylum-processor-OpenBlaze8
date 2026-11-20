@@ -394,12 +394,19 @@ filesets:
   syn:
   #---------------------------------------
     files        :
-      - syn/OpenBlaze8_wrapper.vhd
+      - syn/sbi_OpenBlaze8_wrapper.vhd
     file_type    : vhdlSource-2008
     logical_name : asylum
     # ghdl_synth.sh / ghdl_synth.mk (pre_run hook of lint_ghdl_synth_*)
     depend       :
       - asylum:utils:ghdl_synth
+
+  #---------------------------------------
+  syn_yosys:
+  #---------------------------------------
+    # yosys_synth.sh / yosys_synth.mk / yosys_synth.py (pre_run hook of syn_*)
+    depend       :
+      - asylum:utils:yosys_synth
 
   # Next line is a pragma, don't modify
   #<FILESETS_BEGIN>
@@ -419,12 +426,13 @@ targets:
     default_tool    : ghdl
 
   #---------------------------------------
-  # Lint : -Wall analysis and elaboration (empty simulation)
+  # Lint : -Wall analysis and elaboration (empty simulation) of
+  # sbi_OpenBlaze8_wrapper (sbi_OpenBlaze8 and the core)
   #---------------------------------------
   lint_ghdl : &lint_ghdl
     << : *default
-    description     : Lint with GHDL (-Wall analysis and elaboration of OpenBlaze8_wrapper)
-    toplevel        : asylum.OpenBlaze8_wrapper
+    description     : Lint with GHDL (-Wall analysis and elaboration of sbi_OpenBlaze8_wrapper)
+    toplevel        : asylum.sbi_OpenBlaze8_wrapper
     filesets_append : [syn]
     default_tool    : ghdl
     tools :
@@ -433,14 +441,17 @@ targets:
 
   #---------------------------------------
   # Synthesis check : -Wall analysis, ghdl --synth -Wall and elaboration
-  # (no simulation) of OpenBlaze8_wrapper with the generics of the target.
+  # (no simulation) of a variant (OpenBlaze8 : lint_ghdl_synth_core_*,
+  # sbi_OpenBlaze8_wrapper : lint_ghdl_synth_sbi_*) with the generics of the
+  # target.
   # The pre_run hook (ghdl_synth.sh of asylum:utils:ghdl_synth) adds
   # ghdl_synth.mk to the edalize Makefile.
   # FuseSoC merges tools in depth : analyze_options comes from lint_ghdl.
   #---------------------------------------
-  lint_ghdl_synth_default : &lint_ghdl_synth
+  lint_ghdl_synth_core_default : &lint_ghdl_synth
     << : *lint_ghdl
-    description     : Synthesis check of OpenBlaze8_wrapper, default generics
+    description     : Synthesis check of OpenBlaze8, default generics (KCPSM3, asynchronous register file)
+    toplevel        : asylum.OpenBlaze8
     tools :
       ghdl :
         run_options     : ["--no-run"]
@@ -448,31 +459,74 @@ targets:
       pre_run : [ghdl_synth]
 
   #---------------------------------------
-  lint_ghdl_synth_regfile_async :
+  lint_ghdl_synth_core_small :
   #---------------------------------------
     << : *lint_ghdl_synth
-    description     : Synthesis check of OpenBlaze8_wrapper, asynchronous register file
-    parameters      :
-      - REGFILE_SYNC_READ=false
-
-  #---------------------------------------
-  lint_ghdl_synth_picosoc :
-  #---------------------------------------
-    << : *lint_ghdl_synth
-    description     : Synthesis check of OpenBlaze8_wrapper, PicoSoC (RAM_DEPTH 256)
-    parameters      :
-      - RAM_DEPTH=256
-
-  #---------------------------------------
-  lint_ghdl_synth_small :
-  #---------------------------------------
-    << : *lint_ghdl_synth
-    description     : Synthesis check of OpenBlaze8_wrapper, small configuration
+    description     : Synthesis check of OpenBlaze8, small configuration (stack 8, RAM 16, 256 instructions)
     parameters      :
       - STACK_DEPTH=8
       - RAM_DEPTH=16
       - ADDR_INST_WIDTH=8
-      - REGFILE_SYNC_READ=false
+
+  #---------------------------------------
+  lint_ghdl_synth_sbi_default : &lint_ghdl_synth_sbi
+  #---------------------------------------
+    << : *lint_ghdl_synth
+    description     : Synthesis check of sbi_OpenBlaze8_wrapper, default generics (asynchronous register file)
+    toplevel        : asylum.sbi_OpenBlaze8_wrapper
+
+  #---------------------------------------
+  lint_ghdl_synth_sbi_ram256 :
+  #---------------------------------------
+    << : *lint_ghdl_synth_sbi
+    description     : Synthesis check of sbi_OpenBlaze8_wrapper, RAM 256, synchronous register file (PicoSoC)
+    parameters      :
+      - RAM_DEPTH=256
+      - REGFILE_SYNC_READ=true
+
+  #---------------------------------------
+  # Synthesis : size of a variant with the generics of the target, Xilinx
+  # Artix-7 (LUT, FF, BRAM, DSP) and sky130 (area), by Yosys and its GHDL
+  # plugin. Same configurations as lint_ghdl_synth_*.
+  # The pre_run hook (yosys_synth.sh of asylum:utils:yosys_synth) adds
+  # yosys_synth.mk to the edalize Makefile.
+  #---------------------------------------
+  syn_core_default : &syn
+    << : *lint_ghdl
+    description     : Synthesis (Artix-7, sky130) of OpenBlaze8, default generics (KCPSM3, asynchronous register file)
+    toplevel        : asylum.OpenBlaze8
+    filesets_append : [syn, syn_yosys]
+    tools :
+      ghdl :
+        run_options     : ["--no-run"]
+    hooks :
+      pre_run : [yosys_synth]
+
+  #---------------------------------------
+  syn_core_small :
+  #---------------------------------------
+    << : *syn
+    description     : Synthesis (Artix-7, sky130) of OpenBlaze8, small configuration (stack 8, RAM 16, 256 instructions)
+    parameters      :
+      - STACK_DEPTH=8
+      - RAM_DEPTH=16
+      - ADDR_INST_WIDTH=8
+
+  #---------------------------------------
+  syn_sbi_default : &syn_sbi
+  #---------------------------------------
+    << : *syn
+    description     : Synthesis (Artix-7, sky130) of sbi_OpenBlaze8_wrapper, default generics (asynchronous register file)
+    toplevel        : asylum.sbi_OpenBlaze8_wrapper
+
+  #---------------------------------------
+  syn_sbi_ram256 :
+  #---------------------------------------
+    << : *syn_sbi
+    description     : Synthesis (Artix-7, sky130) of sbi_OpenBlaze8_wrapper, RAM 256, synchronous register file (PicoSoC)
+    parameters      :
+      - RAM_DEPTH=256
+      - REGFILE_SYNC_READ=true
 
   #---------------------------------------
   # tb_OpenBlaze8 : compiled once per configuration (MODEL,
@@ -1024,12 +1078,18 @@ scripts:
   ghdl_synth :
     cmd : [bash, ghdl_synth.sh]
 
+  #---------------------------------------
+  # pre_run hook of syn_* (cwd = work_root)
+  #---------------------------------------
+  yosys_synth :
+    cmd : [bash, yosys_synth.sh]
+
 #=========================================
 parameters :
 #=========================================
 
   #---------------------------------------
-  # Generics of OpenBlaze8_wrapper (lint_ghdl_synth_*)
+  # Generics of OpenBlaze8 / sbi_OpenBlaze8_wrapper (lint_ghdl_synth_*, syn_*)
   #---------------------------------------
   STACK_DEPTH :
     description : Depth of the call stack
@@ -1052,7 +1112,7 @@ parameters :
   REGFILE_SYNC_READ :
     description : true, register file with synchronous read
     datatype    : bool
-    default     : true
+    default     : false
     paramtype   : generic
 
   #---------------------------------------

@@ -1,9 +1,9 @@
 default                           : Default Target
-lint_ghdl                         : Lint with GHDL (-Wall analysis and elaboration of OpenBlaze8_wrapper)
-lint_ghdl_synth_default           : Synthesis check of OpenBlaze8_wrapper, default generics
-lint_ghdl_synth_picosoc           : Synthesis check of OpenBlaze8_wrapper, PicoSoC (RAM_DEPTH 256)
-lint_ghdl_synth_regfile_async     : Synthesis check of OpenBlaze8_wrapper, asynchronous register file
-lint_ghdl_synth_small             : Synthesis check of OpenBlaze8_wrapper, small configuration
+lint_ghdl                         : Lint with GHDL (-Wall analysis and elaboration of sbi_OpenBlaze8_wrapper)
+lint_ghdl_synth_core_default      : Synthesis check of OpenBlaze8, default generics (KCPSM3, asynchronous register file)
+lint_ghdl_synth_core_small        : Synthesis check of OpenBlaze8, small configuration (stack 8, RAM 16, 256 instructions)
+lint_ghdl_synth_sbi_default       : Synthesis check of sbi_OpenBlaze8_wrapper, default generics (asynchronous register file)
+lint_ghdl_synth_sbi_ram256        : Synthesis check of sbi_OpenBlaze8_wrapper, RAM 256, synchronous register file (PicoSoC)
 sim_core                          : Simulation of OpenBlaze8 in lock-step with kcpsm3, KCPSM3 timing (asynchronous register file) - build only (programs of TESTS_LIST)
 sim_core_regfile_sync             : Simulation of OpenBlaze8 in lock-step with kcpsm3, synchronous register file - every program
 sim_core_test_000_default         : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_000_default.psm, default program (writes the OK trigger)
@@ -56,4 +56,8 @@ sim_core_test_uadd16              : Simulation of OpenBlaze8 in lock-step with k
 sim_core_test_udiv16              : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-c/test_udiv16.c, C, 16-bit unsigned division
 sim_core_test_umul16              : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-c/test_umul16.c, C, 16-bit unsigned multiplication
 sim_sbi_regfile_sync              : Simulation of sbi_OpenBlaze8 in lock-step with kcpsm3, synchronous register file (PicoSoC), random cke_i and SBI ready (stalls) - every program
+syn_core_default                  : Synthesis (Artix-7, sky130) of OpenBlaze8, default generics (KCPSM3, asynchronous register file)
+syn_core_small                    : Synthesis (Artix-7, sky130) of OpenBlaze8, small configuration (stack 8, RAM 16, 256 instructions)
+syn_sbi_default                   : Synthesis (Artix-7, sky130) of sbi_OpenBlaze8_wrapper, default generics (asynchronous register file)
+syn_sbi_ram256                    : Synthesis (Artix-7, sky130) of sbi_OpenBlaze8_wrapper, RAM 256, synchronous register file (PicoSoC)
 
