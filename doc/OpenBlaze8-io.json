@@ -1,0 +1,16 @@
+{ "signal": [
+  { "name": "clock_i",        "wave": "p......" },
+  { "name": "cycle phase",    "wave": "1010101" },
+  { "name": "address_o",      "wave": "=.=.=.=", "data": ["n", "n+1", "n+2", "n+3"] },
+  { "name": "instruction_i",  "wave": "x3.4.x.", "data": ["OUTPUT s0, (s3)", "INPUT s1, (s3)"] },
+  {},
+  { "name": "port_id_o",      "wave": "x3.4.x.", "data": ["s3 = 0x40", "s3 = 0x40"] },
+  { "name": "out_port_o",     "wave": "x3.x...", "data": ["s0 = 0x5A"] },
+  { "name": "write_strobe_o", "wave": "0.10..." },
+  { "name": "read_strobe_o",  "wave": "0...10." },
+  { "name": "in_port_i",      "wave": "x...4x.", "data": ["0x5A"] },
+  { "name": "s1",             "wave": "=....4.", "data": ["", "0x5A"] }
+  ],
+  "head": { "text": "OUTPUT then INPUT (REGFILE_SYNC_READ = false)", "tick": 0 },
+  "config": { "hscale": 2 }
+}

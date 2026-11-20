@@ -1,0 +1,109 @@
+; ;------------------------------------
+; ; Test 044
+; ; RETI restores the flags : the handler inverts C and Z
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $e0
+it_id               EQU       $ff
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $000
+main:
+                    LOAD      s5, $00             ; interrupts taken
+                    EINT
+
+                    ; C = 1, Z = 0, interrupt during LOAD (flags unchanged)
+                    LOAD      s0, $00
+                    SUB       s0, $01             ; C = 1, Z = 0
+                    LOAD      s1, $04
+                    OUT       s1, it_id           ; interrupt 4 cycles later
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    JUMP      NC, test_ko
+                    JUMP      Z, test_ko
+                    COMP      s5, $01
+                    JUMP      NZ, test_ko
+
+                    ; C = 0, Z = 1
+                    LOAD      s0, $01
+                    SUB       s0, $01             ; C = 0, Z = 1
+                    OUT       s1, it_id
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    LOAD      s2, s2
+                    JUMP      C, test_ko
+                    JUMP      NZ, test_ko
+                    COMP      s5, $02
+                    JUMP      NZ, test_ko
+
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt Handler : count, leave the opposite flags
+; ;------------------------------------
+it_handler:
+                    ADD       s5, $01
+                    COMP      s5, $01
+                    JUMP      Z, it_first
+                    LOAD      s6, $00
+                    SUB       s6, $01             ; second : C = 1, Z = 0
+                    RETI      ENABLE
+it_first:
+                    LOAD      s6, $01
+                    SUB       s6, $01             ; first : C = 0, Z = 1
+                    RETI      ENABLE
+
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko:
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+test_ok:
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    JUMP      it_handler

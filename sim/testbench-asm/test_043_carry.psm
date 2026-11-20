@@ -1,0 +1,113 @@
+; ;------------------------------------
+; ; Test 043
+; ; Carry : ADDC / SUBC with the carry set, AND / OR / XOR clear the carry
+; ;------------------------------------
+
+; ;------------------------------------
+; ; directive compilation fichier
+; ;------------------------------------
+
+VHDL      "../ROM_blank_adh.vhd", "../../OpenBlaze8_ROM.vhd", "OpenBlaze8_ROM"
+
+; ;------------------------------------
+; ; Constantes
+; ;------------------------------------
+sp                  EQU       sF
+
+test_val_ok         EQU       $FA
+test_val_ko         EQU       $ED
+
+; ;------------------------------------
+; ; directives pour le simulateur:  definition des  E/S
+; ;------------------------------------
+switch_id           EQU       $00
+led_id              EQU       $20
+debug_id            EQU       $e0
+it_id               EQU       $ff
+
+switch              DSIN      switch_id
+led                 DSOUT     led_id
+debug               DSOUT     debug_id
+
+; ;------------------------------------
+; ; MAIN
+; ;------------------------------------
+                    ORG       $000
+main:
+                    ; SUBC with C = 1 : $10 - $05 - 1 = $0A, no borrow
+                    LOAD      s0, $10
+                    LOAD      s1, $00
+                    SUB       s1, $01             ; s1 <- $FF, C = 1
+                    JUMP      NC, test_ko
+                    SUBC      s0, $05
+                    JUMP      C, test_ko
+                    COMP      s0, $0A
+                    JUMP      NZ, test_ko
+
+                    ; SUBC (register) with C = 1 : $00 - $00 - 1 = $FF, borrow
+                    LOAD      s0, $00
+                    LOAD      s2, $00
+                    SUB       s1, $FF             ; $FF - $FF : C = 0
+                    SUB       s1, $01             ; $00 - $01 : C = 1
+                    SUBC      s0, s2
+                    JUMP      NC, test_ko
+                    COMP      s0, $FF
+                    JUMP      NZ, test_ko
+
+                    ; 16-bit subtraction $0100 - $0001 = $00FF (s4:s3)
+                    LOAD      s3, $00
+                    LOAD      s4, $01
+                    SUB       s3, $01
+                    SUBC      s4, $00
+                    JUMP      C, test_ko
+                    COMP      s3, $FF
+                    JUMP      NZ, test_ko
+                    COMP      s4, $00
+                    JUMP      NZ, test_ko
+
+                    ; 16-bit addition $00FF + $0001 = $0100 (s4:s3)
+                    LOAD      s3, $FF
+                    LOAD      s4, $00
+                    ADD       s3, $01
+                    ADDC      s4, $00
+                    JUMP      C, test_ko
+                    COMP      s4, $01
+                    JUMP      NZ, test_ko
+
+                    ; AND, OR, XOR clear the carry
+                    LOAD      s0, $00
+                    SUB       s0, $01             ; C = 1
+                    AND       s0, $F0
+                    JUMP      C, test_ko
+                    COMP      s0, $F0
+                    JUMP      NZ, test_ko
+                    SUB       s0, $F1             ; C = 1
+                    OR        s0, $0F
+                    JUMP      C, test_ko
+                    SUB       s0, $FF             ; C = 0
+                    SUB       s0, $01             ; C = 1
+                    XOR       s0, $FF
+                    JUMP      C, test_ko
+                    COMP      s0, $00
+                    JUMP      NZ, test_ko
+
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Test ok/ko
+; ;------------------------------------
+test_ko:
+                    LOAD      sE, test_val_ko
+                    OUT       sE, debug_id
+                    JUMP      test_ko
+
+test_ok:
+                    LOAD      sE, test_val_ok
+                    OUT       sE, debug_id
+                    JUMP      test_ok
+
+; ;------------------------------------
+; ; Interrupt VECTOR
+; ;------------------------------------
+                    ORG       $3FF
+                    JUMP      test_ko

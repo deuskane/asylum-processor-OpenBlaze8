@@ -1,54 +1,63 @@
-default                          : Default Target
-lint_ghdl                        : Lint with GHDL (-Wall analysis and elaboration of OpenBlaze8_wrapper)
-lint_ghdl_synth_default          : Synthesis check of OpenBlaze8_wrapper, default generics
-lint_ghdl_synth_picosoc          : Synthesis check of OpenBlaze8_wrapper, PicoSoC (RAM_DEPTH 256)
-lint_ghdl_synth_regfile_async    : Synthesis check of OpenBlaze8_wrapper, asynchronous register file
-lint_ghdl_synth_small            : Synthesis check of OpenBlaze8_wrapper, small configuration
-sim                              : Simulation env
-sim_asm_test_000_default         : Simulation of the test sim/testbench-asm/test_000_default.psm
-sim_asm_test_001_test_ok         : Simulation of the test sim/testbench-asm/test_001_test_ok.psm
-sim_asm_test_002_jump            : Simulation of the test sim/testbench-asm/test_002_jump.psm
-sim_asm_test_003_jump            : Simulation of the test sim/testbench-asm/test_003_jump.psm
-sim_asm_test_004_comp            : Simulation of the test sim/testbench-asm/test_004_comp.psm
-sim_asm_test_005_comp            : Simulation of the test sim/testbench-asm/test_005_comp.psm
-sim_asm_test_006_and             : Simulation of the test sim/testbench-asm/test_006_and.psm
-sim_asm_test_007_or              : Simulation of the test sim/testbench-asm/test_007_or.psm
-sim_asm_test_008_xor             : Simulation of the test sim/testbench-asm/test_008_xor.psm
-sim_asm_test_009_andi            : Simulation of the test sim/testbench-asm/test_009_andi.psm
-sim_asm_test_010_ori             : Simulation of the test sim/testbench-asm/test_010_ori.psm
-sim_asm_test_011_xori            : Simulation of the test sim/testbench-asm/test_011_xori.psm
-sim_asm_test_012_add             : Simulation of the test sim/testbench-asm/test_012_add.psm
-sim_asm_test_013_addi            : Simulation of the test sim/testbench-asm/test_013_addi.psm
-sim_asm_test_014_sub             : Simulation of the test sim/testbench-asm/test_014_sub.psm
-sim_asm_test_015_subi            : Simulation of the test sim/testbench-asm/test_015_subi.psm
-sim_asm_test_016_comp            : Simulation of the test sim/testbench-asm/test_016_comp.psm
-sim_asm_test_017_compi           : Simulation of the test sim/testbench-asm/test_017_compi.psm
-sim_asm_test_018_rl              : Simulation of the test sim/testbench-asm/test_018_rl.psm
-sim_asm_test_019_rr              : Simulation of the test sim/testbench-asm/test_019_rr.psm
-sim_asm_test_020_sl0             : Simulation of the test sim/testbench-asm/test_020_sl0.psm
-sim_asm_test_021_sl1             : Simulation of the test sim/testbench-asm/test_021_sl1.psm
-sim_asm_test_022_sla             : Simulation of the test sim/testbench-asm/test_022_sla.psm
-sim_asm_test_023_slx             : Simulation of the test sim/testbench-asm/test_023_slx.psm
-sim_asm_test_024_sr              : Simulation of the test sim/testbench-asm/test_024_sr.psm
-sim_asm_test_025_call            : Simulation of the test sim/testbench-asm/test_025_call.psm
-sim_asm_test_026_call_ret        : Simulation of the test sim/testbench-asm/test_026_call_ret.psm
-sim_asm_test_027_call_ret        : Simulation of the test sim/testbench-asm/test_027_call_ret.psm
-sim_asm_test_028_call_ret_cond   : Simulation of the test sim/testbench-asm/test_028_call_ret_cond.psm
-sim_asm_test_029_fetch_store     : Simulation of the test sim/testbench-asm/test_029_fetch_store.psm
-sim_asm_test_030_fetch_store     : Simulation of the test sim/testbench-asm/test_030_fetch_store.psm
-sim_asm_test_031_fetch_store     : Simulation of the test sim/testbench-asm/test_031_fetch_store.psm
-sim_asm_test_032_stack_depth     : Simulation of the test sim/testbench-asm/test_032_stack_depth.psm
-sim_asm_test_033_mul             : Simulation of the test sim/testbench-asm/test_033_mul.psm
-sim_asm_test_034_div             : Simulation of the test sim/testbench-asm/test_034_div.psm
-sim_asm_test_035_test            : Simulation of the test sim/testbench-asm/test_035_test.psm
-sim_asm_test_036_test            : Simulation of the test sim/testbench-asm/test_036_test.psm
-sim_asm_test_037_in_out          : Simulation of the test sim/testbench-asm/test_037_in_out.psm
-sim_asm_test_038_in_out          : Simulation of the test sim/testbench-asm/test_038_in_out.psm
-sim_asm_test_039_eint_reti       : Simulation of the test sim/testbench-asm/test_039_eint_reti.psm
-sim_asm_test_040_eint_reti       : Simulation of the test sim/testbench-asm/test_040_eint_reti.psm
-sim_asm_test_041_eint_reti       : Simulation of the test sim/testbench-asm/test_041_eint_reti.psm
-sim_asm_test_042_in_out_indirect : Simulation of the test sim/testbench-asm/test_042_in_out_indirect.psm
-sim_c_test_uadd16                : Simulation of the test sim/testbench-c/test_uadd16.c
-sim_c_test_udiv16                : Simulation of the test sim/testbench-c/test_udiv16.c
-sim_c_test_umul16                : Simulation of the test sim/testbench-c/test_umul16.c
+default                           : Default Target
+lint_ghdl                         : Lint with GHDL (-Wall analysis and elaboration of sbi_OpenBlaze8_wrapper)
+lint_ghdl_synth_core_default      : Synthesis check of OpenBlaze8, default generics (KCPSM3, asynchronous register file)
+lint_ghdl_synth_core_small        : Synthesis check of OpenBlaze8, small configuration (stack 8, RAM 16, 256 instructions)
+lint_ghdl_synth_sbi_default       : Synthesis check of sbi_OpenBlaze8_wrapper, default generics (asynchronous register file)
+lint_ghdl_synth_sbi_ram256        : Synthesis check of sbi_OpenBlaze8_wrapper, RAM 256, synchronous register file (PicoSoC)
+sim_core                          : Simulation of OpenBlaze8 in lock-step with kcpsm3, KCPSM3 timing (asynchronous register file) - build only (programs of TESTS_LIST)
+sim_core_regfile_sync             : Simulation of OpenBlaze8 in lock-step with kcpsm3, synchronous register file - every program
+sim_core_test_000_default         : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_000_default.psm, default program (writes the OK trigger)
+sim_core_test_001_test_ok         : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_001_test_ok.psm, OK trigger only
+sim_core_test_002_jump            : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_002_jump.psm, unconditional JUMP
+sim_core_test_003_jump            : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_003_jump.psm, several unconditional JUMP
+sim_core_test_004_comp            : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_004_comp.psm, COMPARE with an immediate, conditional JUMP (Z, NZ, C, NC)
+sim_core_test_005_comp            : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_005_comp.psm, COMPARE with a register, conditional JUMP (Z, NZ, C, NC)
+sim_core_test_006_and             : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_006_and.psm, AND with a register
+sim_core_test_007_or              : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_007_or.psm, OR with a register
+sim_core_test_008_xor             : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_008_xor.psm, XOR with a register
+sim_core_test_009_andi            : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_009_andi.psm, AND with an immediate
+sim_core_test_010_ori             : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_010_ori.psm, OR with an immediate
+sim_core_test_011_xori            : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_011_xori.psm, XOR with an immediate
+sim_core_test_012_add             : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_012_add.psm, ADD / ADDCY with a register
+sim_core_test_013_addi            : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_013_addi.psm, ADD / ADDCY with an immediate
+sim_core_test_014_sub             : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_014_sub.psm, SUB / SUBCY with a register
+sim_core_test_015_subi            : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_015_subi.psm, SUB / SUBCY with an immediate
+sim_core_test_016_comp            : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_016_comp.psm, COMPARE with a register
+sim_core_test_017_compi           : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_017_compi.psm, COMPARE with an immediate
+sim_core_test_018_rl              : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_018_rl.psm, RL, rotate left
+sim_core_test_019_rr              : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_019_rr.psm, RR, rotate right
+sim_core_test_020_sl0             : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_020_sl0.psm, SL0, shift left with 0
+sim_core_test_021_sl1             : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_021_sl1.psm, SL1, shift left with 1
+sim_core_test_022_sla             : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_022_sla.psm, SLA, shift left with the carry
+sim_core_test_023_slx             : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_023_slx.psm, SLX, shift left with the LSB
+sim_core_test_024_sr              : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_024_sr.psm, SR0, SR1, SRA, SRX, shift right
+sim_core_test_025_call            : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_025_call.psm, unconditional CALL
+sim_core_test_026_call_ret        : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_026_call_ret.psm, unconditional CALL and RETURN
+sim_core_test_027_call_ret        : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_027_call_ret.psm, nested CALL and RETURN
+sim_core_test_028_call_ret_cond   : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_028_call_ret_cond.psm, conditional CALL and RETURN
+sim_core_test_029_fetch_store     : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_029_fetch_store.psm, FETCH / STORE, direct address
+sim_core_test_030_fetch_store     : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_030_fetch_store.psm, FETCH / STORE, indirect address
+sim_core_test_031_fetch_store     : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_031_fetch_store.psm, FETCH / STORE, indirect address, whole scratch-pad
+sim_core_test_032_stack_depth     : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_032_stack_depth.psm, CALL / RETURN stack depth
+sim_core_test_033_mul             : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_033_mul.psm, multiplication routine
+sim_core_test_034_div             : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_034_div.psm, division routine
+sim_core_test_035_test            : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_035_test.psm, TEST with a register
+sim_core_test_036_test            : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_036_test.psm, TEST with a register
+sim_core_test_037_in_out          : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_037_in_out.psm, INPUT
+sim_core_test_038_in_out          : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_038_in_out.psm, 255 OUTPUT / INPUT
+sim_core_test_039_eint_reti       : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_039_eint_reti.psm, ENABLE INTERRUPT / RETURNI
+sim_core_test_040_eint_reti       : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_040_eint_reti.psm, ENABLE INTERRUPT / RETURNI
+sim_core_test_041_eint_reti       : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_041_eint_reti.psm, ENABLE INTERRUPT / RETURNI
+sim_core_test_042_in_out_indirect : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_042_in_out_indirect.psm, indirect OUTPUT sX, (sY) and INPUT sX, (sY)
+sim_core_test_043_carry           : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_043_carry.psm, ADDCY / SUBCY with the carry set, AND / OR / XOR clear the carry
+sim_core_test_044_reti_flags      : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_044_reti_flags.psm, RETURNI restores C and Z changed by the handler
+sim_core_test_045_int_reset       : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-asm/test_045_int_reset.psm, interrupts disabled at reset and by DISABLE, pending interrupt taken after ENABLE
+sim_core_test_uadd16              : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-c/test_uadd16.c, C, 16-bit unsigned addition
+sim_core_test_udiv16              : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-c/test_udiv16.c, C, 16-bit unsigned division
+sim_core_test_umul16              : Simulation of OpenBlaze8 in lock-step with kcpsm3 - program sim/testbench-c/test_umul16.c, C, 16-bit unsigned multiplication
+sim_sbi_regfile_sync              : Simulation of sbi_OpenBlaze8 in lock-step with kcpsm3, synchronous register file (PicoSoC), random cke_i and SBI ready (stalls) - every program
+syn_core_default                  : Synthesis (Artix-7, sky130) of OpenBlaze8, default generics (KCPSM3, asynchronous register file)
+syn_core_small                    : Synthesis (Artix-7, sky130) of OpenBlaze8, small configuration (stack 8, RAM 16, 256 instructions)
+syn_sbi_default                   : Synthesis (Artix-7, sky130) of sbi_OpenBlaze8_wrapper, default generics (asynchronous register file)
+syn_sbi_ram256                    : Synthesis (Artix-7, sky130) of sbi_OpenBlaze8_wrapper, RAM 256, synchronous register file (PicoSoC)
 
