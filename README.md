@@ -227,12 +227,12 @@ Figures of the `syn_*` targets (`make nonreg_syn`, see [Targets](#targets)): `Op
 
 | Configuration | LUT¹ | LUTRAM¹ | FF¹ | CARRY4¹ | MUXF7/F8¹ | BRAM¹ | DSP¹ | Area² (µm²) | kGE³ |
 |---|---|---|---|---|---|---|---|---|---|
-| `syn_core_default` (`OpenBlaze8`, KCPSM3: stack 32, RAM 64, 1024 instructions) | 193 | 28 | 28 | 19 | 23 | 0 | 0 | 39282.68 | 10.465 |
-| `syn_core_small` (`OpenBlaze8`, stack 8, RAM 16, 256 instructions) | 191 | 24 | 24 | 16 | 33 | 0 | 0 | 16225.56 | 4.323 |
-| `syn_sbi_default` (`sbi_OpenBlaze8`, default generics) | 198 | 28 | 28 | 19 | 23 | 0 | 0 | 39172.57 | 10.436 |
-| `syn_sbi_ram256` (`sbi_OpenBlaze8`, RAM 256, synchronous register file, as in PicoSoC) | 200 | 52 | 44 | 19 | 23 | 0 | 0 | 99532.96 | 26.517 |
+| `syn_core_default` (`OpenBlaze8`, KCPSM3: stack 32, RAM 64, 1024 instructions) | 186 | 28 | 28 | 19 | 21 | 0 | 0 | 39282.68 | 10.465 |
+| `syn_core_small` (`OpenBlaze8`, stack 8, RAM 16, 256 instructions) | 180 | 24 | 24 | 16 | 30 | 0 | 0 | 16225.56 | 4.323 |
+| `syn_sbi_default` (`sbi_OpenBlaze8`, default generics) | 190 | 28 | 28 | 19 | 21 | 0 | 0 | 39172.57 | 10.436 |
+| `syn_sbi_ram256` (`sbi_OpenBlaze8`, RAM 256, synchronous register file, as in PicoSoC) | 192 | 52 | 44 | 19 | 21 | 0 | 0 | 99532.96 | 26.517 |
 
-¹ Xilinx Artix-7 (LUT6), Yosys 0.33 `synth_xilinx -flatten -noiopad -noclkbuf`, before place and route: every cell of the netlist is counted, Vivado may differ. An `INV` counts as a `LUT1`. The register file, the scratch-pad RAM and the stack are in LUTRAM (distributed RAM, asynchronous read), not in BRAM.
+¹ Xilinx Artix-7 (LUT6), Yosys 0.33 `synth_xilinx -flatten -noiopad -noclkbuf`, before place and route: every cell of the netlist is counted, Vivado may differ. Identical cells are merged as a vendor tool does (`opt_merge -share_all`): the inverters of an active-low reset net become one; every remaining cell is counted, an `INV` as a `LUT1`. The register file, the scratch-pad RAM and the stack are in LUTRAM (distributed RAM, asynchronous read), not in BRAM.
 
 ² SkyWater sky130 `sky130_fd_sc_hd`, typical corner (tt, 25 °C, 1.80 V), Yosys 0.33 `synth` + `dfflibmap` + `abc -liberty`: standard-cell area only, no timing constraint, no buffering, clock tree or placement; the register file, the scratch-pad RAM and the stack become flip-flops (no SRAM macro), most of the area.
 
